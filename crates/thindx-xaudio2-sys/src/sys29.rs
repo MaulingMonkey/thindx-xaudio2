@@ -105,6 +105,17 @@ pub use prev::{
     XAUDIO2_E_DEVICE_INVALIDATED,
 };
 
+// Forward declarations for the XAudio2 interfaces.
+pub use prev::{
+    IXAudio2,
+    IXAudio2Voice,
+    IXAudio2SourceVoice,
+    IXAudio2SubmixVoice,
+    IXAudio2MasteringVoice,
+    IXAudio2EngineCallback,
+    IXAudio2VoiceCallback,
+};
+
 // Used in XAudio2Create, specifies which CPU(s) to use.
 pub use prev::{
     XAUDIO2_PROCESSOR,
@@ -150,3 +161,31 @@ pub const XAUDIO2_USE_DEFAULT_PROCESSOR : u32 = 0x00000000;
 /// Implementations targeting Games and WIN10_19H1 and later, should use [XAUDIO2_USE_DEFAULT_PROCESSOR] instead to let XAudio2 select the appropriate default processor for the hardware platform.
 #[deprecated = "Implementations targeting Games and WIN10_19H1 and later, should use [XAUDIO2_USE_DEFAULT_PROCESSOR] instead to let XAudio2 select the appropriate default processor for the hardware platform."]
 pub const XAUDIO2_DEFAULT_PROCESSOR : u32 = Processor1;
+
+pub use prev::{
+    XAUDIO2_VOICE_DETAILS,
+    XAUDIO2_SEND_DESCRIPTOR,
+    XAUDIO2_VOICE_SENDS,
+    XAUDIO2_EFFECT_DESCRIPTOR,
+    XAUDIO2_EFFECT_CHAIN,
+    XAUDIO2_FILTER_TYPE,
+    XAUDIO2_FILTER_PARAMETERS,
+    XAUDIO2_BUFFER,
+    XAUDIO2_BUFFER_WMA,
+    XAUDIO2_VOICE_STATE,
+    XAUDIO2_PERFORMANCE_DATA,
+    XAUDIO2_DEBUG_CONFIGURATION,
+};
+
+pub use prev::{
+    XAUDIO2_LOG_ERRORS,
+    XAUDIO2_LOG_WARNINGS,
+    XAUDIO2_LOG_INFO,
+    XAUDIO2_LOG_DETAIL,
+    XAUDIO2_LOG_API_CALLS,
+    XAUDIO2_LOG_FUNC_CALLS,
+    XAUDIO2_LOG_TIMING,
+    XAUDIO2_LOG_LOCKS,
+    XAUDIO2_LOG_MEMORY,
+    XAUDIO2_LOG_STREAMING,
+};
