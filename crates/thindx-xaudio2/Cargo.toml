@@ -1,0 +1,69 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name                                    = "thindx-xaudio2"
+version                                 = "0.0.0-git"
+authors                                 = ["MaulingMonkey <git@maulingmonkey.com>"]
+edition                                 = "2021"
+repository                              = "https://github.com/MaulingMonkey/thindx-xaudio2"
+documentation                           = "https://docs.rs/thindx-xaudio2"
+license                                 = "Apache-2.0 OR MIT"
+readme                                  = "Readme.md"
+description                             = "High level FFI for XAudio2"
+keywords                                = ["directx", "xaudio2"]
+
+categories = [
+    # https://crates.io/category_slugs
+    "api-bindings",             # high level idiomatic bindings
+    # "external-ffi-bindings",  # low  level ffi bindings
+    "multimedia::audio",
+    "os::windows-apis",
+]
+
+include = [
+    "doc/changelog.md",
+    "src/**",
+    "Readme.md",
+    "LICENSE*",
+]
+
+[package.metadata.docs.rs]
+default-target                          = "x86_64-pc-windows-msvc"
+targets                                 = ["x86_64-pc-windows-msvc", "i686-pc-windows-msvc"]
+all-features                            = true
+
+[lib]
+path                                    = "src/_xaudio2.rs"
+
+
+
+[target.'cfg(windows)'.dependencies]
+abibool.version                         = "0.5"
+abistr.version                          = "0.2.0-rc3" # const abistr::cstr!("...")
+bytemuck.version                        = "1"
+minidl                                  = "0.1.3"
+mcom.git                                = "https://github.com/MaulingMonkey/mcom"
+mcom.rev                                = "82e63687c18f35445bc8cd98ca59bce68ff40946"    # relax winapi::Interface requirement for mcom::Rc
+winapi.version                          = "0.3.9"
+winresult.version                       = "0.1.2"
+
+abibool.features                        = ["bytemuck"]
+abistr.features                         = ["bytemuck"]
+bytemuck.features                       = ["derive"]
+winapi.features = [
+    # shared
+    "guiddef",
+    "minwindef",
+    "ntdef",
+    "windef",
+    "winerror",
+
+    # um
+    "audiosessiontypes",
+    "errhandlingapi",
+    "libloaderapi",
+    "mmreg",
+    "unknwnbase",
+    "windef",
+    "winnt",
+]
