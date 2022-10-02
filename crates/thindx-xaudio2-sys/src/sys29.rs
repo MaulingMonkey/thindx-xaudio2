@@ -8,6 +8,7 @@
 
 use super::xaudio2_8 as prev;
 use abistr::*;
+use winapi::ctypes::c_void;
 use winapi::shared::guiddef::GUID;
 
 #[doc = "`\"xaudio2_9.dll\"`"] pub const XAUDIO2_DLL        : &'static str              =           "xaudio2_9.dll";
@@ -115,6 +116,12 @@ pub use prev::{
     IXAudio2EngineCallback,
     IXAudio2VoiceCallback,
 };
+
+/// \[<strike>microsoft.com</strike>\]
+#[repr(C)] pub struct IXAudio2Extension { lpVtbl: *const c_void }
+// no learn.microsoft.com docs currently
+
+
 
 // Used in XAudio2Create, specifies which CPU(s) to use.
 pub use prev::{

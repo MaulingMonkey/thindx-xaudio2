@@ -175,12 +175,25 @@ pub const XAUDIO2_E_DEVICE_INVALIDATED : HResult = HResult::from_constant(0x8896
 
 // Forward declarations for the XAudio2 interfaces.
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2)\]
 #[repr(C)] pub struct IXAudio2                  { lpVtbl: *const c_void }
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voice)\]
 #[repr(C)] pub struct IXAudio2Voice             { lpVtbl: *const c_void }
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\]
 #[repr(C)] pub struct IXAudio2SourceVoice       { lpVtbl: *const c_void }
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2submixvoice)\]
 #[repr(C)] pub struct IXAudio2SubmixVoice       { lpVtbl: *const c_void }
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2masteringvoice)\]
 #[repr(C)] pub struct IXAudio2MasteringVoice    { lpVtbl: *const c_void }
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2enginecallback)\]
 #[repr(C)] pub struct IXAudio2EngineCallback    { lpVtbl: *const c_void }
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voicecallback)\]
 #[repr(C)] pub struct IXAudio2VoiceCallback     { lpVtbl: *const c_void }
 
 
@@ -224,7 +237,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 
 
 
-/// \[[docs.microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_details)\] XAUDIO2_VOICE_DETAILS
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_details)\]
 #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_DETAILS {
     /// Flags the voice was created with.
     pub CreationFlags: u32,
@@ -239,31 +252,32 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
     pub InputSampleRate: u32,
 }
 
-/// \[[docs.microsoft.com](https://docs.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_send_descriptor)\] XAUDIO2_SEND_DESCRIPTOR
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_send_descriptor)\]
 #[repr(C, packed(1))] pub struct XAUDIO2_SEND_DESCRIPTOR {
     pub Flags:          u32,
     pub pOutputVoice:   *const IXAudio2Voice,
 }
 
-/// \[[docs.microsoft.com](https://docs.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_sends)\] XAUDIO2_VOICE_SENDS
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_sends)\]
 #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_SENDS {
     pub SendCount:      u32,
     pub pSends:         *mut XAUDIO2_SEND_DESCRIPTOR,
 }
 
-/// \[[docs.microsoft.com](https://docs.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_descriptor)\] XAUDIO2_EFFECT_DESCRIPTOR
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_descriptor)\]
 #[repr(C, packed(1))] pub struct XAUDIO2_EFFECT_DESCRIPTOR {
     pub pEffect:        *const IUnknown,
     pub InitialState:   bool32,
     pub OutputChannels: u32,
 }
 
-/// \[[docs.microsoft.com](https://docs.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_chain)\] XAUDIO2_EFFECT_CHAIN
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_chain)\]
 #[repr(C, packed(1))] pub struct XAUDIO2_EFFECT_CHAIN {
     pub EffectCount:        u32,
     pub pEffectDescriptors: *mut XAUDIO2_EFFECT_DESCRIPTOR,
 }
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ne-xaudio2-xaudio2_filter_type)\]
 /// Used in [XAUDIO2_FILTER_PARAMETERS]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)] pub struct XAUDIO2_FILTER_TYPE(u32); // TODO: check type
@@ -286,6 +300,7 @@ pub const LowPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(4);
 /// Attenuates frequencies below the cutoff frequency (one-pole filter, [XAUDIO2_FILTER_PARAMETERS::OneOverQ] has no effect)
 pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_filter_parameters)\]
 /// Used in IXAudio2Voice::Set/GetFilterParameters and Set/GetOutputFilterParameters
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_FILTER_PARAMETERS {
     /// Filter type
@@ -301,6 +316,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     pub OneOverQ: f32,
 }
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer)\]
 /// Used in IXAudio2SourceVoice::SubmitSourceBuffer
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER {
     /// Either 0 or [xaudio2_9::END_OF_STREAM].
@@ -331,7 +347,9 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     pub pContext: *mut c_void,
 }
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma)\]
 /// Used in IXAudio2SourceVoice::SubmitSourceBuffer when submitting XWMA data.
+///
 /// NOTE: If an XWMA sound is submitted in more than one buffer, each buffer's
 /// pDecodedPacketCumulativeBytes[PacketCount-1] value must be subtracted from
 /// all the entries in the next buffer's pDecodedPacketCumulativeBytes array.
@@ -349,6 +367,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     PacketCount: u32,
 }
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_state)\]
 /// Returned by IXAudio2SourceVoice::GetState
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_STATE {
     /// The pContext value provided in the [Buffer]
@@ -368,6 +387,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     pub SamplesPlayed: u64,
 }
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_performance_data)\]
 /// Returned by IXAudio2::GetPerformanceData
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_PERFORMANCE_DATA {
     // CPU usage information
@@ -428,6 +448,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     pub ActiveXmaStreams: u32,
 }
 
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_debug_configuration)\]
 /// Used in IXAudio2::SetDebugConfiguration
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_DEBUG_CONFIGURATION {
     /// Bitmap of enabled debug message types.
