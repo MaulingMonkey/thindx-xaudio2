@@ -1,5 +1,6 @@
 //! \[[docs.microsoft.com](https://docs.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-apis-portal)\]
 
+#![cfg(windows)]
 #![allow(non_upper_case_globals)]
 
 #[path = "sys20.rs"] pub mod xaudio2_0;
