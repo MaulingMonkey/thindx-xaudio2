@@ -38,6 +38,7 @@ path                                    = "src/_xaudio2.rs"
 
 
 [target.'cfg(windows)'.dependencies]
+thindx-xaudio2-sys.path                 = "../thindx-xaudio2-sys"
 abibool.version                         = "0.5"
 abistr.version                          = "0.2.0-rc3" # const abistr::cstr!("...")
 bytemuck.version                        = "1"

@@ -10,3 +10,6 @@
 //! *   [Not So Direct Setup](https://walbourn.github.io/not-so-direct-setup/)
 
 #![deprecated = "Not currently implemented.  Prefer XAudio 2.9, which has redists backported to Windows 7 SP 1."]
+#![allow(deprecated)]
+
+pub use thindx_xaudio2_sys::xaudio2_7 as sys;

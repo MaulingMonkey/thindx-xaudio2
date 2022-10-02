@@ -3,3 +3,6 @@
 //! Introduced in the legacy DirectX SDK (August 2008)
 
 #![deprecated = "Not currently implemented.  Prefer XAudio 2.9, which has redists backported to Windows 7 SP 1."]
+#![allow(deprecated)]
+
+pub use thindx_xaudio2_sys::xaudio2_2 as sys;
