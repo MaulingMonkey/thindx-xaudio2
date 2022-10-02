@@ -6,7 +6,9 @@
 //! *   [XAudio2 Versions: XAudio 2.9 (Windows 10 and redistributable for Windows 7 and Windows 8.x)](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-versions#xaudio-29-windows-10-and-redistributable-for-windows-7-and-windows-8x)
 //! *   [Developer guide for redistributable version of XAudio 2.9](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-redistributable)
 
-pub use thindx_xaudio2_sys::xaudio2_9 as sys;
+/// Raw low level FFI bindings
+///
+pub use xaudio2_sys::xaudio2_9 as sys;
 
 pub use sys::XAUDIO2_DLL    as DLL;
 pub use sys::XAUDIO2_DLL_A  as DLL_A;
