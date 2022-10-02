@@ -11,7 +11,9 @@ use abibool::bool32;
 use abistr::*;
 use winapi::ctypes::c_void;
 use winapi::shared::guiddef::GUID;
-use winapi::um::unknwnbase::IUnknown;
+use winapi::shared::mmreg::WAVEFORMATEX;
+use winapi::um::audiosessiontypes::AUDIO_STREAM_CATEGORY;
+use winapi::um::unknwnbase::{IUnknown, IUnknownVtbl};
 use winresult::*;
 
 #[doc = "`\"xaudio2_8.dll\"`"] pub const XAUDIO2_DLL    : &'static str              =           "xaudio2_8.dll";
@@ -53,13 +55,13 @@ pub const XAUDIO2_MAX_SAMPLE_RATE : u32 = 200000;
 /// Maximum acceptable volume level (2^24)
 pub const XAUDIO2_MAX_VOLUME_LEVEL : f32 = 16777216.0;
 
-/// Minimum SetFrequencyRatio argument
+/// Minimum [SetFrequencyRatio](IXAudio2SourceVoice::SetFrequencyRatio) argument
 pub const XAUDIO2_MIN_FREQ_RATIO : f32 = 1.0 / 1024.0;
 
-/// Maximum MaxFrequencyRatio argument
+/// Maximum [MaxFrequencyRatio](IXAudio2::CreateSourceVoice) argument
 pub const XAUDIO2_MAX_FREQ_RATIO : f32 = 1024.0;
 
-/// Default MaxFrequencyRatio argument
+/// Default [MaxFrequencyRatio](IXAudio2::CreateSourceVoice) argument
 pub const XAUDIO2_DEFAULT_FREQ_RATIO : f32 = 2.0;
 
 /// Maximum [XAUDIO2_FILTER_PARAMETERS::OneOverQ]
@@ -76,7 +78,7 @@ pub const XAUDIO2_MAX_INSTANCES : u32 = 8;
 
 
 
-// For XMA voices on Xbox 360 there is an additional restriction on the MaxFrequencyRatio
+// For XMA voices on Xbox 360 there is an additional restriction on the [MaxFrequencyRatio](IXAudio2::CreateSourceVoice)
 // argument and the voice's sample rate: the product of these numbers cannot exceed 600000
 // for one-channel voices or 300000 for voices with more than one channel.
 
@@ -87,13 +89,13 @@ pub const XAUDIO2_MAX_RATIO_TIMES_RATE_XMA_MULTICHANNEL : u32 = 300000;
 
 // Numeric values with special meanings
 
-/// Used as an OperationSet argument
+/// Used as an `OperationSet` argument
 pub const XAUDIO2_COMMIT_NOW : u32 = 0;
 
-/// Used in IXAudio2::CommitChanges
+/// Used in [IXAudio2::CommitChanges]
 pub const XAUDIO2_COMMIT_ALL : u32 = 0;
 
-/// Not allowed for OperationSet arguments
+/// Not allowed for `OperationSet` arguments
 pub const XAUDIO2_INVALID_OPSET : u32 = -1_i32 as u32;
 
 /// Used in [XAUDIO2_BUFFER::LoopCount]
@@ -102,26 +104,26 @@ pub const XAUDIO2_NO_LOOP_REGION : u32 = 0;
 /// Used in [XAUDIO2_BUFFER::LoopCount]
 pub const XAUDIO2_LOOP_INFINITE : u32 = 255;
 
-/// Used in CreateMasteringVoice
+/// Used in [IXAudio2::CreateMasteringVoice]
 pub const XAUDIO2_DEFAULT_CHANNELS : u32 = 0;
 
-/// Used in CreateMasteringVoice
+/// Used in [IXAudio2::CreateMasteringVoice]
 pub const XAUDIO2_DEFAULT_SAMPLERATE : u32 = 0;
 
 
 
 // Flags
 
-/// Used in IXAudio2::CreateSourceVoice
+/// Used in [IXAudio2::CreateSourceVoice]
 pub const XAUDIO2_VOICE_NOPITCH : u32 = 0x0002;
 
-/// Used in IXAudio2::CreateSourceVoice
+/// Used in [IXAudio2::CreateSourceVoice]
 pub const XAUDIO2_VOICE_NOSRC : u32 = 0x0004;
 
-/// Used in IXAudio2::CreateSource/SubmixVoice
+/// Used in [IXAudio2]::[CreateSource](IXAudio2::CreateSourceVoice)/[SubmixVoice](IXAudio2::CreateSubmixVoice)
 pub const XAUDIO2_VOICE_USEFILTER : u32 = 0x0008;
 
-/// Used in IXAudio2SourceVoice::Stop
+/// Used in [IXAudio2SourceVoice::Stop]
 pub const XAUDIO2_PLAY_TAILS : u32 = 0x0020;
 
 /// Used in [XAUDIO2_BUFFER::Flags]
@@ -130,14 +132,14 @@ pub const XAUDIO2_END_OF_STREAM : u32 = 0x0040;
 /// Used in [XAUDIO2_SEND_DESCRIPTOR::Flags]
 pub const XAUDIO2_SEND_USEFILTER : u32 = 0x0080;
 
-/// Used in IXAudio2SourceVoice::GetState
+/// Used in [IXAudio2SourceVoice::GetState]
 pub const XAUDIO2_VOICE_NOSAMPLESPLAYED : u32 = 0x0100;
 
 
 
 // Default parameters for the built-in filter
 
-//pub const XAUDIO2_DEFAULT_FILTER_TYPE       : ()  = LowPassFilter; // TODO
+pub const XAUDIO2_DEFAULT_FILTER_TYPE       : XAUDIO2_FILTER_TYPE = LowPassFilter;
 pub const XAUDIO2_DEFAULT_FILTER_FREQUENCY  : f32 = XAUDIO2_MAX_FILTER_FREQUENCY;
 pub const XAUDIO2_DEFAULT_FILTER_ONEOVERQ   : f32 = 1.0;
 
@@ -170,31 +172,6 @@ pub const XAUDIO2_E_XAPO_CREATION_FAILED : HResult = HResult::from_constant(0x88
 
 /// An audio device became unusable (unplugged, etc)
 pub const XAUDIO2_E_DEVICE_INVALIDATED : HResult = HResult::from_constant(0x88960004);
-
-
-
-// Forward declarations for the XAudio2 interfaces.
-
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2)\]
-#[repr(C)] pub struct IXAudio2                  { lpVtbl: *const c_void }
-
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voice)\]
-#[repr(C)] pub struct IXAudio2Voice             { lpVtbl: *const c_void }
-
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\]
-#[repr(C)] pub struct IXAudio2SourceVoice       { lpVtbl: *const c_void }
-
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2submixvoice)\]
-#[repr(C)] pub struct IXAudio2SubmixVoice       { lpVtbl: *const c_void }
-
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2masteringvoice)\]
-#[repr(C)] pub struct IXAudio2MasteringVoice    { lpVtbl: *const c_void }
-
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2enginecallback)\]
-#[repr(C)] pub struct IXAudio2EngineCallback    { lpVtbl: *const c_void }
-
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voicecallback)\]
-#[repr(C)] pub struct IXAudio2VoiceCallback     { lpVtbl: *const c_void }
 
 
 
@@ -301,7 +278,8 @@ pub const LowPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(4);
 pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_filter_parameters)\]
-/// Used in IXAudio2Voice::Set/GetFilterParameters and Set/GetOutputFilterParameters
+/// Used in [IXAudio2Voice]::[Set](IXAudio2Voice::SetFilterParameters)/[GetFilterParameters](IXAudio2Voice::GetFilterParameters)
+/// and [Set](IXAudio2Voice::SetOutputFilterParameters)/[GetOutputFilterParameters](IXAudio2Voice::GetOutputFilterParameters)
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_FILTER_PARAMETERS {
     /// Filter type
     pub Type: XAUDIO2_FILTER_TYPE,
@@ -317,7 +295,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer)\]
-/// Used in IXAudio2SourceVoice::SubmitSourceBuffer
+/// Used in [IXAudio2SourceVoice::SubmitSourceBuffer]
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER {
     /// Either 0 or [xaudio2_9::END_OF_STREAM].
     pub Flags: u32,
@@ -348,14 +326,14 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma)\]
-/// Used in IXAudio2SourceVoice::SubmitSourceBuffer when submitting XWMA data.
+/// Used in [IXAudio2SourceVoice::SubmitSourceBuffer] when submitting XWMA data.
 ///
 /// NOTE: If an XWMA sound is submitted in more than one buffer, each buffer's
 /// pDecodedPacketCumulativeBytes[PacketCount-1] value must be subtracted from
 /// all the entries in the next buffer's pDecodedPacketCumulativeBytes array.
 /// And whether a sound is submitted in more than one buffer or not, the final
 /// buffer of the sound should use the [XAUDIO2_END_OF_STREAM] flag, or else the
-/// client must call IXAudio2SourceVoice::Discontinuity after submitting it.
+/// client must call [IXAudio2SourceVoice::Discontinuity] after submitting it.
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER_WMA {
     /// Decoded packet's cumulative size array.
     /// Each element is the number of bytes accumulated when the corresponding XWMA packet is decoded in order.
@@ -368,7 +346,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_state)\]
-/// Returned by IXAudio2SourceVoice::GetState
+/// Returned by [IXAudio2SourceVoice::GetState]
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_STATE {
     /// The pContext value provided in the [Buffer]
     ///  that is currently being processed, or NULL if
@@ -382,13 +360,13 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     /// Total number of samples produced by the voice since
     ///  it began processing the current audio stream.
     ///  If [VOICE_NOSAMPLESPLAYED] is specified
-    ///  in the call to IXAudio2SourceVoice::GetState,
+    ///  in the call to [IXAudio2SourceVoice::GetState],
     ///  this member will not be calculated, saving CPU.
     pub SamplesPlayed: u64,
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_performance_data)\]
-/// Returned by IXAudio2::GetPerformanceData
+/// Returned by [IXAudio2::GetPerformanceData]
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_PERFORMANCE_DATA {
     // CPU usage information
 
@@ -449,7 +427,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_debug_configuration)\]
-/// Used in IXAudio2::SetDebugConfiguration
+/// Used in [IXAudio2::SetDebugConfiguration]
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_DEBUG_CONFIGURATION {
     /// Bitmap of enabled debug message types.
     pub TraceMask: u32,
@@ -501,3 +479,427 @@ pub const XAUDIO2_LOG_MEMORY : u32 = 0x0100;
 
 /// Audio streaming information.
 pub const XAUDIO2_LOG_STREAMING  : u32 = 0x1000;
+
+
+
+interfaces! {
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2)\]
+    /// Top-level XAudio2 COM interface.
+    // #[iid = ...] // XAudio 2.8 and 2.9 define this IID differently, which makes actually using it here awkward.  And pretty pointless - why would you ever type erase [IXAudio2] to [IUnknown]?
+    pub interface IXAudio2(IXAudio2Vtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// Adds a new client to receive XAudio2's engine callbacks.
+        ///
+        /// ### Arguments
+        /// * `pCallback` - Callback interface to be called during each processing pass.
+        pub unsafe fn RegisterForCallbacks(&self, pCallback: *const IXAudio2EngineCallback) -> HResult;
+
+        /// Removes an existing receiver of XAudio2 engine callbacks.
+        ///
+        /// ### Arguments
+        /// * `pCallback` - Previously registered callback interface to be removed.
+        pub unsafe fn UnregisterForCallbacks(&self, pCallback: *const IXAudio2EngineCallback) -> ();
+
+        /// Creates and configures a source voice.
+        ///
+        /// ### Arguments
+        /// * `ppSourceVoice`       - Returns the new object's [IXAudio2SourceVoice] interface.
+        /// * `pSourceFormat`       - Format of the audio that will be fed to the voice.
+        /// * `Flags`               - VOICE_\* flags specifying the source voice's behavior.
+        /// * `MaxFrequencyRatio`   - Maximum SetFrequencyRatio argument to be allowed.
+        /// * `pCallback`           - Optional pointer to a client-provided callback interface.
+        /// * `pSendList`           - Optional list of voices this voice should send audio to.
+        /// * `pEffectChain`        - Optional list of effects to apply to the audio data.
+        pub unsafe fn CreateSourceVoice(
+            &self,
+            ppSourceVoice:      *mut *mut IXAudio2SourceVoice,
+            pSourceFormat:      *const WAVEFORMATEX,
+            MaxFrequencyRatio:  f32,
+            pCallback:          *const IXAudio2VoiceCallback,
+            pSendList:          *const XAUDIO2_VOICE_SENDS,
+            pEffectChain:       *const XAUDIO2_EFFECT_CHAIN,
+        ) -> HResult;
+
+        /// Creates and configures a submix voice.
+        ///
+        /// ### Arguments
+        /// * `ppSubmixVoice`   - Returns the new object's [IXAudio2SubmixVoice] interface.
+        /// * `InputChannels`   - Number of channels in this voice's input audio data.
+        /// * `InputSampleRate` - Sample rate of this voice's input audio data.
+        /// * `Flags`           - VOICE_\* flags specifying the submix voice's behavior.
+        /// * `ProcessingStage` - Arbitrary number that determines the processing order.
+        /// * `pSendList`       - Optional list of voices this voice should send audio to.
+        /// * `pEffectChain`    - Optional list of effects to apply to the audio data.
+        pub unsafe fn CreateSubmixVoice(
+            &self,
+            ppSubmixVoice:      *mut *mut IXAudio2SubmixVoice,
+            InputChannels:      u32,
+            InputSampleRate:    u32,
+            Flags:              u32,
+            ProcessingStage:    u32,
+            pSendList:          *const XAUDIO2_VOICE_SENDS,
+            pEffectChain:       *const XAUDIO2_EFFECT_CHAIN,
+        ) -> HResult;
+
+        /// Creates and configures a mastering voice.
+        ///
+        /// ### Arguments
+        /// * `ppMasteringVoice`    - Returns the new object's [IXAudio2MasteringVoice] interface.
+        /// * `InputChannels`       - Number of channels in this voice's input audio data.
+        /// * `InputSampleRate`     - Sample rate of this voice's input audio data.
+        /// * `Flags`               - VOICE_\* flags specifying the mastering voice's behavior.
+        /// * `szDeviceId`          - Identifier of the device to receive the output audio.
+        /// * `pEffectChain`        - Optional list of effects to apply to the audio data.
+        /// * `StreamCategory`      - The audio stream category to use for this mastering voice
+        pub unsafe fn CreateMasteringVoice(
+            &self,
+            ppMasteringVoice:   *mut *mut IXAudio2MasteringVoice,
+            InputChannels:      u32,
+            InputSampleRate:    u32,
+            Flags:              u32,
+            szDeviceId:         Option<CStrNonNull<u16>>,
+            pEffectChain:       *const XAUDIO2_EFFECT_CHAIN,
+            StreamCategory:     AUDIO_STREAM_CATEGORY,
+        ) -> HResult;
+
+        /// Creates and starts the audio processing thread.
+        pub unsafe fn StartEngine(&self) -> HResult;
+
+        /// Stops and destroys the audio processing thread.
+        pub unsafe fn StopEngine(&self) -> ();
+
+        /// Atomically applies a set of operations previously tagged with a given identifier.
+        ///
+        /// ### Arguments
+        /// * `OperationSet` - Identifier of the set of operations to be applied.
+        pub unsafe fn CommitChanges(&self, OperationSet: u32) -> HResult;
+
+        /// Returns current resource usage details: memory, CPU, etc.
+        ///
+        /// ### Arguments
+        /// * `pPerfData` - Returns the performance data structure.
+        pub unsafe fn GetPerformanceData(&self, pPerfData: *mut XAUDIO2_PERFORMANCE_DATA) -> ();
+
+        /// Configures XAudio2's debug output (in debug builds only).
+        ///
+        /// ### Arguments
+        /// * `pDebugConfiguration` - Structure describing the debug output behavior.
+        /// * `pReserved`           - Optional parameter; must be NULL.
+        pub unsafe fn SetDebugConfiguration(&self, pDebugConfiguration: *const XAUDIO2_DEBUG_CONFIGURATION, pReserved: *const c_void) -> ();
+    }
+
+
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voice)\]
+    /// Base voice management interface.
+    pub interface IXAudio2Voice(IXAudio2VoiceVtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// Returns the basic characteristics of this voice.
+        ///
+        /// ### Arguments
+        /// * `pVoiceDetails`   - Returns the voice's details.
+        pub unsafe fn GetVoiceDetails(&self, pVoiceDetails: *mut XAUDIO2_VOICE_DETAILS) -> ();
+
+        /// Replaces the set of submix/mastering voices that receive this voice's output.
+        ///
+        /// ### Arguments
+        /// * `pSendList`       - Optional list of voices this voice should send audio to.
+        pub unsafe fn SetOutputVoices(&self, pSendList: *const XAUDIO2_VOICE_SENDS) -> HResult;
+
+        /// Replaces this voice's current effect chain with a new one.
+        ///
+        /// ### Arguments
+        /// * `pEffectChain`    - Structure describing the new effect chain to be used.
+        pub unsafe fn SetEffectChain(&self, pEffectChain: *const XAUDIO2_EFFECT_CHAIN) -> HResult;
+
+        /// Enables an effect in this voice's effect chain.
+        ///
+        /// ### Arguments
+        /// * `EffectIndex`     - Index of an effect within this voice's effect chain.
+        /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
+        pub unsafe fn EnableEffect(&self, EffectIndex: u32, OperationSet: u32) -> HResult;
+
+        /// Disables an effect in this voice's effect chain.
+        ///
+        /// ### Arguments
+        /// * `EffectIndex`     - Index of an effect within this voice's effect chain.
+        /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
+        pub unsafe fn DisableEffect(&self, EffectIndex: u32, OperationSet: u32) -> HResult;
+
+        /// Returns the running state of an effect.
+        ///
+        /// ### Arguments
+        /// * `EffectIndex`     - Index of an effect within this voice's effect chain.
+        /// * `pEnabled`        - Returns the enabled/disabled state of the given effect.
+        pub unsafe fn GetEffectState(&self, EffectIndex: u32, pEnabled: *mut bool32) -> ();
+
+        /// Sets effect-specific parameters.
+        ///
+        /// Unlike IXAPOParameters::SetParameters, this method may
+        /// be called from any thread.  XAudio2 implements
+        /// appropriate synchronization to copy the parameters to the
+        /// realtime audio processing thread.
+        ///
+        /// ### Arguments
+        /// * `EffectIndex`         - Index of an effect within this voice's effect chain.
+        /// * `pParameters`         - Pointer to an effect-specific parameters block.
+        /// * `ParametersByteSize`  - Size of the pParameters array  in bytes.
+        /// * `OperationSet`        - Used to identify this call as part of a deferred batch.
+        pub unsafe fn SetEffectParameters(&self, EffectIndex: u32, pParameters: *const u8, ParametersByteSize: u32, OperationSet: u32) -> HResult;
+
+        /// Obtains the current effect-specific parameters.
+        ///
+        /// ### Arguments
+        /// * `EffectIndex`         - Index of an effect within this voice's effect chain.
+        /// * `pParameters`         - Returns the current values of the effect-specific parameters.
+        /// * `ParametersByteSize`  - Size of the pParameters array in bytes.
+        pub unsafe fn GetEffectParameters(&self, EffectIndex: u32, pParameters: *mut u8, ParametersByteSize: u32) -> HResult;
+
+        /// Sets this voice's filter parameters.
+        ///
+        /// ### Arguments
+        /// * `pParameters`         - Pointer to the filter's parameter structure.
+        /// * `OperationSet`        - Used to identify this call as part of a deferred batch.
+        pub unsafe fn SetFilterParameters(&self, pParameters: *const XAUDIO2_FILTER_PARAMETERS, OperationSet: u32) -> HResult;
+
+        /// Returns this voice's current filter parameters.
+        ///
+        /// ### Arguments
+        /// * `pParameters`         - Returns the filter parameters.
+        pub unsafe fn GetFilterParameters(&self, pParameters: *mut XAUDIO2_FILTER_PARAMETERS) -> ();
+
+        /// Sets the filter parameters on one of this voice's sends.
+        ///
+        /// ### Arguments
+        /// * `pDestinationVoice`   - Destination voice of the send whose filter parameters will be set.
+        /// * `pParameters`         - Pointer to the filter's parameter structure.
+        /// * `OperationSet`        - Used to identify this call as part of a deferred batch.
+        pub unsafe fn SetOutputFilterParameters(&self, pDestinationVoice: *const IXAudio2Voice, pParameters: *const XAUDIO2_FILTER_PARAMETERS, OperationSet: u32) -> HResult;
+
+        /// Returns the filter parameters from one of this voice's sends.
+        ///
+        /// ### Arguments
+        /// * `pDestinationVoice`   - Destination voice of the send whose filter parameters will be read.
+        /// * `pParameters`         - Returns the filter parameters.
+        pub unsafe fn GetOutputFilterParameters(&self, pDestinationVoice: *const IXAudio2Voice, pParameters: *mut XAUDIO2_FILTER_PARAMETERS) -> ();
+
+        /// Sets this voice's overall volume level.
+        ///
+        /// ### Arguments
+        /// * `Volume`          - New overall volume level to be used, as an amplitude factor.
+        /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
+        pub unsafe fn SetVolume(&self, Volume: f32, OperationSet: u32) -> HResult;
+
+        /// Obtains this voice's current overall volume level.
+        ///
+        /// ### Arguments
+        /// * `pVolume`         - Returns the voice's current overall volume level.
+        pub unsafe fn GetVolume(&self, pVolume: *mut f32) -> ();
+
+        /// Sets this voice's per-channel volume levels.
+        ///
+        /// ### Arguments
+        /// * `Channels`        - Used to confirm the voice's channel count.
+        /// * `pVolumes`        - Array of per-channel volume levels to be used.
+        /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
+        pub unsafe fn SetChannelVolumes(&self, Channels: u32, pVolumes: *const f32, OperationSet: u32) -> HResult;
+
+        /// Returns this voice's current per-channel volume levels.
+        ///
+        /// ### Arguments
+        /// * `Channels`    - Used to confirm the voice's channel count.
+        /// * `pVolumes`    - Returns an array of the current per-channel volume levels.
+        pub unsafe fn GetChannelVolumes(&self, Channels: u32, pVolumes: *mut f32) -> ();
+
+        /// Sets the volume levels used to mix from each channel of this
+        /// voice's output audio to each channel of a given destination
+        /// voice's input audio.
+        ///
+        /// ### Arguments
+        /// * `pDestinationVoice`   - The destination voice whose mix matrix to change.
+        /// * `SourceChannels`      - Used to confirm this voice's output channel count (the number of channels produced by the last effect in the chain).
+        /// * `DestinationChannels` - Confirms the destination voice's input channels.
+        /// * `pLevelMatrix`        - Array of \[SourceChannels * DestinationChannels\] send levels.  The level used to send from source channel S to destination channel D should be in pLevelMatrix\[S + SourceChannels * D\].
+        /// * `OperationSet`        - Used to identify this call as part of a deferred batch.
+        pub unsafe fn SetOutputMatrix(
+            &self,
+            pDestinationVoice:      *const IXAudio2Voice,
+            SourceChannels:         u32,
+            DestinationChannels:    u32,
+            pLevelMatrix:           *const f32,
+            OperationSet:           u32,
+        ) -> HResult;
+
+        /// Obtains the volume levels used to send each channel of this
+        /// voice's output audio to each channel of a given destination
+        /// voice's input audio.
+        ///
+        /// ### Arguments
+        /// * `pDestinationVoice`   - The destination voice whose mix matrix to obtain.
+        /// * `SourceChannels`      - Used to confirm this voice's output channel count (the number of channels produced by the last effect in the chain).
+        /// * `DestinationChannels` - Confirms the destination voice's input channels.
+        /// * `pLevelMatrix`        - Array of send levels, as above.
+        pub unsafe fn GetOutputMatrix(
+            &self,
+            pDestinationVoice:      *const IXAudio2Voice,
+            SourceChannels:         u32,
+            DestinationChannels:    u32,
+            pLevelMatrix:           *mut f32,
+        ) -> ();
+
+        /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
+        pub unsafe fn DestroyVoice(&self) -> ();
+    }
+
+
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\]
+    /// Source voice management interface.
+    pub interface IXAudio2SourceVoice(IXAudio2SourceVoiceVtbl) => unsafe IXAudio2Voice(IXAudio2VoiceVtbl) {
+        /// Makes this voice start consuming and processing audio.
+        //
+        /// ### Arguments
+        /// *   `Flags`         - Flags controlling how the voice should be started.
+        /// *   `OperationSet`  - Used to identify this call as part of a deferred batch.
+        pub unsafe fn Start(&self, Flags: u32, OperationSet: u32) -> HResult;
+
+        /// Makes this voice stop consuming audio.
+        ///
+        /// ### Arguments
+        /// * `Flags`           - Flags controlling how the voice should be stopped.
+        /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
+        pub unsafe fn Stop(&self, Flags: u32, OperationSet: u32) -> HResult;
+
+        /// Adds a new audio buffer to this voice's input queue.
+        ///
+        /// ### Arguments
+        /// * `pBuffer`     - Pointer to the buffer structure to be queued.
+        /// * `pBufferWMA`  - Additional structure used only when submitting XWMA data.
+        pub unsafe fn SubmitSourceBuffer(&self, pBuffer: *const XAUDIO2_BUFFER, pBufferWMA: *const XAUDIO2_BUFFER_WMA) -> HResult;
+
+        /// Removes all pending audio buffers from this voice's queue.
+        pub unsafe fn FlushSourceBuffers(&self) -> HResult;
+
+        /// Notifies the voice of an intentional break in the stream of
+        /// audio buffers (e.g. the end of a sound), to prevent XAudio2
+        /// from interpreting an empty buffer queue as a glitch.
+        pub unsafe fn Discontinuity(&self) -> HResult;
+
+        /// Breaks out of the current loop when its end is reached.
+        ///
+        /// ### Arguments
+        /// * `OperationSet` - Used to identify this call as part of a deferred batch.
+        pub unsafe fn ExitLoop(&self, OperatoinSet: u32) -> HResult;
+
+        /// Returns the number of buffers currently queued on this voice,
+        /// the pContext value associated with the currently processing
+        /// buffer (if any), and other voice state information.
+        ///
+        /// ### Arguments
+        /// * `pVoiceState` - Returns the state information.
+        /// * `Flags`       - Flags controlling what voice state is returned.
+        pub unsafe fn GetState(&self, pVoiceState: *mut XAUDIO2_VOICE_STATE, Flags: u32) -> ();
+
+        /// Sets this voice's frequency adjustment, i.e. its pitch.
+        ///
+        /// ### Arguments
+        /// * `Ratio`           - Frequency change, expressed as source frequency / target frequency.
+        /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
+        pub unsafe fn SetFrequencyRatio(&self, Ratio: f32, OperationSet: u32) -> HResult;
+
+        /// Returns this voice's current frequency adjustment ratio.
+        ///
+        /// ### Arguments
+        /// * `pRatio` - Returns the frequency adjustment.
+        pub unsafe fn GetFrequencyRatio(&self, pRatio: *mut f32) -> HResult;
+
+        /// Reconfigures this voice to treat its source data as being
+        /// at a different sample rate than the original one specified
+        /// in [CreateSourceVoice]'s pSourceFormat argument.
+        ///
+        /// ### Arguments
+        /// *   `NewSourceSampleRate` - The intended sample rate of further submitted source data.
+        pub unsafe fn SetSourceSampleRate(&self, NewSourceSampleRate: u32) -> HResult;
+    }
+
+
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2submixvoice)\]
+    /// Submixing voice management interface.
+    pub interface IXAudio2SubmixVoice(IXAudio2SubmixVoiceVtbl) => unsafe IXAudio2Voice(IXAudio2VoiceVtbl) {
+        // There are currently no methods specific to submix voices.
+    }
+
+
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2masteringvoice)\]
+    /// Mastering voice management interface.
+    pub interface IXAudio2MasteringVoice(IXAudio2MasteringVoiceVtbl) => unsafe IXAudio2Voice(IXAudio2VoiceVtbl) {
+        /// Returns the channel mask for this voice
+        ///
+        /// ### Arguments
+        /// *   `pChannelMask` - returns the channel mask for this voice.
+        ///     This corresponds to the dwChannelMask member of WAVEFORMATEXTENSIBLE.
+        pub unsafe fn GetChannelMask(&self, pChannelmask: *mut u32) -> HResult;
+    }
+
+
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2enginecallback)\]
+    /// Client notification interface for engine events.
+    ///
+    /// Contains methods to notify the client when certain events happen
+    /// in the XAudio2 engine.  This interface should be implemented by
+    /// the client.  XAudio2 will call these methods via the interface
+    /// pointer provided by the client when it calls
+    /// [IXAudio2::RegisterForCallbacks].
+    pub interface IXAudio2EngineCallback(IXAudio2EngineCallbackVtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// Called by XAudio2 just before an audio processing pass begins.
+        pub unsafe fn OnProcessingPassStart(&self) -> ();
+
+        /// Called just after an audio processing pass ends.
+        pub unsafe fn OnProcessingPassEnd(&self) -> ();
+
+        /// Called in the event of a critical system error which requires XAudio2
+        /// to be closed down and restarted.  The error code is given in Error.
+        pub unsafe fn OnCriticalError(&self, error: HResult) -> ();
+    }
+
+
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voicecallback)\]
+    /// Client notification interface for voice events.
+    ///
+    /// Contains methods to notify the client when certain events happen
+    /// in an XAudio2 voice.  This interface should be implemented by the
+    /// client.  XAudio2 will call these methods via an interface pointer
+    /// provided by the client in the [IXAudio2::CreateSourceVoice] call.
+    pub interface IXAudio2VoiceCallback(IXAudio2VoiceCallbackVtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// Called just before this voice's processing pass begins.
+        pub unsafe fn OnVoiceProcessingPassStart(&self, BytesRequired: u32) -> ();
+
+        /// Called just after this voice's processing pass ends.
+        pub unsafe fn OnVoiceProcessingPassEnd(&self) -> ();
+
+        /// Called when this voice has just finished playing a buffer stream
+        /// (as marked with the [XAUDIO2_END_OF_STREAM] flag on the last buffer).
+        pub unsafe fn OnStreamEnd(&self) -> ();
+
+        /// Called when this voice is about to start processing a new buffer.
+        pub unsafe fn OnBufferStart(&self, pBufferContext: *mut c_void) -> ();
+
+        /// Called when this voice has just finished processing a buffer.
+        /// The buffer can now be reused or destroyed.
+        pub unsafe fn OnBufferEnd(&self, pBufferContext: *mut c_void) -> ();
+
+        /// Called when this voice has just reached the end position of a loop.
+        pub unsafe fn OnLoopEnd(&self, pBufferContext: *mut c_void) -> ();
+
+        /// Called in the event of a critical error during voice processing,
+        /// such as a failing xAPO or an error from the hardware XMA decoder.
+        /// The voice may have to be destroyed and re-created to recover from
+        /// the error.  The callback arguments report which buffer was being
+        /// processed when the error occurred, and its HRESULT code.
+        pub unsafe fn OnVoiceError(&self, pBufferContext: *mut c_void, error: HResult) -> ();
+    }
+
+}

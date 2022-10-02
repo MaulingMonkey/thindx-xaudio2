@@ -8,8 +8,8 @@
 
 use super::xaudio2_8 as prev;
 use abistr::*;
-use winapi::ctypes::c_void;
 use winapi::shared::guiddef::GUID;
+use winapi::um::unknwnbase::{IUnknown, IUnknownVtbl};
 
 #[doc = "`\"xaudio2_9.dll\"`"] pub const XAUDIO2_DLL        : &'static str              =           "xaudio2_9.dll";
 #[doc = "`\"xaudio2_9.dll\"`"] pub const XAUDIO2_DLL_A      : CStrNonNull<'static, u8 > = cstr8!(   "xaudio2_9.dll");
@@ -106,21 +106,6 @@ pub use prev::{
     XAUDIO2_E_DEVICE_INVALIDATED,
 };
 
-// Forward declarations for the XAudio2 interfaces.
-pub use prev::{
-    IXAudio2,
-    IXAudio2Voice,
-    IXAudio2SourceVoice,
-    IXAudio2SubmixVoice,
-    IXAudio2MasteringVoice,
-    IXAudio2EngineCallback,
-    IXAudio2VoiceCallback,
-};
-
-/// \[<strike>microsoft.com</strike>\]
-#[repr(C)] pub struct IXAudio2Extension { lpVtbl: *const c_void }
-// no learn.microsoft.com docs currently
-
 
 
 // Used in XAudio2Create, specifies which CPU(s) to use.
@@ -196,3 +181,45 @@ pub use prev::{
     XAUDIO2_LOG_MEMORY,
     XAUDIO2_LOG_STREAMING,
 };
+
+pub use prev::{
+    IXAudio2,
+    IXAudio2Vtbl,
+    IXAudio2Voice,
+    IXAudio2VoiceVtbl,
+    IXAudio2SourceVoice,
+    IXAudio2SourceVoiceVtbl,
+    IXAudio2SubmixVoice,
+    IXAudio2SubmixVoiceVtbl,
+    IXAudio2MasteringVoice,
+    IXAudio2MasteringVoiceVtbl,
+    IXAudio2EngineCallback,
+    IXAudio2EngineCallbackVtbl,
+    IXAudio2VoiceCallback,
+    IXAudio2VoiceCallbackVtbl,
+};
+
+interfaces! {
+    /// \[<strike>microsoft.com</strike>\]
+    /// Extends [IXAudio2] with additional 2.9+ specific functionality.
+    ///
+    /// Use [IXAudio2]::[QueryInterface](IUnknown::QueryInterface) to obtain a pointer to this interface.
+    #[iid = IID_IXAudio2Extension]
+    pub interface IXAudio2Extension(IXAudio2ExtensionVtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// \[<strike>microsoft.com</strike>\]
+        /// Returns the processing quantum
+        /// quantumMilliseconds = (1000.0f * quantumNumerator / quantumDenominator)
+        ///
+        /// ### Arguments
+        /// * `quantumNumerator`    - Quantum numerator
+        /// * `quantumDenominator`  - Quantum denominator
+        pub unsafe fn GetProcessingQuantum(&self, quantumNumerator: *mut u32, quantumDenominator: *mut u32) -> ();
+
+        /// \[<strike>microsoft.com</strike>\]
+        /// Returns the number of the processor used by XAudio2
+        ///
+        /// ### Arguments
+        /// * `processor`           - Non-zero Processor number
+        pub unsafe fn GetProcessor(&self, processor: *mut XAUDIO2_PROCESSOR) -> ();
+    }
+}
