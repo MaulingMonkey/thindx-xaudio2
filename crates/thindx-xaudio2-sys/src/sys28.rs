@@ -55,7 +55,7 @@ pub const XAUDIO2_MAX_SAMPLE_RATE : u32 = 200000;
 /// Maximum acceptable volume level (2^24)
 pub const XAUDIO2_MAX_VOLUME_LEVEL : f32 = 16777216.0;
 
-/// Minimum [SetFrequencyRatio](IXAudio2SourceVoice::SetFrequencyRatio) argument
+/// Minimum [IXAudio2SourceVoice::SetFrequencyRatio] argument
 pub const XAUDIO2_MIN_FREQ_RATIO : f32 = 1.0 / 1024.0;
 
 /// Maximum [MaxFrequencyRatio](IXAudio2::CreateSourceVoice) argument
@@ -506,7 +506,7 @@ interfaces! {
         /// * `ppSourceVoice`       - Returns the new object's [IXAudio2SourceVoice] interface.
         /// * `pSourceFormat`       - Format of the audio that will be fed to the voice.
         /// * `Flags`               - VOICE_\* flags specifying the source voice's behavior.
-        /// * `MaxFrequencyRatio`   - Maximum SetFrequencyRatio argument to be allowed.
+        /// * `MaxFrequencyRatio`   - Maximum [IXAudio2SourceVoice::SetFrequencyRatio] argument to be allowed.
         /// * `pCallback`           - Optional pointer to a client-provided callback interface.
         /// * `pSendList`           - Optional list of voices this voice should send audio to.
         /// * `pEffectChain`        - Optional list of effects to apply to the audio data.
@@ -902,4 +902,71 @@ interfaces! {
         pub unsafe fn OnVoiceError(&self, pBufferContext: *mut c_void, error: HResult) -> ();
     }
 
+}
+
+
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2decibelstoamplituderatio)\]
+/// Calculate the argument to [IXAudio2Voice::SetVolume] from a decibel value
+#[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2DecibelsToAmplitudeRatio(Decibels: f32) -> f32 {
+    f32::powf(10.0, Decibels / 20.0)
+}
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2amplituderatiotodecibels)\]
+/// Recover a volume in decibels from an amplitude factor
+#[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2AmplitudeRatioToDecibels(Volume: f32) -> f32 {
+    if Volume == 0.0 {
+        -3.402823466e+38 // Smallest float value (-FLT_MAX)
+    } else {
+        20.0 * f32::log10(Volume)
+    }
+}
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2semitonestofrequencyratio)\]
+/// Calculate the argument to [IXAudio2SourceVoice::SetFrequencyRatio] from a semitone value
+#[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2SemitonesToFrequencyRatio(Semitones: f32) -> f32 {
+    // FrequencyRatio = 2 ^ Octaves
+    //                = 2 ^ (Semitones / 12)
+    f32::powf(2.0, Semitones / 12.0)
+}
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2frequencyratiotosemitones)\]
+/// Recover a pitch in semitones from a frequency ratio
+#[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2FrequencyRatioToSemitones(FrequencyRatio: f32) -> f32 {
+    // Semitones = 12 * log2(FrequencyRatio)
+    //           = 12 * log2(10) * log10(FrequencyRatio)
+    39.86313713864835 * f32::log10(FrequencyRatio)
+}
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2cutofffrequencytoradians)
+/// Convert from filter cutoff frequencies expressed in Hertz to the radian
+/// frequency values used in [XAUDIO2_FILTER_PARAMETERS::Frequency], state-variable
+/// filter types only.  Use [XAudio2CutoffFrequencyToOnePoleCoefficient]\(\) for one-pole filter types.
+/// Note that the highest CutoffFrequency supported is SampleRate/6.
+/// Higher values of CutoffFrequency will return [XAUDIO2_MAX_FILTER_FREQUENCY].
+#[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2CutoffFrequencyToRadians(CutoffFrequency: f32, SampleRate: u32) -> f32 {
+    if ((CutoffFrequency * 6.0) as u32) >= SampleRate {
+        XAUDIO2_MAX_FILTER_FREQUENCY
+    } else {
+        2.0 * f32::sin(core::f32::consts::PI * CutoffFrequency / (SampleRate as f32))
+    }
+}
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2radianstocutofffrequency)\]
+/// Convert from radian frequencies back to absolute frequencies in Hertz
+#[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2RadiansToCutoffFrequency(Radians: f32, SampleRate: f32) -> f32{
+    SampleRate * f32::asin(Radians / 2.0) / core::f32::consts::PI
+}
+
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2cutofffrequencytoonepolecoefficient)\]
+/// Convert from filter cutoff frequencies expressed in Hertz to the filter
+/// coefficients used with [XAUDIO2_FILTER_PARAMETERS::Frequency],
+/// [LowPassOnePoleFilter] and [HighPassOnePoleFilter] filter types only.
+/// Use [XAudio2CutoffFrequencyToRadians] for state-variable filter types.
+#[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2CutoffFrequencyToOnePoleCoefficient(CutoffFrequency: f32, SampleRate: u32) -> f32 {
+    if (CutoffFrequency as u32) >= SampleRate {
+        XAUDIO2_MAX_FILTER_FREQUENCY
+    } else {
+        1.0 - f32::powf(1.0 - 2.0 * CutoffFrequency / (SampleRate as f32), 2.0)
+    }
 }

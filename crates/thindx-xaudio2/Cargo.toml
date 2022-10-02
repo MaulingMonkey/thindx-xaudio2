@@ -32,6 +32,10 @@ default-target                          = "x86_64-pc-windows-msvc"
 targets                                 = ["x86_64-pc-windows-msvc", "i686-pc-windows-msvc"]
 all-features                            = true
 
+[features]
+default                                 = ["thindx-xaudio2-sys/default"]
+helper-functions                        = ["thindx-xaudio2-sys/helper-functions"] # XAUDIO2_HELPER_FUNCTIONS
+
 [lib]
 path                                    = "src/_xaudio2.rs"
 name                                    = "xaudio2"
@@ -40,6 +44,7 @@ name                                    = "xaudio2"
 
 [target.'cfg(windows)'.dependencies]
 thindx-xaudio2-sys.path                 = "../thindx-xaudio2-sys"
+thindx-xaudio2-sys.default-features     = false
 abibool.version                         = "0.5"
 abistr.version                          = "0.2.0-rc3" # const abistr::cstr!("...")
 bytemuck.version                        = "1"

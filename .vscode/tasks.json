@@ -7,7 +7,7 @@
     "tasks": [
         {
             "label":            "build",
-            "command":          "cargo test --all-targets",
+            "command":          "cargo test --all-targets --all-features",
             "group":            { "kind": "build", "isDefault": true },
         },
         {
@@ -16,11 +16,11 @@
         },
         {
             "label":            "help",
-            "command":          "cargo doc --no-deps --open --package thindx-xaudio2",
+            "command":          "cargo doc --no-deps --all-features --open --package thindx-xaudio2",
         },
         {
             "label":            "check-file",
-            "command":          "cargo check",
+            "command":          "cargo check --all-features",
         },
         {
             "label":            "open repository",

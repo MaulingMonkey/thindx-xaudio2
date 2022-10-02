@@ -183,7 +183,7 @@ pub use prev::{
 };
 
 pub use prev::{
-    IXAudio2,
+    IXAudio2, // Has non-semantic changes
     IXAudio2Vtbl,
     IXAudio2Voice,
     IXAudio2VoiceVtbl,
@@ -223,3 +223,13 @@ interfaces! {
         pub unsafe fn GetProcessor(&self, processor: *mut XAUDIO2_PROCESSOR) -> ();
     }
 }
+
+#[cfg(feature = "helper-functions")] pub use prev::{
+    XAudio2DecibelsToAmplitudeRatio,
+    XAudio2AmplitudeRatioToDecibels,
+    XAudio2SemitonesToFrequencyRatio,
+    XAudio2FrequencyRatioToSemitones,
+    XAudio2CutoffFrequencyToRadians,            // Has non-semantic changes
+    XAudio2RadiansToCutoffFrequency,
+    XAudio2CutoffFrequencyToOnePoleCoefficient, // Has non-semantic changes
+};
