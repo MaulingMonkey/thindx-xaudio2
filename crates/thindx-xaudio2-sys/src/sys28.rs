@@ -167,3 +167,42 @@ pub const XAUDIO2_E_XAPO_CREATION_FAILED : HResult = HResult::from_constant(0x88
 
 /// An audio device became unusable (unplugged, etc)
 pub const XAUDIO2_E_DEVICE_INVALIDATED : HResult = HResult::from_constant(0x88960004);
+
+
+
+/// Used in XAudio2Create, specifies which CPU(s) to use.
+pub type XAUDIO2_PROCESSOR              = u32;
+pub const Processor1                    : u32 = 0x00000001;
+pub const Processor2                    : u32 = 0x00000002;
+#[doc(hidden)] pub const Processor3     : u32 = 0x00000004;
+#[doc(hidden)] pub const Processor4     : u32 = 0x00000008;
+#[doc(hidden)] pub const Processor5     : u32 = 0x00000010;
+#[doc(hidden)] pub const Processor6     : u32 = 0x00000020;
+#[doc(hidden)] pub const Processor7     : u32 = 0x00000040;
+#[doc(hidden)] pub const Processor8     : u32 = 0x00000080;
+#[doc(hidden)] pub const Processor9     : u32 = 0x00000100;
+#[doc(hidden)] pub const Processor10    : u32 = 0x00000200;
+#[doc(hidden)] pub const Processor11    : u32 = 0x00000400;
+#[doc(hidden)] pub const Processor12    : u32 = 0x00000800;
+#[doc(hidden)] pub const Processor13    : u32 = 0x00001000;
+#[doc(hidden)] pub const Processor14    : u32 = 0x00002000;
+#[doc(hidden)] pub const Processor15    : u32 = 0x00004000;
+#[doc(hidden)] pub const Processor16    : u32 = 0x00008000;
+#[doc(hidden)] pub const Processor17    : u32 = 0x00010000;
+#[doc(hidden)] pub const Processor18    : u32 = 0x00020000;
+#[doc(hidden)] pub const Processor19    : u32 = 0x00040000;
+#[doc(hidden)] pub const Processor20    : u32 = 0x00080000;
+#[doc(hidden)] pub const Processor21    : u32 = 0x00100000;
+#[doc(hidden)] pub const Processor22    : u32 = 0x00200000;
+#[doc(hidden)] pub const Processor23    : u32 = 0x00400000;
+#[doc(hidden)] pub const Processor24    : u32 = 0x00800000;
+#[doc(hidden)] pub const Processor25    : u32 = 0x01000000;
+#[doc(hidden)] pub const Processor26    : u32 = 0x02000000;
+#[doc(hidden)] pub const Processor27    : u32 = 0x04000000;
+#[doc(hidden)] pub const Processor28    : u32 = 0x08000000;
+#[doc(hidden)] pub const Processor29    : u32 = 0x10000000;
+#[doc(hidden)] pub const Processor30    : u32 = 0x20000000;
+pub const Processor31                   : u32 = 0x40000000;
+pub const Processor32                   : u32 = 0x80000000;
+pub const XAUDIO2_ANY_PROCESSOR         : u32 = 0xffffffff;
+pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;

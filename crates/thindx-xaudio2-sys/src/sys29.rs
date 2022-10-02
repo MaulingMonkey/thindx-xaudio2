@@ -104,3 +104,49 @@ pub use prev::{
     XAUDIO2_E_XAPO_CREATION_FAILED,
     XAUDIO2_E_DEVICE_INVALIDATED,
 };
+
+// Used in XAudio2Create, specifies which CPU(s) to use.
+pub use prev::{
+    XAUDIO2_PROCESSOR,
+    Processor1,
+    Processor2,
+    Processor3,
+    Processor4,
+    Processor5,
+    Processor6,
+    Processor7,
+    Processor8,
+    Processor9,
+    Processor10,
+    Processor11,
+    Processor12,
+    Processor13,
+    Processor14,
+    Processor15,
+    Processor16,
+    Processor17,
+    Processor18,
+    Processor19,
+    Processor20,
+    Processor21,
+    Processor22,
+    Processor23,
+    Processor24,
+    Processor25,
+    Processor26,
+    Processor27,
+    Processor28,
+    Processor29,
+    Processor30,
+    Processor31,
+    Processor32,
+    XAUDIO2_ANY_PROCESSOR,
+};
+
+/// This value indicates that XAudio2 will choose the default processor by itself. The actual value chosen may vary depending on the hardware platform.
+pub const XAUDIO2_USE_DEFAULT_PROCESSOR : u32 = 0x00000000;
+
+/// This definition is included for backwards compatibilty.
+/// Implementations targeting Games and WIN10_19H1 and later, should use [XAUDIO2_USE_DEFAULT_PROCESSOR] instead to let XAudio2 select the appropriate default processor for the hardware platform.
+#[deprecated = "Implementations targeting Games and WIN10_19H1 and later, should use [XAUDIO2_USE_DEFAULT_PROCESSOR] instead to let XAudio2 select the appropriate default processor for the hardware platform."]
+pub const XAUDIO2_DEFAULT_PROCESSOR : u32 = Processor1;
