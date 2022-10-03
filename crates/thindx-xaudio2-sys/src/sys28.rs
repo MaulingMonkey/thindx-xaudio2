@@ -9,6 +9,7 @@
 // don't use prev
 use abibool::bool32;
 use abistr::*;
+use bytemuck::Zeroable;
 use winapi::ctypes::c_void;
 use winapi::shared::guiddef::GUID;
 use winapi::shared::mmreg::WAVEFORMATEX;
@@ -217,7 +218,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_details)\]
-#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_DETAILS {
+#[derive(Clone, Copy, Debug, Default, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_DETAILS {
     /// Flags the voice was created with.
     pub CreationFlags: u32,
 
@@ -258,7 +259,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ne-xaudio2-xaudio2_filter_type)\]
 /// Used in [XAUDIO2_FILTER_PARAMETERS]
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, Debug, Default, Zeroable, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)] pub struct XAUDIO2_FILTER_TYPE(u32); // TODO: check type
 
 /// Attenuates frequencies above the cutoff frequency (state-variable filter).
@@ -282,7 +283,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_filter_parameters)\]
 /// Used in [IXAudio2Voice]::[Set](IXAudio2Voice::SetFilterParameters)/[GetFilterParameters](IXAudio2Voice::GetFilterParameters)
 /// and [Set](IXAudio2Voice::SetOutputFilterParameters)/[GetOutputFilterParameters](IXAudio2Voice::GetOutputFilterParameters)
-#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_FILTER_PARAMETERS {
+#[derive(Clone, Copy, Debug, Default, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_FILTER_PARAMETERS {
     /// Filter type
     pub Type: XAUDIO2_FILTER_TYPE,
 
@@ -349,7 +350,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_state)\]
 /// Returned by [IXAudio2SourceVoice::GetState]
-#[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_STATE {
+#[derive(Clone, Copy, Debug, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_STATE {
     /// The pContext value provided in the [XAUDIO2_BUFFER]
     ///  that is currently being processed, or NULL if
     ///  there are no buffers in the queue.
@@ -366,10 +367,11 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     ///  this member will not be calculated, saving CPU.
     pub SamplesPlayed: u64,
 }
+impl Default for XAUDIO2_VOICE_STATE { fn default() -> Self { Self::zeroed() } }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_performance_data)\]
 /// Returned by [IXAudio2::GetPerformanceData]
-#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_PERFORMANCE_DATA {
+#[derive(Clone, Copy, Debug, Default, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_PERFORMANCE_DATA {
     // CPU usage information
 
     /// CPU cycles spent on audio processing since the
@@ -430,7 +432,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_debug_configuration)\]
 /// Used in [IXAudio2::SetDebugConfiguration]
-#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_DEBUG_CONFIGURATION {
+#[derive(Clone, Copy, Debug, Default, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_DEBUG_CONFIGURATION {
     /// Bitmap of enabled debug message types.
     pub TraceMask: u32,
 
@@ -786,6 +788,7 @@ interfaces! {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\]
     /// Source voice management interface.
     pub interface IXAudio2SourceVoice(IXAudio2SourceVoiceVtbl) => unsafe IXAudio2Voice(IXAudio2VoiceVtbl) {
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-start)\]
         /// Makes this voice start consuming and processing audio.
         //
         /// ### Arguments
@@ -793,6 +796,7 @@ interfaces! {
         /// *   `OperationSet`  - Used to identify this call as part of a deferred batch.
         pub unsafe fn Start(&self, Flags: u32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-stop)\]
         /// Makes this voice stop consuming audio.
         ///
         /// ### Arguments
@@ -800,6 +804,7 @@ interfaces! {
         /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
         pub unsafe fn Stop(&self, Flags: u32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
         /// Adds a new audio buffer to this voice's input queue.
         ///
         /// ### Arguments
@@ -807,20 +812,24 @@ interfaces! {
         /// * `pBufferWMA`  - Additional structure used only when submitting XWMA data.
         pub unsafe fn SubmitSourceBuffer(&self, pBuffer: *const XAUDIO2_BUFFER, pBufferWMA: *const XAUDIO2_BUFFER_WMA) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-flushsourcebuffers)\]
         /// Removes all pending audio buffers from this voice's queue.
         pub unsafe fn FlushSourceBuffers(&self) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-discontinuity)\]
         /// Notifies the voice of an intentional break in the stream of
         /// audio buffers (e.g. the end of a sound), to prevent XAudio2
         /// from interpreting an empty buffer queue as a glitch.
         pub unsafe fn Discontinuity(&self) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-exitloop)\]
         /// Breaks out of the current loop when its end is reached.
         ///
         /// ### Arguments
         /// * `OperationSet` - Used to identify this call as part of a deferred batch.
-        pub unsafe fn ExitLoop(&self, OperatoinSet: u32) -> HResult;
+        pub unsafe fn ExitLoop(&self, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-getstate)\]
         /// Returns the number of buffers currently queued on this voice,
         /// the pContext value associated with the currently processing
         /// buffer (if any), and other voice state information.
@@ -830,6 +839,7 @@ interfaces! {
         /// * `Flags`       - Flags controlling what voice state is returned.
         pub unsafe fn GetState(&self, pVoiceState: *mut XAUDIO2_VOICE_STATE, Flags: u32) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-setfrequencyratio)\]
         /// Sets this voice's frequency adjustment, i.e. its pitch.
         ///
         /// ### Arguments
@@ -837,12 +847,14 @@ interfaces! {
         /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
         pub unsafe fn SetFrequencyRatio(&self, Ratio: f32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-getfrequencyratio)\]
         /// Returns this voice's current frequency adjustment ratio.
         ///
         /// ### Arguments
         /// * `pRatio` - Returns the frequency adjustment.
-        pub unsafe fn GetFrequencyRatio(&self, pRatio: *mut f32) -> HResult;
+        pub unsafe fn GetFrequencyRatio(&self, pRatio: *mut f32) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-setsourcesamplerate)\]
         /// Reconfigures this voice to treat its source data as being
         /// at a different sample rate than the original one specified
         /// in [IXAudio2::CreateSourceVoice]'s pSourceFormat argument.

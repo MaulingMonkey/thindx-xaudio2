@@ -8,6 +8,7 @@
 
 mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
 mod xa28_ixaudio2voice_ext; pub use xa28_ixaudio2voice_ext::*;
+mod xa28_ixaudio2sourcevoice_ext; pub use xa28_ixaudio2sourcevoice_ext::*;
 
 
 // Might not remain pub
@@ -74,5 +75,6 @@ pub mod xaudio2 {
         XAUDIO2_FILTER_PARAMETERS       as FilterParameters,
         XAUDIO2_PERFORMANCE_DATA        as PerformanceData,
         XAUDIO2_VOICE_DETAILS           as VoiceDetails,
+        XAUDIO2_VOICE_STATE             as VoiceState,
     };
 }
