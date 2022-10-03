@@ -39,17 +39,15 @@ pub trait IXAudio2Ext {
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
     ) -> Result<Rc<IXAudio2SourceVoice>, HResultError> {
-        use xaudio2::sys::*;
-
         let mut voice = null_mut();
 
         let send_list = send_list.map(|sl| -> Result<XAUDIO2_VOICE_SENDS, HResultError> { Ok(XAUDIO2_VOICE_SENDS {
-            SendCount:  u32::try_from(sl.len()).map_err(|_| HResultError::from_win32(ERROR::INVALID_PARAMETER))?,
+            SendCount:  u32::try_from(sl.len()).map_err(|_| E::INVALIDARG)?,
             pSends:     sl.as_ptr() as *mut _,
         })}).transpose()?;
 
         let effect_chain = effect_chain.map(|ec| -> Result<XAUDIO2_EFFECT_CHAIN, HResultError> { Ok(XAUDIO2_EFFECT_CHAIN {
-            EffectCount:        u32::try_from(ec.len()).map_err(|_| HResultError::from_win32(ERROR::INVALID_PARAMETER))?,
+            EffectCount:        u32::try_from(ec.len()).map_err(|_| E::INVALIDARG)?,
             pEffectDescriptors: ec.as_ptr() as *mut _,
         })}).transpose()?;
 
@@ -63,7 +61,7 @@ pub trait IXAudio2Ext {
         )};
         let voice = unsafe { Rc::from_raw_opt(voice) };
         hr.succeeded()?;
-        let voice = voice.ok_or(HResultError::from_win32(ERROR::NOINTERFACE))?;
+        let voice = voice.ok_or(E::NOINTERFACE)?;
         Ok(voice)
     }
 
@@ -78,17 +76,15 @@ pub trait IXAudio2Ext {
         send_list:          Option<&[xaudio2::SendDescriptor]>,
         effect_chain:       Option<&[xaudio2::EffectDescriptor]>,
     ) -> Result<Rc<IXAudio2SubmixVoice>, HResultError> {
-        use xaudio2::sys::*;
-
         let mut voice = null_mut();
 
         let send_list = send_list.map(|sl| -> Result<XAUDIO2_VOICE_SENDS, HResultError> { Ok(XAUDIO2_VOICE_SENDS {
-            SendCount:  u32::try_from(sl.len()).map_err(|_| HResultError::from_win32(ERROR::INVALID_PARAMETER))?,
+            SendCount:  u32::try_from(sl.len()).map_err(|_| E::INVALIDARG)?,
             pSends:     sl.as_ptr() as *mut _,
         })}).transpose()?;
 
         let effect_chain = effect_chain.map(|ec| -> Result<XAUDIO2_EFFECT_CHAIN, HResultError> { Ok(XAUDIO2_EFFECT_CHAIN {
-            EffectCount:        u32::try_from(ec.len()).map_err(|_| HResultError::from_win32(ERROR::INVALID_PARAMETER))?,
+            EffectCount:        u32::try_from(ec.len()).map_err(|_| E::INVALIDARG)?,
             pEffectDescriptors: ec.as_ptr() as *mut _,
         })}).transpose()?;
 
@@ -103,7 +99,7 @@ pub trait IXAudio2Ext {
         )};
         let voice = unsafe { Rc::from_raw_opt(voice) };
         hr.succeeded()?;
-        let voice = voice.ok_or(HResultError::from_win32(ERROR::NOINTERFACE))?;
+        let voice = voice.ok_or(E::NOINTERFACE)?;
         Ok(voice)
     }
 
@@ -118,12 +114,10 @@ pub trait IXAudio2Ext {
         effect_chain:       Option<&[xaudio2::EffectDescriptor]>,
         stream_category:    AUDIO_STREAM_CATEGORY,
     ) -> Result<Rc<IXAudio2MasteringVoice>, HResultError> {
-        use xaudio2::sys::*;
-
         let mut voice = null_mut();
 
         let effect_chain = effect_chain.map(|ec| -> Result<XAUDIO2_EFFECT_CHAIN, HResultError> { Ok(XAUDIO2_EFFECT_CHAIN {
-            EffectCount:        u32::try_from(ec.len()).map_err(|_| HResultError::from_win32(ERROR::INVALID_PARAMETER))?,
+            EffectCount:        u32::try_from(ec.len()).map_err(|_| E::INVALIDARG)?,
             pEffectDescriptors: ec.as_ptr() as *mut _,
         })}).transpose()?;
 
@@ -132,13 +126,13 @@ pub trait IXAudio2Ext {
             input_channels,
             input_sample_rate,
             flags,
-            device_id       .try_into().map_err(|_| HResultError::from_win32(ERROR::INVALID_PARAMETER))?.as_opt_cstr(),
+            device_id       .try_into().map_err(|_| E::INVALIDARG)?.as_opt_cstr(),
             effect_chain    .as_ref().map_or(null(), |c| c),
             stream_category,
         )};
         let voice = unsafe { Rc::from_raw_opt(voice) };
         hr.succeeded()?;
-        let voice = voice.ok_or(HResultError::from_win32(ERROR::NOINTERFACE))?;
+        let voice = voice.ok_or(E::NOINTERFACE)?;
         Ok(voice)
     }
 
