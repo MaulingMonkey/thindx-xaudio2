@@ -175,7 +175,7 @@ pub const XAUDIO2_E_DEVICE_INVALIDATED : HResult = HResult::from_constant(0x8896
 
 
 
-/// Used in XAudio2Create, specifies which CPU(s) to use.
+/// Used in `XAudio2Create`, specifies which CPU(s) to use.
 pub type XAUDIO2_PROCESSOR              = u32;
 #[doc = "Processor/core no. 1"] pub const Processor1 : u32 = 0x00000001;
 #[doc = "Processor/core no. 2"] pub const Processor2 : u32 = 0x00000002;
@@ -287,8 +287,8 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     pub Type: XAUDIO2_FILTER_TYPE,
 
     /// Filter coefficient.  Must be within 0 ..= [XAUDIO2_MAX_FILTER_FREQUENCY].
-    /// See XAudio2CutoffFrequencyToRadians() for state-variable filter types and
-    /// XAudio2CutoffFrequencyToOnePoleCoefficient() for one-pole filter types.
+    /// See [XAudio2CutoffFrequencyToRadians]\(\) for state-variable filter types and
+    /// [XAudio2CutoffFrequencyToOnePoleCoefficient]\(\) for one-pole filter types.
     pub Frequency: f32,
 
     /// Reciprocal of the filter's quality factor Q; must be within 0 ..= [XAUDIO2_MAX_FILTER_ONEOVERQ].
@@ -940,12 +940,12 @@ interfaces! {
     39.86313713864835 * f32::log10(FrequencyRatio)
 }
 
-/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2cutofffrequencytoradians)
+/// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2cutofffrequencytoradians)\]
 /// Convert from filter cutoff frequencies expressed in Hertz to the radian
 /// frequency values used in [XAUDIO2_FILTER_PARAMETERS::Frequency], state-variable
 /// filter types only.  Use [XAudio2CutoffFrequencyToOnePoleCoefficient]\(\) for one-pole filter types.
-/// Note that the highest CutoffFrequency supported is SampleRate/6.
-/// Higher values of CutoffFrequency will return [XAUDIO2_MAX_FILTER_FREQUENCY].
+/// Note that the highest `CutoffFrequency` supported is `SampleRate/6`.
+/// Higher values of `CutoffFrequency` will return [XAUDIO2_MAX_FILTER_FREQUENCY].
 #[cfg(feature = "helper-functions")] #[inline] pub fn XAudio2CutoffFrequencyToRadians(CutoffFrequency: f32, SampleRate: u32) -> f32 {
     if ((CutoffFrequency * 6.0) as u32) >= SampleRate {
         XAUDIO2_MAX_FILTER_FREQUENCY

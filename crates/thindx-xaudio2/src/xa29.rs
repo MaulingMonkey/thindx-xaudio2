@@ -18,6 +18,7 @@ mod xa29_exports;
 ///
 pub use thindx_xaudio2_sys::xaudio2_9 as xaudio2_sys;
 
+/// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
     use super::*;
     use winresult::*;
