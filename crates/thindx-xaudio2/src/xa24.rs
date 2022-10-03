@@ -7,4 +7,4 @@
 
 /// Raw low level FFI bindings
 ///
-pub use xaudio2_sys::xaudio2_4 as sys;
+pub use thindx_xaudio2_sys::xaudio2_4 as sys;

@@ -38,7 +38,6 @@ helper-functions                        = ["thindx-xaudio2-sys/helper-functions"
 
 [lib]
 path                                    = "src/_xaudio2.rs"
-name                                    = "xaudio2"
 
 
 

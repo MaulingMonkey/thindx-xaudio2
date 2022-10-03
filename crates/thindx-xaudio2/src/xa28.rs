@@ -8,7 +8,7 @@
 
 /// Raw low level FFI bindings
 ///
-pub use xaudio2_sys::xaudio2_8 as sys;
+pub use thindx_xaudio2_sys::xaudio2_8 as sys;
 
 pub use sys::XAUDIO2_DLL    as DLL;
 pub use sys::XAUDIO2_DLL_A  as DLL_A;

@@ -1,4 +1,4 @@
-use super::sys::*;
+use super::xaudio2::sys::*;
 use winapi::ctypes::c_void;
 use winapi::shared::guiddef::REFCLSID;
 use winapi::um::unknwnbase::IUnknown;
@@ -165,7 +165,7 @@ impl Exports {
     }
 
     pub fn from_default_path() -> std::io::Result<Self> {
-        Self::from_path(super::DLL)
+        Self::from_path(super::xaudio2::DLL)
     }
 
     pub fn from_path(path: impl AsRef<std::path::Path>) -> std::io::Result<Self> {

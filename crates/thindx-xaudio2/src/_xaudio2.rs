@@ -2,6 +2,8 @@
 
 #![cfg(windows)]
 
+pub use thindx_xaudio2_sys as sys;
+
 #[path = "xa20.rs"] pub mod xaudio2_0;
 #[path = "xa21.rs"] pub mod xaudio2_1;
 #[path = "xa22.rs"] pub mod xaudio2_2;
