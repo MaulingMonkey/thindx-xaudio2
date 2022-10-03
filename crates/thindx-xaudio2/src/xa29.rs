@@ -72,6 +72,16 @@ pub mod xaudio2 {
     };
     #[allow(deprecated)] #[doc(hidden)] pub use sys::XAUDIO2_DEFAULT_PROCESSOR as DEFAULT_PROCESSOR;
 
+    #[cfg(feature = "helper-functions")] pub use sys::{
+        XAudio2DecibelsToAmplitudeRatio             as decibels_to_amplitude_ratio,
+        XAudio2AmplitudeRatioToDecibels             as amplitude_ratio_to_decibels,
+        XAudio2SemitonesToFrequencyRatio            as semitones_to_frequency_ratio,
+        XAudio2FrequencyRatioToSemitones            as frequency_ratio_to_semitones,
+        XAudio2CutoffFrequencyToRadians             as cutoff_frequency_to_radians,
+        XAudio2RadiansToCutoffFrequency             as radians_to_cutoff_frequency,
+        XAudio2CutoffFrequencyToOnePoleCoefficient  as cutoff_frequency_to_one_pole_coefficient,
+    };
+
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2create)\] XAudio2Create:
     /// Creates a new [IXAudio2] instance, which you can use to start using XAudio2.
     ///
