@@ -151,7 +151,7 @@ pub const XAUDIO2_USE_DEFAULT_PROCESSOR : u32 = 0x00000000;
 
 /// This definition is included for backwards compatibilty.
 /// Implementations targeting Games and WIN10_19H1 and later, should use [XAUDIO2_USE_DEFAULT_PROCESSOR] instead to let XAudio2 select the appropriate default processor for the hardware platform.
-#[deprecated = "Implementations targeting Games and WIN10_19H1 and later, should use [XAUDIO2_USE_DEFAULT_PROCESSOR] instead to let XAudio2 select the appropriate default processor for the hardware platform."]
+#[deprecated = "Implementations targeting Games and WIN10_19H1 and later, should use `XAUDIO2_USE_DEFAULT_PROCESSOR` instead to let XAudio2 select the appropriate default processor for the hardware platform."]
 pub const XAUDIO2_DEFAULT_PROCESSOR : u32 = Processor1;
 
 pub use prev::{
