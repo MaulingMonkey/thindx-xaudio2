@@ -284,12 +284,12 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     /// Filter type
     pub Type: XAUDIO2_FILTER_TYPE,
 
-    /// Filter coefficient.  Must be within 0 ..= [xaudio2_9::MAX_FILTER_FREQUENCY].
+    /// Filter coefficient.  Must be within 0 ..= [XAUDIO2_MAX_FILTER_FREQUENCY].
     /// See XAudio2CutoffFrequencyToRadians() for state-variable filter types and
     /// XAudio2CutoffFrequencyToOnePoleCoefficient() for one-pole filter types.
     pub Frequency: f32,
 
-    /// Reciprocal of the filter's quality factor Q; must be within 0 ..= [xaudio2_9::MAX_FILTER_ONEOVERQ].
+    /// Reciprocal of the filter's quality factor Q; must be within 0 ..= [XAUDIO2_MAX_FILTER_ONEOVERQ].
     /// Has no effect for one-pole filters.
     pub OneOverQ: f32,
 }
@@ -297,7 +297,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer)\]
 /// Used in [IXAudio2SourceVoice::SubmitSourceBuffer]
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER {
-    /// Either 0 or [xaudio2_9::END_OF_STREAM].
+    /// Either 0 or [XAUDIO2_END_OF_STREAM].
     pub Flags: u32,
 
     /// Size of the audio data buffer in bytes.
@@ -341,14 +341,14 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     pDecodedPacketCumulativeBytes: *const u32,
 
     /// Number of XWMA packets submitted.
-    /// Must be >= 1 and divide evenly into [Buffer::AudioBytes].
+    /// Must be >= 1 and divide evenly into [XAUDIO2_BUFFER::AudioBytes].
     PacketCount: u32,
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_state)\]
 /// Returned by [IXAudio2SourceVoice::GetState]
 #[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_STATE {
-    /// The pContext value provided in the [Buffer]
+    /// The pContext value provided in the [XAUDIO2_BUFFER]
     ///  that is currently being processed, or NULL if
     ///  there are no buffers in the queue.
     pub pCurrentBufferContext: *mut c_void,
@@ -359,7 +359,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
     /// Total number of samples produced by the voice since
     ///  it began processing the current audio stream.
-    ///  If [VOICE_NOSAMPLESPLAYED] is specified
+    ///  If [XAUDIO2_VOICE_NOSAMPLESPLAYED] is specified
     ///  in the call to [IXAudio2SourceVoice::GetState],
     ///  this member will not be calculated, saving CPU.
     pub SamplesPlayed: u64,
@@ -814,7 +814,7 @@ interfaces! {
 
         /// Reconfigures this voice to treat its source data as being
         /// at a different sample rate than the original one specified
-        /// in [CreateSourceVoice]'s pSourceFormat argument.
+        /// in [IXAudio2::CreateSourceVoice]'s pSourceFormat argument.
         ///
         /// ### Arguments
         /// *   `NewSourceSampleRate` - The intended sample rate of further submitted source data.
