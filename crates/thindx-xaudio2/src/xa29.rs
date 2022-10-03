@@ -101,11 +101,11 @@ pub mod xaudio2 {
     /// ```
     ///
     /// ### Errors
-    /// *   [ERROR::BAD_EXE_FORMAT]     - if `XAudio2_9.dll` had the wrong architecture (perhaps a 32-bit DLL in a 64-bit process or vicea versa?)
-    /// *   [ERROR::MOD_NOT_FOUND]      - if `XAudio2_9.dll` could not be found
-    /// *   [ERROR::INVALID_LIBRARY]    - if `XAudio2_9.dll` loading failed to load in a strange way
-    /// *   [ERROR::PROC_NOT_FOUND]     - if `XAudio2_9.dll` failed to export `XAudio2CreateWithVersionInformation` or `XAudio2Create`
-    /// *   [ERROR::NOINTERFACE]        - if [IXAudio2] was null despite the function "succeeding" (thindx specific)
+    /// *   [HResultError::from_win32]\([ERROR::BAD_EXE_FORMAT])    - if `XAudio2_9.dll` had the wrong architecture (perhaps a 32-bit DLL in a 64-bit process or vicea versa?)
+    /// *   [HResultError::from_win32]\([ERROR::MOD_NOT_FOUND])     - if `XAudio2_9.dll` could not be found
+    /// *   [HResultError::from_win32]\([ERROR::INVALID_LIBRARY])   - if `XAudio2_9.dll` loading failed to load in a strange way
+    /// *   [HResultError::from_win32]\([ERROR::PROC_NOT_FOUND])    - if `XAudio2_9.dll` failed to export `XAudio2CreateWithVersionInformation` or `XAudio2Create`
+    /// *   [HResultError::from_win32]\([ERROR::NOINTERFACE])       - if [IXAudio2] was null despite the function "succeeding" (thindx specific)
     pub fn create(flags: Option<core::convert::Infallible>, processor: Processor) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
         #![allow(non_snake_case)]
 
