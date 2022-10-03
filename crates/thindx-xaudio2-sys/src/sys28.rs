@@ -605,24 +605,28 @@ interfaces! {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voice)\]
     /// Base voice management interface.
     pub interface IXAudio2Voice(IXAudio2VoiceVtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getvoicedetails)\]
         /// Returns the basic characteristics of this voice.
         ///
         /// ### Arguments
         /// * `pVoiceDetails`   - Returns the voice's details.
         pub unsafe fn GetVoiceDetails(&self, pVoiceDetails: *mut XAUDIO2_VOICE_DETAILS) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-setoutputvoices)\]
         /// Replaces the set of submix/mastering voices that receive this voice's output.
         ///
         /// ### Arguments
         /// * `pSendList`       - Optional list of voices this voice should send audio to.
         pub unsafe fn SetOutputVoices(&self, pSendList: *const XAUDIO2_VOICE_SENDS) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-seteffectchain)\]
         /// Replaces this voice's current effect chain with a new one.
         ///
         /// ### Arguments
         /// * `pEffectChain`    - Structure describing the new effect chain to be used.
         pub unsafe fn SetEffectChain(&self, pEffectChain: *const XAUDIO2_EFFECT_CHAIN) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-enableeffect)\]
         /// Enables an effect in this voice's effect chain.
         ///
         /// ### Arguments
@@ -630,6 +634,7 @@ interfaces! {
         /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
         pub unsafe fn EnableEffect(&self, EffectIndex: u32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-disableeffect)\]
         /// Disables an effect in this voice's effect chain.
         ///
         /// ### Arguments
@@ -637,6 +642,7 @@ interfaces! {
         /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
         pub unsafe fn DisableEffect(&self, EffectIndex: u32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-geteffectstate)\]
         /// Returns the running state of an effect.
         ///
         /// ### Arguments
@@ -644,6 +650,7 @@ interfaces! {
         /// * `pEnabled`        - Returns the enabled/disabled state of the given effect.
         pub unsafe fn GetEffectState(&self, EffectIndex: u32, pEnabled: *mut bool32) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-seteffectparameters)\]
         /// Sets effect-specific parameters.
         ///
         /// Unlike IXAPOParameters::SetParameters, this method may
@@ -658,6 +665,7 @@ interfaces! {
         /// * `OperationSet`        - Used to identify this call as part of a deferred batch.
         pub unsafe fn SetEffectParameters(&self, EffectIndex: u32, pParameters: *const u8, ParametersByteSize: u32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-geteffectparameters)\]
         /// Obtains the current effect-specific parameters.
         ///
         /// ### Arguments
@@ -666,6 +674,7 @@ interfaces! {
         /// * `ParametersByteSize`  - Size of the pParameters array in bytes.
         pub unsafe fn GetEffectParameters(&self, EffectIndex: u32, pParameters: *mut u8, ParametersByteSize: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-setfilterparameters)\]
         /// Sets this voice's filter parameters.
         ///
         /// ### Arguments
@@ -673,12 +682,14 @@ interfaces! {
         /// * `OperationSet`        - Used to identify this call as part of a deferred batch.
         pub unsafe fn SetFilterParameters(&self, pParameters: *const XAUDIO2_FILTER_PARAMETERS, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getfilterparameters)\]
         /// Returns this voice's current filter parameters.
         ///
         /// ### Arguments
         /// * `pParameters`         - Returns the filter parameters.
         pub unsafe fn GetFilterParameters(&self, pParameters: *mut XAUDIO2_FILTER_PARAMETERS) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-setoutputfilterparameters)\]
         /// Sets the filter parameters on one of this voice's sends.
         ///
         /// ### Arguments
@@ -687,6 +698,7 @@ interfaces! {
         /// * `OperationSet`        - Used to identify this call as part of a deferred batch.
         pub unsafe fn SetOutputFilterParameters(&self, pDestinationVoice: *const IXAudio2Voice, pParameters: *const XAUDIO2_FILTER_PARAMETERS, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getoutputfilterparameters)\]
         /// Returns the filter parameters from one of this voice's sends.
         ///
         /// ### Arguments
@@ -694,6 +706,7 @@ interfaces! {
         /// * `pParameters`         - Returns the filter parameters.
         pub unsafe fn GetOutputFilterParameters(&self, pDestinationVoice: *const IXAudio2Voice, pParameters: *mut XAUDIO2_FILTER_PARAMETERS) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-setvolume)\]
         /// Sets this voice's overall volume level.
         ///
         /// ### Arguments
@@ -701,12 +714,14 @@ interfaces! {
         /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
         pub unsafe fn SetVolume(&self, Volume: f32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getvolume)\]
         /// Obtains this voice's current overall volume level.
         ///
         /// ### Arguments
         /// * `pVolume`         - Returns the voice's current overall volume level.
         pub unsafe fn GetVolume(&self, pVolume: *mut f32) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-setchannelvolumes)\]
         /// Sets this voice's per-channel volume levels.
         ///
         /// ### Arguments
@@ -715,6 +730,7 @@ interfaces! {
         /// * `OperationSet`    - Used to identify this call as part of a deferred batch.
         pub unsafe fn SetChannelVolumes(&self, Channels: u32, pVolumes: *const f32, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getchannelvolumes)\]
         /// Returns this voice's current per-channel volume levels.
         ///
         /// ### Arguments
@@ -722,6 +738,7 @@ interfaces! {
         /// * `pVolumes`    - Returns an array of the current per-channel volume levels.
         pub unsafe fn GetChannelVolumes(&self, Channels: u32, pVolumes: *mut f32) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-setoutputmatrix)\]
         /// Sets the volume levels used to mix from each channel of this
         /// voice's output audio to each channel of a given destination
         /// voice's input audio.
@@ -741,6 +758,7 @@ interfaces! {
             OperationSet:           u32,
         ) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getoutputmatrix)\]
         /// Obtains the volume levels used to send each channel of this
         /// voice's output audio to each channel of a given destination
         /// voice's input audio.
@@ -758,6 +776,7 @@ interfaces! {
             pLevelMatrix:           *mut f32,
         ) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-destroyvoice)\]
         /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
         pub unsafe fn DestroyVoice(&self) -> ();
     }
