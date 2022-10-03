@@ -7,7 +7,7 @@
 //! *   [XAudio2 and Windows 8](https://walbourn.github.io/xaudio2-and-windows-8/)
 
 mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
-
+mod xa28_ixaudio2voice_ext; pub use xa28_ixaudio2voice_ext::*;
 
 
 // Might not remain pub
@@ -70,7 +70,9 @@ pub mod xaudio2 {
     const _ : () = assert!(core::mem::size_of ::<sys::XAUDIO2_SEND_DESCRIPTOR>() == core::mem::size_of ::<SendDescriptor>());
 
     pub use sys::{
-        XAUDIO2_PERFORMANCE_DATA       as PerformanceData,
-        XAUDIO2_DEBUG_CONFIGURATION    as DebugConfiguration,
+        XAUDIO2_DEBUG_CONFIGURATION     as DebugConfiguration,
+        XAUDIO2_FILTER_PARAMETERS       as FilterParameters,
+        XAUDIO2_PERFORMANCE_DATA        as PerformanceData,
+        XAUDIO2_VOICE_DETAILS           as VoiceDetails,
     };
 }

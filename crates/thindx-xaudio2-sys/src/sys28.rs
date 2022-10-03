@@ -217,7 +217,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_details)\]
-#[repr(C, packed(1))] pub struct XAUDIO2_VOICE_DETAILS {
+#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_DETAILS {
     /// Flags the voice was created with.
     pub CreationFlags: u32,
 

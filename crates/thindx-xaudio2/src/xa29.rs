@@ -150,4 +150,5 @@ pub mod xaudio2 {
 
 #[doc(inline)] pub use prev::{
     IXAudio2Ext,
+    IXAudio2VoiceExt,
 };
