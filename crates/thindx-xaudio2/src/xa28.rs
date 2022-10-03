@@ -7,6 +7,7 @@
 //! *   [XAudio2 and Windows 8](https://walbourn.github.io/xaudio2-and-windows-8/)
 
 mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
+mod xa28_ixaudio2masteringvoice_ext; pub use xa28_ixaudio2masteringvoice_ext::*;
 mod xa28_ixaudio2voice_ext; pub use xa28_ixaudio2voice_ext::*;
 mod xa28_ixaudio2sourcevoice_ext; pub use xa28_ixaudio2sourcevoice_ext::*;
 

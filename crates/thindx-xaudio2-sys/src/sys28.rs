@@ -877,11 +877,14 @@ interfaces! {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2masteringvoice)\]
     /// Mastering voice management interface.
     pub interface IXAudio2MasteringVoice(IXAudio2MasteringVoiceVtbl) => unsafe IXAudio2Voice(IXAudio2VoiceVtbl) {
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2masteringvoice-getchannelmask)\]
         /// Returns the channel mask for this voice
         ///
         /// ### Arguments
         /// *   `pChannelMask` - returns the channel mask for this voice.
-        ///     This corresponds to the dwChannelMask member of WAVEFORMATEXTENSIBLE.
+        ///     This corresponds to the dwChannelMask member of [WAVEFORMATEXTENSIBLE].
+        ///
+        /// [WAVEFORMATEXTENSIBLE]: https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatextensible
         pub unsafe fn GetChannelMask(&self, pChannelmask: *mut u32) -> HResult;
     }
 
