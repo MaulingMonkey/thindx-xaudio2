@@ -27,8 +27,22 @@ pub trait IXAudio2SourceVoiceExt {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
     /// Adds a new audio buffer to this voice's input queue.
-    unsafe fn submit_source_buffer(&self, buffer: &XAUDIO2_BUFFER, buffer_wma: Option<&XAUDIO2_BUFFER_WMA>) -> Result<HResultSuccess, HResultError> {
-        // TODO: safe alternative to XAUDIO2_BUFFER{,_WMA}
+    ///
+    /// ### Safety
+    /// The following invariants may apply:
+    /// *   [XAUDIO2_BUFFER::pContext] may have arbitrary requirements depending on what callbacks have been registered with this voice.
+    /// *   [XAUDIO2_BUFFER::pAudioData]\[.. [XAUDIO2_BUFFER::AudioBytes]\] must be valid
+    /// *   [XAUDIO2_BUFFER::pAudioData]\[[XAUDIO2_BUFFER::PlayBegin]..\]\[..[XAUDIO2_BUFFER::PlayLength]\] must be valid?
+    /// *   [XAUDIO2_BUFFER::pAudioData]\[[XAUDIO2_BUFFER::LoopBegin]..\]\[..[XAUDIO2_BUFFER::LoopLength]\] must be valid?
+    /// *   [XAUDIO2_BUFFER::PlayBegin] <= [XAUDIO2_BUFFER::AudioBytes]?
+    /// *   [XAUDIO2_BUFFER::LoopBegin] <= [XAUDIO2_BUFFER::AudioBytes]?
+    /// *   [XAUDIO2_BUFFER::Flags] may need to be valid?
+    ///
+    /// And if `buffer_wma` is [Some]:
+    /// *   [XAUDIO2_BUFFER_WMA::pDecodedPacketCumulativeBytes]\[.. [XAUDIO2_BUFFER_WMA::PacketCount]\] must be valid
+    /// *   [XAUDIO2_BUFFER_WMA::PacketCount] >= 1?
+    /// *   [XAUDIO2_BUFFER::AudioBytes] % [XAUDIO2_BUFFER_WMA::PacketCount] == 0?  "Must 'divide evenly'..."
+    unsafe fn submit_source_buffer_unchecked(&self, buffer: &XAUDIO2_BUFFER, buffer_wma: Option<&XAUDIO2_BUFFER_WMA>) -> Result<HResultSuccess, HResultError> {
         unsafe { self._as_ixaudio2().SubmitSourceBuffer(buffer, buffer_wma.map_or(null(), |r| r)) }.succeeded()
     }
 
