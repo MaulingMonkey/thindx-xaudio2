@@ -7,7 +7,7 @@
     "tasks": [
         {
             "label":            "build",
-            "command":          "cargo test --all-targets --all-features",
+            "command":          "scripts\\build.cmd",
             "group":            { "kind": "build", "isDefault": true },
         },
         {
@@ -16,17 +16,38 @@
         },
         {
             "label":            "help",
-            "command":          "cargo doc --no-deps --all-features --open --package thindx-xaudio2",
+            "command":          "cargo doc --all-features --open --package thindx-xaudio2",
         },
         {
+            /* -Z doctest-in-workspace : fixes paths to doc tests: https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#doctest-in-workspace */
             "label":            "check-file",
-            "command":          "cargo check --all-features",
+            "command":          "cargo +nightly test --all-features -Z doctest-in-workspace",
         },
         {
             "label":            "open repository",
             "windows":          { "command": "start \"\"    \"https://github.com/MaulingMonkey/thindx-xaudio2\"" },
             "linux":            { "command": "xdg-open      \"https://github.com/MaulingMonkey/thindx-xaudio2\"" },
             "osx":              { "command": "open          \"https://github.com/MaulingMonkey/thindx-xaudio2\"" },
+            "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
+        },
+        {
+            "label":            "diff 2.7 -> 2.8: xaudio2.h",
+            "command":          "code --diff \"C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\\Include\\XAudio2.h\" \"C:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um\\xaudio2.h\"",
+            "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
+        },
+        {
+            "label":            "diff 2.7 -> 2.8: xaudio2fx.h",
+            "command":          "code --diff \"C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\\Include\\XAudio2fx.h\" \"C:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um\\xaudio2fx.h\"",
+            "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
+        },
+        {
+            "label":            "diff 2.8 -> 2.9: xaudio2.h",
+            "command":          "code --diff \"C:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um\\xaudio2.h\" \"C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\um\\xaudio2.h\"",
+            "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
+        },
+        {
+            "label":            "diff 2.8 -> 2.9: xaudio2fx.h",
+            "command":          "code --diff \"C:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um\\xaudio2fx.h\" \"C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\um\\xaudio2fx.h\"",
             "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
         },
     ]
