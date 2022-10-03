@@ -177,8 +177,8 @@ pub const XAUDIO2_E_DEVICE_INVALIDATED : HResult = HResult::from_constant(0x8896
 
 /// Used in XAudio2Create, specifies which CPU(s) to use.
 pub type XAUDIO2_PROCESSOR              = u32;
-pub const Processor1                    : u32 = 0x00000001;
-pub const Processor2                    : u32 = 0x00000002;
+#[doc = "Processor/core no. 1"] pub const Processor1 : u32 = 0x00000001;
+#[doc = "Processor/core no. 2"] pub const Processor2 : u32 = 0x00000002;
 #[doc(hidden)] pub const Processor3     : u32 = 0x00000004;
 #[doc(hidden)] pub const Processor4     : u32 = 0x00000008;
 #[doc(hidden)] pub const Processor5     : u32 = 0x00000010;
@@ -207,9 +207,11 @@ pub const Processor2                    : u32 = 0x00000002;
 #[doc(hidden)] pub const Processor28    : u32 = 0x08000000;
 #[doc(hidden)] pub const Processor29    : u32 = 0x10000000;
 #[doc(hidden)] pub const Processor30    : u32 = 0x20000000;
-pub const Processor31                   : u32 = 0x40000000;
-pub const Processor32                   : u32 = 0x80000000;
+#[doc = "Processor/core no. 31"] pub const Processor31 : u32 = 0x40000000;
+#[doc = "Processor/core no. 32"] pub const Processor32 : u32 = 0x80000000;
+/// Any/all processors (might spawn a thread per core, which might be an excessive number of threads...)
 pub const XAUDIO2_ANY_PROCESSOR         : u32 = 0xffffffff;
+/// The "default" processor as of XAudio 2.8
 pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 
 
