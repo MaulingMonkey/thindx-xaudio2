@@ -258,7 +258,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ne-xaudio2-xaudio2_filter_type)\]
 /// Used in [XAUDIO2_FILTER_PARAMETERS]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)] pub struct XAUDIO2_FILTER_TYPE(u32); // TODO: check type
 
 /// Attenuates frequencies above the cutoff frequency (state-variable filter).
@@ -282,7 +282,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_filter_parameters)\]
 /// Used in [IXAudio2Voice]::[Set](IXAudio2Voice::SetFilterParameters)/[GetFilterParameters](IXAudio2Voice::GetFilterParameters)
 /// and [Set](IXAudio2Voice::SetOutputFilterParameters)/[GetOutputFilterParameters](IXAudio2Voice::GetOutputFilterParameters)
-#[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_FILTER_PARAMETERS {
+#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_FILTER_PARAMETERS {
     /// Filter type
     pub Type: XAUDIO2_FILTER_TYPE,
 
@@ -369,7 +369,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_performance_data)\]
 /// Returned by [IXAudio2::GetPerformanceData]
-#[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_PERFORMANCE_DATA {
+#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_PERFORMANCE_DATA {
     // CPU usage information
 
     /// CPU cycles spent on audio processing since the
@@ -430,7 +430,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_debug_configuration)\]
 /// Used in [IXAudio2::SetDebugConfiguration]
-#[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_DEBUG_CONFIGURATION {
+#[derive(Clone, Copy, Debug, Default)] #[repr(C, packed(1))] pub struct XAUDIO2_DEBUG_CONFIGURATION {
     /// Bitmap of enabled debug message types.
     pub TraceMask: u32,
 
@@ -490,18 +490,21 @@ interfaces! {
     /// Top-level XAudio2 COM interface.
     // #[iid = ...] // XAudio 2.8 and 2.9 define this IID differently, which makes actually using it here awkward.  And pretty pointless - why would you ever type erase [IXAudio2] to [IUnknown]?
     pub interface IXAudio2(IXAudio2Vtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-registerforcallbacks)\]
         /// Adds a new client to receive XAudio2's engine callbacks.
         ///
         /// ### Arguments
         /// * `pCallback` - Callback interface to be called during each processing pass.
         pub unsafe fn RegisterForCallbacks(&self, pCallback: *const IXAudio2EngineCallback) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-unregisterforcallbacks)\]
         /// Removes an existing receiver of XAudio2 engine callbacks.
         ///
         /// ### Arguments
         /// * `pCallback` - Previously registered callback interface to be removed.
         pub unsafe fn UnregisterForCallbacks(&self, pCallback: *const IXAudio2EngineCallback) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
         /// Creates and configures a source voice.
         ///
         /// ### Arguments
@@ -522,6 +525,7 @@ interfaces! {
             pEffectChain:       *const XAUDIO2_EFFECT_CHAIN,
         ) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsubmixvoice)\]
         /// Creates and configures a submix voice.
         ///
         /// ### Arguments
@@ -543,6 +547,7 @@ interfaces! {
             pEffectChain:       *const XAUDIO2_EFFECT_CHAIN,
         ) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createmasteringvoice)\]
         /// Creates and configures a mastering voice.
         ///
         /// ### Arguments
@@ -559,29 +564,34 @@ interfaces! {
             InputChannels:      u32,
             InputSampleRate:    u32,
             Flags:              u32,
-            szDeviceId:         Option<CStrNonNull<u16>>,
+            szDeviceId:         *const u16,
             pEffectChain:       *const XAUDIO2_EFFECT_CHAIN,
             StreamCategory:     AUDIO_STREAM_CATEGORY,
         ) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-startengine)\]
         /// Creates and starts the audio processing thread.
         pub unsafe fn StartEngine(&self) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-stopengine)\]
         /// Stops and destroys the audio processing thread.
         pub unsafe fn StopEngine(&self) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-commitchanges)\]
         /// Atomically applies a set of operations previously tagged with a given identifier.
         ///
         /// ### Arguments
         /// * `OperationSet` - Identifier of the set of operations to be applied.
         pub unsafe fn CommitChanges(&self, OperationSet: u32) -> HResult;
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-getperformancedata)\]
         /// Returns current resource usage details: memory, CPU, etc.
         ///
         /// ### Arguments
         /// * `pPerfData` - Returns the performance data structure.
         pub unsafe fn GetPerformanceData(&self, pPerfData: *mut XAUDIO2_PERFORMANCE_DATA) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-setdebugconfiguration)\]
         /// Configures XAudio2's debug output (in debug builds only).
         ///
         /// ### Arguments

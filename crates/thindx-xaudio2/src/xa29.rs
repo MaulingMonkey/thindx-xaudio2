@@ -6,6 +6,8 @@
 //! *   [XAudio2 Versions: XAudio 2.9 (Windows 10 and redistributable for Windows 7 and Windows 8.x)](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-versions#xaudio-29-windows-10-and-redistributable-for-windows-7-and-windows-8x)
 //! *   [Developer guide for redistributable version of XAudio 2.9](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-redistributable)
 
+use super::xaudio2_8 as prev;
+
 mod xa29_exports;
 
 // Might not remain pub
@@ -145,3 +147,7 @@ pub mod xaudio2 {
         Ok(xaudio2)
     }
 }
+
+#[doc(inline)] pub use prev::{
+    IXAudio2Ext,
+};

@@ -1,6 +1,7 @@
 //! \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-apis-portal)\]
 
 #![cfg(windows)]
+#![forbid(unsafe_op_in_unsafe_fn)]
 
 pub use thindx_xaudio2_sys as sys;
 
