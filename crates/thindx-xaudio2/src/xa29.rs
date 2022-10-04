@@ -163,6 +163,10 @@ pub mod xaudio2 {
 }
 
 #[doc(inline)] pub use prev::{
+    // Structs
+    IXAudio2SourceVoiceTyped,
+
+    // Traits
     IXAudio2Ext,
     IXAudio2MasteringVoiceExt,
     IXAudio2SourceVoiceExt,
