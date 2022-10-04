@@ -1,4 +1,4 @@
-use super::xaudio2;
+use super::*;
 use super::xaudio2::sys::*;
 
 use abistr::AsOptCStr;
@@ -31,7 +31,10 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
-    fn create_source_voice(
+    ///
+    /// ### Safety
+    /// *   `callback` may make demands of [IXAudio2SourceVoiceExt::submit_source_buffer_unchecked]ed [XAUDIO2_BUFFER::pContext]s for soundness purpouses.
+    unsafe fn create_source_voice_unchecked(
         &self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
         max_frequency_ratio:    f32,
