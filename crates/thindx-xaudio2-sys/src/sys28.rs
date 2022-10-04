@@ -218,6 +218,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_details)\]
+/// [IXAudio2Voice::GetVoiceDetails] returned voice metadata
 #[derive(Clone, Copy, Debug, Default, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_DETAILS {
     /// Flags the voice was created with.
     pub CreationFlags: u32,
@@ -233,18 +234,21 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_send_descriptor)\]
+/// (Flags, [IXAudio2Voice]) to output to
 #[repr(C, packed(1))] pub struct XAUDIO2_SEND_DESCRIPTOR {
     pub Flags:          u32,
     pub pOutputVoice:   *const IXAudio2Voice,
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_sends)\]
+/// &'_ \[[XAUDIO2_SEND_DESCRIPTOR]\]
 #[repr(C, packed(1))] pub struct XAUDIO2_VOICE_SENDS {
     pub SendCount:      u32,
     pub pSends:         *mut XAUDIO2_SEND_DESCRIPTOR,
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_descriptor)\]
+/// [XAPO](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xapofx-overview) audio effect (echo, reverb, etc.) to apply
 #[repr(C, packed(1))] pub struct XAUDIO2_EFFECT_DESCRIPTOR {
     pub pEffect:        *const IUnknown,
     pub InitialState:   bool32,
@@ -252,6 +256,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_chain)\]
+/// &'_ \[[XAUDIO2_EFFECT_DESCRIPTOR]\]
 #[repr(C, packed(1))] pub struct XAUDIO2_EFFECT_CHAIN {
     pub EffectCount:        u32,
     pub pEffectDescriptors: *mut XAUDIO2_EFFECT_DESCRIPTOR,
