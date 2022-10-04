@@ -35,13 +35,14 @@ pub trait IXAudio2Ext {
     fn create_source_voice_no_callback(
         &self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
+        flags:                  u32,
         max_frequency_ratio:    f32,
         callback:               Option<core::convert::Infallible>,
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
     ) -> Result<Rc<IXAudio2SourceVoice>, HResultError> {
         let _ = callback;
-        unsafe { self.create_source_voice_unchecked(format, max_frequency_ratio, None, send_list, effect_chain) }
+        unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, None, send_list, effect_chain) }
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
@@ -49,12 +50,13 @@ pub trait IXAudio2Ext {
     fn create_source_voice_typed_callback<VC: xaudio2::VoiceCallback>(
         &self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
+        flags:                  u32,
         max_frequency_ratio:    f32,
         callback:               VC,
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
     ) -> Result<Rc<IXAudio2SourceVoiceTyped<VC>>, HResultError> {
-        let voice = unsafe { self.create_source_voice_unchecked(format, max_frequency_ratio, Some(&callback.into_com_object()), send_list, effect_chain) }?;
+        let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, Some(&callback.into_com_object()), send_list, effect_chain) }?;
         Ok(unsafe { mcom::Rc::from_raw(voice.into_raw().cast()) })
     }
 
@@ -66,6 +68,7 @@ pub trait IXAudio2Ext {
     unsafe fn create_source_voice_unchecked(
         &self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
+        flags:                  u32,
         max_frequency_ratio:    f32,
         callback:               Option<&IXAudio2VoiceCallback>,
         send_list:              Option<&[xaudio2::SendDescriptor]>,
@@ -89,6 +92,7 @@ pub trait IXAudio2Ext {
         let hr = unsafe { self._as_ixaudio2().CreateSourceVoice(
             &mut voice,
             format,
+            flags,
             max_frequency_ratio,
             callback                    .map_or(null(), |c| c),
             send_list       .as_ref()   .map_or(null(), |c| c),

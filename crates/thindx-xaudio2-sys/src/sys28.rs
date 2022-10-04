@@ -526,6 +526,7 @@ interfaces! {
             &self,
             ppSourceVoice:      *mut *mut IXAudio2SourceVoice,
             pSourceFormat:      *const WAVEFORMATEX,
+            Flags:              u32,
             MaxFrequencyRatio:  f32,
             pCallback:          *const IXAudio2VoiceCallback,
             pSendList:          *const XAUDIO2_VOICE_SENDS,
