@@ -30,13 +30,13 @@ pub trait EngineCallback : Sized {
     fn on_critical_error(&self, error: HResult);
 }
 
-#[repr(C)] struct EngineCallbackWrapper<T: EngineCallback> {
+#[repr(C)] struct EngineCallbackWrapper<EC: EngineCallback> {
     vtbl:       *const IXAudio2EngineCallbackVtbl,
-    callbacks:  T,
+    callbacks:  EC,
 }
 
-impl<T: EngineCallback> EngineCallbackWrapper<T> {
-    fn new(callbacks: T) -> mcom::Rc<IXAudio2EngineCallback> {
+impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
+    fn new(callbacks: EC) -> mcom::Rc<IXAudio2EngineCallback> {
         unsafe { mcom::Rc::from_raw(Arc::into_raw(Arc::new(EngineCallbackWrapper {
             vtbl: &Self::VTBL,
             callbacks
@@ -73,11 +73,10 @@ impl<T: EngineCallback> EngineCallbackWrapper<T> {
         debug_assert!(!riid.is_null());
         debug_assert!(!object.is_null());
 
-        let this = this as *const Self;
         let riid = unsafe { &*riid };
 
         // the following do not exist to compare against:
-        //  EngineCallbackWrapper::<T>::uuidof()
+        //  EngineCallbackWrapper::<EC>::uuidof()
         //  EngineCallback::uuidof()
         //  IXAudio2EngineCallback::uuidof()
         if IsEqualGUID(riid, &IUnknown::uuidof()) {
@@ -91,17 +90,17 @@ impl<T: EngineCallback> EngineCallbackWrapper<T> {
     }
 
     unsafe extern "system" fn on_processing_pass_start(this: *const IXAudio2EngineCallback) {
-        let this = this as *const Self;
-        unsafe { (*this).callbacks.on_processing_pass_start() }
+        let this = unsafe { &*(this as *const Self) };
+        this.callbacks.on_processing_pass_start()
     }
 
     unsafe extern "system" fn on_processing_pass_end(this: *const IXAudio2EngineCallback) {
-        let this = this as *const Self;
-        unsafe { (*this).callbacks.on_processing_pass_end() }
+        let this = unsafe { &*(this as *const Self) };
+        this.callbacks.on_processing_pass_end()
     }
 
     unsafe extern "system" fn on_critical_error(this: *const IXAudio2EngineCallback, error: HResult) {
-        let this = this as *const Self;
-        unsafe { (*this).callbacks.on_critical_error(error) }
+        let this = unsafe { &*(this as *const Self) };
+        this.callbacks.on_critical_error(error)
     }
 }
