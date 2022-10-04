@@ -66,6 +66,33 @@ pub mod xaudio2 {
     pub use sys::XAUDIO2D_DLL_W  as D_DLL_W;
 
     pub use prev::xaudio2::{
+        MAX_BUFFER_BYTES,
+        MAX_QUEUED_BUFFERS,
+        MAX_BUFFERS_SYSTEM,
+        MAX_AUDIO_CHANNELS,
+        MIN_SAMPLE_RATE,
+        MAX_SAMPLE_RATE,
+        MAX_VOLUME_LEVEL,
+        MIN_FREQ_RATIO,
+        MAX_FREQ_RATIO,
+        DEFAULT_FREQ_RATIO,
+        MAX_FILTER_ONEOVERQ,
+        MAX_FILTER_FREQUENCY,
+        MAX_LOOP_COUNT,
+        MAX_INSTANCES,
+        MAX_RATIO_TIMES_RATE_XMA_MONO,
+        MAX_RATIO_TIMES_RATE_XMA_MULTICHANNEL,
+        COMMIT_NOW,
+        COMMIT_ALL,
+        INVALID_OPSET,
+        NO_LOOP_REGION,
+        LOOP_INFINITE,
+        DEFAULT_CHANNELS,
+        DEFAULT_SAMPLERATE,
+        DEFAULT_AUDIO_CATEGORY,
+    };
+
+    pub use prev::xaudio2::{
         Processor,
         Processor1,
         Processor2,

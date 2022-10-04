@@ -54,6 +54,33 @@ pub mod xaudio2 {
     pub use sys::XAUDIO2D_DLL_W  as D_DLL_W;
 
     pub use sys::{
+        XAUDIO2_MAX_BUFFER_BYTES                        as MAX_BUFFER_BYTES,
+        XAUDIO2_MAX_QUEUED_BUFFERS                      as MAX_QUEUED_BUFFERS,
+        XAUDIO2_MAX_BUFFERS_SYSTEM                      as MAX_BUFFERS_SYSTEM,
+        XAUDIO2_MAX_AUDIO_CHANNELS                      as MAX_AUDIO_CHANNELS,
+        XAUDIO2_MIN_SAMPLE_RATE                         as MIN_SAMPLE_RATE,
+        XAUDIO2_MAX_SAMPLE_RATE                         as MAX_SAMPLE_RATE,
+        XAUDIO2_MAX_VOLUME_LEVEL                        as MAX_VOLUME_LEVEL,
+        XAUDIO2_MIN_FREQ_RATIO                          as MIN_FREQ_RATIO,
+        XAUDIO2_MAX_FREQ_RATIO                          as MAX_FREQ_RATIO,
+        XAUDIO2_DEFAULT_FREQ_RATIO                      as DEFAULT_FREQ_RATIO,
+        XAUDIO2_MAX_FILTER_ONEOVERQ                     as MAX_FILTER_ONEOVERQ,
+        XAUDIO2_MAX_FILTER_FREQUENCY                    as MAX_FILTER_FREQUENCY,
+        XAUDIO2_MAX_LOOP_COUNT                          as MAX_LOOP_COUNT,
+        XAUDIO2_MAX_INSTANCES                           as MAX_INSTANCES,
+        XAUDIO2_MAX_RATIO_TIMES_RATE_XMA_MONO           as MAX_RATIO_TIMES_RATE_XMA_MONO,
+        XAUDIO2_MAX_RATIO_TIMES_RATE_XMA_MULTICHANNEL   as MAX_RATIO_TIMES_RATE_XMA_MULTICHANNEL,
+        XAUDIO2_COMMIT_NOW                              as COMMIT_NOW,
+        XAUDIO2_COMMIT_ALL                              as COMMIT_ALL,
+        XAUDIO2_INVALID_OPSET                           as INVALID_OPSET,
+        XAUDIO2_NO_LOOP_REGION                          as NO_LOOP_REGION,
+        XAUDIO2_LOOP_INFINITE                           as LOOP_INFINITE,
+        XAUDIO2_DEFAULT_CHANNELS                        as DEFAULT_CHANNELS,
+        XAUDIO2_DEFAULT_SAMPLERATE                      as DEFAULT_SAMPLERATE,
+        XAUDIO2_DEFAULT_AUDIO_CATEGORY                  as DEFAULT_AUDIO_CATEGORY,
+    };
+
+    pub use sys::{
         XAUDIO2_PROCESSOR  as Processor,
         Processor1,
         Processor2,
