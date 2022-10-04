@@ -144,6 +144,15 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createmasteringvoice)\]
     /// Creates and configures a mastering voice.
+    ///
+    /// | Argument          | Default   |
+    /// | ----------------- | --------- |
+    /// | input_channels    | [xaudio2::DEFAULT_CHANNELS]
+    /// | input_sample_rate | [xaudio2::DEFAULT_SAMPLERATE]
+    /// | flags             | 0
+    /// | device_id         | None
+    /// | effect_chain      | None
+    /// | stream_category   | [xaudio2::DEFAULT_AUDIO_CATEGORY]
     fn create_mastering_voice(
         &self,
         input_channels:     u32,
