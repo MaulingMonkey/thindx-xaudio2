@@ -899,12 +899,15 @@ interfaces! {
     /// pointer provided by the client when it calls
     /// [IXAudio2::RegisterForCallbacks].
     pub interface IXAudio2EngineCallback(IXAudio2EngineCallbackVtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2enginecallback-onprocessingpassstart)\]
         /// Called by XAudio2 just before an audio processing pass begins.
         pub unsafe fn OnProcessingPassStart(&self) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2enginecallback-onprocessingpassend)\]
         /// Called just after an audio processing pass ends.
         pub unsafe fn OnProcessingPassEnd(&self) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2enginecallback-oncriticalerror)\]
         /// Called in the event of a critical system error which requires XAudio2
         /// to be closed down and restarted.  The error code is given in Error.
         pub unsafe fn OnCriticalError(&self, error: HResult) -> ();

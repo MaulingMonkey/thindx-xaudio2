@@ -6,6 +6,7 @@
 //! *   [XAudio2 Versions: XAudio 2.8 (Windows 8.x)](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-versions#xaudio-28-windows-8x)
 //! *   [XAudio2 and Windows 8](https://walbourn.github.io/xaudio2-and-windows-8/)
 
+mod xa28_enginecallback;
 mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
 mod xa28_ixaudio2masteringvoice_ext; pub use xa28_ixaudio2masteringvoice_ext::*;
 mod xa28_ixaudio2voice_ext; pub use xa28_ixaudio2voice_ext::*;
@@ -15,13 +16,21 @@ mod xa28_ixaudio2sourcevoice_ext; pub use xa28_ixaudio2sourcevoice_ext::*;
 // Might not remain pub
 #[doc(hidden)] pub use xaudio2_sys::{
     IXAudio2,
+    IXAudio2Vtbl,
+
 
     IXAudio2Voice,
+    IXAudio2VoiceVtbl,
     IXAudio2SourceVoice,
+    IXAudio2SourceVoiceVtbl,
     IXAudio2SubmixVoice,
+    IXAudio2SubmixVoiceVtbl,
     IXAudio2MasteringVoice,
+    IXAudio2MasteringVoiceVtbl,
     IXAudio2EngineCallback,
+    IXAudio2EngineCallbackVtbl,
     IXAudio2VoiceCallback,
+    IXAudio2VoiceCallbackVtbl,
 };
 
 /// Raw low level FFI bindings
@@ -30,6 +39,7 @@ pub use thindx_xaudio2_sys::xaudio2_8 as xaudio2_sys;
 
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
+    pub use super::xa28_enginecallback::*;
     pub use super::xaudio2_sys as sys;
 
     pub use sys::XAUDIO2_DLL    as DLL;
