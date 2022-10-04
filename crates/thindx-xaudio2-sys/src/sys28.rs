@@ -329,7 +329,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma)\]
-/// Used in [IXAudio2SourceVoice::SubmitSourceBuffer] when submitting XWMA data.
+/// Used to [IXAudio2SourceVoice::SubmitSourceBuffer] xWMA data.
 ///
 /// NOTE: If an XWMA sound is submitted in more than one buffer, each buffer's
 /// pDecodedPacketCumulativeBytes[PacketCount-1] value must be subtracted from
