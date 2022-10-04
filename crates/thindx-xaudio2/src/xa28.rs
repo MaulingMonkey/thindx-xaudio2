@@ -11,6 +11,7 @@ mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
 mod xa28_ixaudio2masteringvoice_ext; pub use xa28_ixaudio2masteringvoice_ext::*;
 mod xa28_ixaudio2voice_ext; pub use xa28_ixaudio2voice_ext::*;
 mod xa28_ixaudio2sourcevoice_ext; pub use xa28_ixaudio2sourcevoice_ext::*;
+mod xa28_voicecallback;
 
 
 // Might not remain pub
@@ -40,6 +41,7 @@ pub use thindx_xaudio2_sys::xaudio2_8 as xaudio2_sys;
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
     pub use super::xa28_enginecallback::*;
+    pub use super::xa28_voicecallback::*;
     pub use super::xaudio2_sys as sys;
 
     pub use sys::XAUDIO2_DLL    as DLL;
