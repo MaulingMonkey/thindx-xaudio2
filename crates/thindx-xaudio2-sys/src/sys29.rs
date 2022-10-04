@@ -85,7 +85,7 @@ pub const XAUDIO2_NO_VIRTUAL_AUDIO_CLIENT : u32 = 0x10000;
 
 // Default parameters for the built-in filter
 pub use prev::{
-    //XAUDIO2_DEFAULT_FILTER_TYPE, // TODO
+    XAUDIO2_DEFAULT_FILTER_TYPE,
     XAUDIO2_DEFAULT_FILTER_FREQUENCY,
     XAUDIO2_DEFAULT_FILTER_ONEOVERQ,
 };
@@ -161,6 +161,12 @@ pub use prev::{
     XAUDIO2_EFFECT_DESCRIPTOR,
     XAUDIO2_EFFECT_CHAIN,
     XAUDIO2_FILTER_TYPE,
+    LowPassFilter,
+    BandPassFilter,
+    HighPassFilter,
+    NotchFilter,
+    LowPassOnePoleFilter,
+    HighPassOnePoleFilter,
     XAUDIO2_FILTER_PARAMETERS,
     XAUDIO2_BUFFER,
     XAUDIO2_BUFFER_WMA,
