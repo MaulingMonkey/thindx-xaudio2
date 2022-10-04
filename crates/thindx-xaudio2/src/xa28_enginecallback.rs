@@ -1,4 +1,4 @@
-use super::{IXAudio2EngineCallback, IXAudio2EngineCallbackVtbl};
+use super::*;
 
 use winapi::Interface;
 use winapi::ctypes::c_void;
