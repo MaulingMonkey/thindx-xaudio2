@@ -341,11 +341,11 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     /// Decoded packet's cumulative size array.
     /// Each element is the number of bytes accumulated when the corresponding XWMA packet is decoded in order.
     /// The array must have PacketCount elements.
-    pDecodedPacketCumulativeBytes: *const u32,
+    pub pDecodedPacketCumulativeBytes: *const u32,
 
     /// Number of XWMA packets submitted.
     /// Must be >= 1 and divide evenly into [XAUDIO2_BUFFER::AudioBytes].
-    PacketCount: u32,
+    pub PacketCount: u32,
 }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_state)\]
