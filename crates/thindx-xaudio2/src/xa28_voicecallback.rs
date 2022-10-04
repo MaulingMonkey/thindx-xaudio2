@@ -1,15 +1,8 @@
 #[allow(unused_imports)] use super::*;
 use super::xaudio2::sys::*;
 
-use winapi::Interface;
 use winapi::ctypes::c_void;
-use winapi::shared::guiddef::{REFIID, IsEqualGUID};
-use winapi::shared::winerror::HRESULT;
-use winapi::um::unknwnbase::{IUnknownVtbl, IUnknown};
 use winresult::*;
-
-use std::sync::Arc;
-use core::ptr::null_mut;
 
 
 
@@ -17,8 +10,8 @@ use core::ptr::null_mut;
 pub trait VoiceCallback : Send + Sync + Sized + 'static {
     type BufferContext : Send + Sync + Sized + 'static;
 
-    /// Convert `self` into a [mcom::Rc]<[IXAudio2VoiceCallback]> suitable for passing to [IXAudio2Ext::create_source_voice_unchecked]
-    fn into_com_object(self) -> mcom::Rc<IXAudio2VoiceCallback> { VoiceCallbackWrapper::new(self) }
+    /// Convert `self` into a [IXAudio2VoiceCallback] implementation suitable for passing to [IXAudio2Ext::create_source_voice_unchecked]
+    fn wrap(self) -> VoiceCallbackWrapper<Self> { VoiceCallbackWrapper::new(self) }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassstart)\]
     /// Called just before this voice's processing pass begins.
@@ -55,25 +48,16 @@ pub trait VoiceCallback : Send + Sync + Sized + 'static {
     fn on_voice_error(&self, buffer_context: &Self::BufferContext, error: HResult);
 }
 
-#[repr(C)] struct VoiceCallbackWrapper<VC: VoiceCallback> {
+#[repr(C)] pub struct VoiceCallbackWrapper<VC: VoiceCallback> {
     vtbl:       *const IXAudio2VoiceCallbackVtbl,
     callbacks:  VC,
 }
 
 impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
-    fn new(callbacks: VC) -> mcom::Rc<IXAudio2VoiceCallback> {
-        unsafe { mcom::Rc::from_raw(Arc::into_raw(Arc::new(VoiceCallbackWrapper {
-            vtbl: &Self::VTBL,
-            callbacks
-        })) as *mut _) }
-    }
+    pub fn new(callbacks: VC) -> Self { Self { vtbl: &Self::VTBL, callbacks } }
+    pub fn as_interface(&self) -> &IXAudio2VoiceCallback { unsafe { core::mem::transmute(self) } }
 
     const VTBL : IXAudio2VoiceCallbackVtbl = IXAudio2VoiceCallbackVtbl {
-        base: IUnknownVtbl {
-            AddRef:                 Self::add_ref,
-            Release:                Self::release,
-            QueryInterface:         Self::query_interface,
-        },
         OnVoiceProcessingPassStart: Self::on_voice_processing_pass_start,
         OnVoiceProcessingPassEnd:   Self::on_voice_processing_pass_end,
         OnStreamEnd:                Self::on_stream_end,
@@ -82,41 +66,6 @@ impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
         OnLoopEnd:                  Self::on_loop_end,
         OnVoiceError:               Self::on_voice_error,
     };
-
-    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-addref)\]
-    unsafe extern "system" fn add_ref(this: *mut IUnknown) -> u32 {
-        let this = this as *const Self;
-        unsafe { Arc::increment_strong_count(this) };
-        0 // "The method returns the new reference count. This value is intended to be used only for test purposes."
-    }
-
-    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-release)\]
-    unsafe extern "system" fn release(this: *mut IUnknown) -> u32 {
-        let this = this as *const Self;
-        unsafe { Arc::decrement_strong_count(this) };
-        0 // "The method returns the new reference count. This value is intended to be used only for test purposes."
-    }
-
-    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iunknown-queryinterface(refiid_void))\]
-    unsafe extern "system" fn query_interface(this: *mut IUnknown, riid: REFIID, object: *mut *mut c_void) -> HRESULT {
-        debug_assert!(!riid.is_null());
-        debug_assert!(!object.is_null());
-
-        let riid = unsafe { &*riid };
-
-        // the following do not exist to compare against:
-        //  VoiceCallbackWrapper::<VC>::uuidof()
-        //  VoiceCallback::uuidof()
-        //  IXAudio2VoiceCallback::uuidof()
-        if IsEqualGUID(riid, &IUnknown::uuidof()) {
-            unsafe { Self::add_ref(this as *mut _) };
-            unsafe { *object = this as *mut _ };
-            S::OK.into()
-        } else {
-            unsafe { *object = null_mut() };
-            E::NOINTERFACE.into()
-        }
-    }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassstart)\]
     unsafe extern "system" fn on_voice_processing_pass_start(this: *const IXAudio2VoiceCallback, bytes_required: u32) {

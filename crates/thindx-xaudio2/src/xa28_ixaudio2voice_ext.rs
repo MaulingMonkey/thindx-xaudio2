@@ -153,10 +153,4 @@ pub trait IXAudio2VoiceExt {
         if level_matrix.len() != n { panic!("BUG: source_channels ({source_channels}) x destination_channels ({destination_channels}) != level_matrix.len() ({})", level_matrix.len()) }
         unsafe { self._as_ixaudio2().GetOutputMatrix(destination_voice, source_channels, destination_channels, level_matrix.as_mut_ptr()) }
     }
-
-    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-destroyvoice)\]
-    /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
-    fn destroy_voice(&self) {
-        unsafe { self._as_ixaudio2().DestroyVoice() }
-    }
 }

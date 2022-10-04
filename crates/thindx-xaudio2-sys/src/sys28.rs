@@ -498,7 +498,7 @@ interfaces! {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2)\]
     /// Top-level XAudio2 COM interface.
-    // #[iid = ...] // XAudio 2.8 and 2.9 define this IID differently, which makes actually using it here awkward.  And pretty pointless - why would you ever type erase [IXAudio2] to [IUnknown]?
+    #[iid = None] // XAudio 2.8 and 2.9 define this IID differently, which makes actually using it here awkward.  And pretty pointless - why would you ever type erase [IXAudio2] to [IUnknown]?
     pub interface IXAudio2(IXAudio2Vtbl) => unsafe IUnknown(IUnknownVtbl) {
         /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-registerforcallbacks)\]
         /// Adds a new client to receive XAudio2's engine callbacks.
@@ -615,7 +615,7 @@ interfaces! {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voice)\]
     /// Base voice management interface.
-    pub interface IXAudio2Voice(IXAudio2VoiceVtbl) => unsafe IUnknown(IUnknownVtbl) {
+    pub interface IXAudio2Voice(IXAudio2VoiceVtbl) {
         /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getvoicedetails)\]
         /// Returns the basic characteristics of this voice.
         ///
@@ -907,7 +907,7 @@ interfaces! {
     /// the client.  XAudio2 will call these methods via the interface
     /// pointer provided by the client when it calls
     /// [IXAudio2::RegisterForCallbacks].
-    pub interface IXAudio2EngineCallback(IXAudio2EngineCallbackVtbl) => unsafe IUnknown(IUnknownVtbl) {
+    pub interface IXAudio2EngineCallback(IXAudio2EngineCallbackVtbl) {
         /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2enginecallback-onprocessingpassstart)\]
         /// Called by XAudio2 just before an audio processing pass begins.
         pub unsafe fn OnProcessingPassStart(&self) -> ();
@@ -931,7 +931,7 @@ interfaces! {
     /// in an XAudio2 voice.  This interface should be implemented by the
     /// client.  XAudio2 will call these methods via an interface pointer
     /// provided by the client in the [IXAudio2::CreateSourceVoice] call.
-    pub interface IXAudio2VoiceCallback(IXAudio2VoiceCallbackVtbl) => unsafe IUnknown(IUnknownVtbl) {
+    pub interface IXAudio2VoiceCallback(IXAudio2VoiceCallbackVtbl) {
         /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassstart)\]
         /// Called just before this voice's processing pass begins.
         pub unsafe fn OnVoiceProcessingPassStart(&self, BytesRequired: u32) -> ();

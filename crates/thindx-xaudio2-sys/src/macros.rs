@@ -1,8 +1,8 @@
 macro_rules! interfaces {
     ($(
         $(#[doc = $interface_doc:literal])*
-        $(#[iid = $iid:expr])?
-        $interface_vis:vis interface $interface:ident ( $interface_vtable:ident ) => unsafe $base:ident ( $base_vtable:ident ) {
+        $(#[iid = $iid:tt])?
+        $interface_vis:vis interface $interface:ident ( $interface_vtable:ident ) $( => unsafe $base:ident ( $base_vtable:ident ) )? {
             $(
                 $(#[doc = $fn_doc:literal])*
                 pub unsafe fn $method:ident ( &self $(, $param_id:ident : $param_ty:ty )* $(,)? ) -> $return_ty:ty;
@@ -12,7 +12,9 @@ macro_rules! interfaces {
         $(#[doc = $interface_doc])*
         #[repr(C)] $interface_vis struct $interface ( * const $interface_vtable );
         #[doc(hidden)] #[repr(C)] $interface_vis struct $interface_vtable {
-            pub base: $base_vtable,
+            $(
+                pub base: $base_vtable,
+            )?
             $(
                 $(#[doc = $fn_doc])*
                 pub $method : unsafe extern "system" fn(This: *const $interface $(, $param_id : $param_ty)*) -> $return_ty,
@@ -26,13 +28,16 @@ macro_rules! interfaces {
                 }
             )*
         }
-        impl core::ops::Deref for $interface {
-            type Target = $base;
-            fn deref(&self) -> &Self::Target { unsafe { core::mem::transmute(self) } }
-        }
-        interfaces!(@iid $interface $(#[iid = $iid])?);
+        $(
+            impl core::ops::Deref for $interface {
+                type Target = $base;
+                fn deref(&self) -> &Self::Target { unsafe { core::mem::transmute(self) } }
+            }
+        )?
+        interfaces!(@iid $interface $($iid)?);
     )*};
 
-    (@iid $interface:ident                   ) => { unsafe impl mcom::AsIUnknown for $interface { fn as_iunknown(&self) -> &IUnknown { self } } };
-    (@iid $interface:ident #[iid = $iid:expr]) => { impl winapi::Interface for $interface { fn uuidof() -> winapi::shared::guiddef::GUID { $iid.into() } } };
+    (@iid $interface:ident           ) => {};
+    (@iid $interface:ident None      ) => { unsafe impl mcom::AsIUnknown for $interface { fn as_iunknown(&self) -> &IUnknown { self } } };
+    (@iid $interface:ident $iid:expr ) => { impl winapi::Interface for $interface { fn uuidof() -> winapi::shared::guiddef::GUID { $iid.into() } } };
 }

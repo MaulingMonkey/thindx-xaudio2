@@ -42,9 +42,11 @@ pub mod xaudio2 {
         BufferWma,
         DebugConfiguration,
         EffectDescriptor,
+        EngineCallbackWrapper,
         FilterParameters,
         PerformanceData,
         SendDescriptor,
+        VoiceCallbackWrapper,
         VoiceDetails,
         VoiceState,
 
@@ -142,6 +144,10 @@ pub mod xaudio2 {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2create)\] XAudio2Create:
     /// Creates a new [IXAudio2] instance, which you can use to start using XAudio2.
+    ///
+    /// Initialize COM (see e.g. [mcom::init::mta]) before calling this function.
+    /// In XAudio 2.7 and earlier, XAudio2Create immediately creates a COM object and will fail if COM is not initialized.
+    /// In XAudio 2.8 and later, this call may succeed, but basic operations like creating voices will fail with e.g. [CO::E_NOTINITIALIZED].
     ///
     /// | Argument  | Description                                                                                       |
     /// | --------- | ------------------------------------------------------------------------------------------------- |

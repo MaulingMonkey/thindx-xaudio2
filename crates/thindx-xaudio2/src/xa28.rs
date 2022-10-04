@@ -12,6 +12,7 @@ mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
 mod xa28_ixaudio2masteringvoice_ext; pub use xa28_ixaudio2masteringvoice_ext::*;
 mod xa28_ixaudio2voice_ext; pub use xa28_ixaudio2voice_ext::*;
 mod xa28_ixaudio2sourcevoice_ext; pub use xa28_ixaudio2sourcevoice_ext::*;
+mod xa28_voice;
 mod xa28_voicecallback;
 
 
@@ -39,6 +40,7 @@ mod xa28_voicecallback;
 pub mod xaudio2 {
     pub use super::xa28_buffers::*;
     pub use super::xa28_enginecallback::*;
+    pub use super::xa28_voice::*;
     pub use super::xa28_voicecallback::*;
 
     /// Raw low level FFI bindings

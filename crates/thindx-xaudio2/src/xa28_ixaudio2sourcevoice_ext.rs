@@ -10,7 +10,6 @@ use core::ptr::null;
 
 /// [IXAudio2SourceVoice], but with a typed context for callbacks / submitted source buffers.
 #[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<VC: xaudio2::VoiceCallback>(IXAudio2SourceVoice, PhantomData<VC>);
-unsafe impl<VC: xaudio2::VoiceCallback> mcom::AsIUnknown for IXAudio2SourceVoiceTyped<VC> { fn as_iunknown(&self) -> &winapi::um::unknwnbase::IUnknown { self } }
 impl<VC: xaudio2::VoiceCallback> core::ops::Deref for IXAudio2SourceVoiceTyped<VC> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
 impl<VC: xaudio2::VoiceCallback> IXAudio2SourceVoiceTyped<VC> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
