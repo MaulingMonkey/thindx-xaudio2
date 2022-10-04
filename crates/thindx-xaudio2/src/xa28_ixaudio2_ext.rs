@@ -7,6 +7,7 @@ use winapi::shared::mmreg::WAVEFORMATEX;
 use winapi::um::audiosessiontypes::AUDIO_STREAM_CATEGORY;
 use winresult::*;
 
+use core::mem::size_of_val;
 use core::ptr::{null_mut, null};
 
 
@@ -31,6 +32,34 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
+    fn create_source_voice_no_callback(
+        &self,
+        format:                 &WAVEFORMATEX, // TODO: safer type?
+        max_frequency_ratio:    f32,
+        callback:               Option<core::convert::Infallible>,
+        send_list:              Option<&[xaudio2::SendDescriptor]>,
+        effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
+    ) -> Result<Rc<IXAudio2SourceVoice>, HResultError> {
+        let _ = callback;
+        unsafe { self.create_source_voice_unchecked(format, max_frequency_ratio, None, send_list, effect_chain) }
+    }
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
+    /// Creates and configures a source voice.
+    fn create_source_voice_typed_callback<VC: xaudio2::VoiceCallback>(
+        &self,
+        format:                 &WAVEFORMATEX, // TODO: safer type?
+        max_frequency_ratio:    f32,
+        callback:               VC,
+        send_list:              Option<&[xaudio2::SendDescriptor]>,
+        effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
+    ) -> Result<Rc<IXAudio2SourceVoiceTyped<VC>>, HResultError> {
+        let voice = unsafe { self.create_source_voice_unchecked(format, max_frequency_ratio, Some(&callback.into_com_object()), send_list, effect_chain) }?;
+        Ok(unsafe { mcom::Rc::from_raw(voice.into_raw().cast()) })
+    }
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
+    /// Creates and configures a source voice.
     ///
     /// ### Safety
     /// *   `callback` may make demands of [IXAudio2SourceVoiceExt::submit_source_buffer_unchecked]ed [XAUDIO2_BUFFER::pContext]s for soundness purpouses.
@@ -42,6 +71,9 @@ pub trait IXAudio2Ext {
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
     ) -> Result<Rc<IXAudio2SourceVoice>, HResultError> {
+        // so much for "unchecked" - more like "less checked" amirite
+        if usize::from(format.cbSize) != size_of_val(format) { return Err(E::INVALIDARG) }
+
         let mut voice = null_mut();
 
         let send_list = send_list.map(|sl| -> Result<XAUDIO2_VOICE_SENDS, HResultError> { Ok(XAUDIO2_VOICE_SENDS {

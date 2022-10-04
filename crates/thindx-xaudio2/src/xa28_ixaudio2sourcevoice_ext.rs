@@ -3,7 +3,33 @@ use super::xaudio2::sys::*;
 
 use winresult::*;
 
+use core::marker::PhantomData;
 use core::ptr::null;
+
+
+
+/// [IXAudio2SourceVoice], but with a typed context for callbacks / submitted source buffers.
+#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<VC: xaudio2::VoiceCallback>(IXAudio2SourceVoice, PhantomData<VC>);
+unsafe impl<VC: xaudio2::VoiceCallback> mcom::AsIUnknown for IXAudio2SourceVoiceTyped<VC> { fn as_iunknown(&self) -> &winapi::um::unknwnbase::IUnknown { self } }
+impl<VC: xaudio2::VoiceCallback> core::ops::Deref for IXAudio2SourceVoiceTyped<VC> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
+impl<VC: xaudio2::VoiceCallback> IXAudio2SourceVoiceTyped<VC> {
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
+    /// Adds a new audio buffer to this voice's input queue.
+    pub fn submit_source_buffer(&self, buffer: xaudio2::Buffer<VC::BufferContext>, buffer_wma: Option<&xaudio2::BufferWma>) -> Result<HResultSuccess, HResultError> {
+        let buffer = XAUDIO2_BUFFER {
+            Flags:      buffer.Flags,
+            AudioBytes: buffer.AudioData.len().try_into().map_err(|_| E::INVALIDARG)?,
+            pAudioData: buffer.AudioData.as_ptr(),
+            LoopBegin:  buffer.LoopBegin,
+            LoopCount:  buffer.LoopCount,
+            LoopLength: buffer.LoopLength,
+            PlayBegin:  buffer.PlayBegin,
+            PlayLength: buffer.PlayLength,
+            pContext:   Box::into_raw(Box::new(buffer.Context)).cast(), // XXX: Consider replacing `Box` with trait driven `trait UserData { into_raw, from_raw, borrow_raw }`
+        };
+        unsafe { self.submit_source_buffer_unchecked(&buffer, buffer_wma) }
+    }
+}
 
 
 
@@ -42,8 +68,9 @@ pub trait IXAudio2SourceVoiceExt {
     /// *   [XAUDIO2_BUFFER_WMA::pDecodedPacketCumulativeBytes]\[.. [XAUDIO2_BUFFER_WMA::PacketCount]\] must be valid
     /// *   [XAUDIO2_BUFFER_WMA::PacketCount] >= 1?
     /// *   [XAUDIO2_BUFFER::AudioBytes] % [XAUDIO2_BUFFER_WMA::PacketCount] == 0?  "Must 'divide evenly'..."
-    unsafe fn submit_source_buffer_unchecked(&self, buffer: &XAUDIO2_BUFFER, buffer_wma: Option<&XAUDIO2_BUFFER_WMA>) -> Result<HResultSuccess, HResultError> {
-        unsafe { self._as_ixaudio2().SubmitSourceBuffer(buffer, buffer_wma.map_or(null(), |r| r)) }.succeeded()
+    unsafe fn submit_source_buffer_unchecked(&self, buffer: &XAUDIO2_BUFFER, buffer_wma: Option<&xaudio2::BufferWma>) -> Result<HResultSuccess, HResultError> {
+        let buffer_wma = buffer_wma.map(|bw| XAUDIO2_BUFFER_WMA::try_from(*bw)).transpose()?;
+        unsafe { self._as_ixaudio2().SubmitSourceBuffer(buffer, buffer_wma.as_ref().map_or(null(), |r| r)) }.succeeded()
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-flushsourcebuffers)\]

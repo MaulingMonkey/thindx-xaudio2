@@ -6,6 +6,7 @@
 //! *   [XAudio2 Versions: XAudio 2.8 (Windows 8.x)](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-versions#xaudio-28-windows-8x)
 //! *   [XAudio2 and Windows 8](https://walbourn.github.io/xaudio2-and-windows-8/)
 
+mod xa28_buffers;
 mod xa28_enginecallback;
 mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
 mod xa28_ixaudio2masteringvoice_ext; pub use xa28_ixaudio2masteringvoice_ext::*;
@@ -40,6 +41,7 @@ pub use thindx_xaudio2_sys::xaudio2_8 as xaudio2_sys;
 
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
+    pub use super::xa28_buffers::*;
     pub use super::xa28_enginecallback::*;
     pub use super::xa28_voicecallback::*;
     pub use super::xaudio2_sys as sys;
