@@ -923,26 +923,33 @@ interfaces! {
     /// client.  XAudio2 will call these methods via an interface pointer
     /// provided by the client in the [IXAudio2::CreateSourceVoice] call.
     pub interface IXAudio2VoiceCallback(IXAudio2VoiceCallbackVtbl) => unsafe IUnknown(IUnknownVtbl) {
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassstart)\]
         /// Called just before this voice's processing pass begins.
         pub unsafe fn OnVoiceProcessingPassStart(&self, BytesRequired: u32) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassend)\]
         /// Called just after this voice's processing pass ends.
         pub unsafe fn OnVoiceProcessingPassEnd(&self) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onstreamend)\]
         /// Called when this voice has just finished playing a buffer stream
         /// (as marked with the [XAUDIO2_END_OF_STREAM] flag on the last buffer).
         pub unsafe fn OnStreamEnd(&self) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onbufferstart)\]
         /// Called when this voice is about to start processing a new buffer.
         pub unsafe fn OnBufferStart(&self, pBufferContext: *mut c_void) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onbufferend)\]
         /// Called when this voice has just finished processing a buffer.
         /// The buffer can now be reused or destroyed.
         pub unsafe fn OnBufferEnd(&self, pBufferContext: *mut c_void) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onloopend)\]
         /// Called when this voice has just reached the end position of a loop.
         pub unsafe fn OnLoopEnd(&self, pBufferContext: *mut c_void) -> ();
 
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceerror)\]
         /// Called in the event of a critical error during voice processing,
         /// such as a failing xAPO or an error from the hardware XMA decoder.
         /// The voice may have to be destroyed and re-created to recover from
