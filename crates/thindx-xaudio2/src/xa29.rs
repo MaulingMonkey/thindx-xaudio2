@@ -11,7 +11,7 @@ use super::xaudio2_8 as prev;
 mod xa29_exports;
 
 // Might not remain pub
-#[doc(hidden)] pub use xaudio2_sys::{
+#[doc(hidden)] pub use xaudio2::sys::{
     IXAudio2,
     IXAudio2Vtbl,
     IXAudio2Extension,
@@ -30,10 +30,6 @@ mod xa29_exports;
     IXAudio2VoiceCallbackVtbl,
 };
 
-/// Raw low level FFI bindings
-///
-pub use thindx_xaudio2_sys::xaudio2_9 as xaudio2_sys;
-
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
     use super::*;
@@ -41,7 +37,10 @@ pub mod xaudio2 {
 
     pub use xa29_exports::*;
     pub use prev::xaudio2::EngineCallback;
-    pub use super::xaudio2_sys as sys;
+
+    /// Raw low level FFI bindings
+    ///
+    pub use thindx_xaudio2_sys::xaudio2_9 as sys;
 
     pub use sys::XAUDIO2_DLL    as DLL;
     pub use sys::XAUDIO2_DLL_A  as DLL_A;

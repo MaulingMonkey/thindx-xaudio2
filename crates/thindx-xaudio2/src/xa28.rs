@@ -16,7 +16,7 @@ mod xa28_voicecallback;
 
 
 // Might not remain pub
-#[doc(hidden)] pub use xaudio2_sys::{
+#[doc(hidden)] pub use xaudio2::sys::{
     IXAudio2,
     IXAudio2Vtbl,
 
@@ -35,16 +35,15 @@ mod xa28_voicecallback;
     IXAudio2VoiceCallbackVtbl,
 };
 
-/// Raw low level FFI bindings
-///
-pub use thindx_xaudio2_sys::xaudio2_8 as xaudio2_sys;
-
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
     pub use super::xa28_buffers::*;
     pub use super::xa28_enginecallback::*;
     pub use super::xa28_voicecallback::*;
-    pub use super::xaudio2_sys as sys;
+
+    /// Raw low level FFI bindings
+    ///
+    pub use thindx_xaudio2_sys::xaudio2_8 as sys;
 
     pub use sys::XAUDIO2_DLL    as DLL;
     pub use sys::XAUDIO2_DLL_A  as DLL_A;
