@@ -13,7 +13,21 @@ mod xa29_exports;
 // Might not remain pub
 #[doc(hidden)] pub use xaudio2_sys::{
     IXAudio2,
+    IXAudio2Vtbl,
     IXAudio2Extension,
+    IXAudio2ExtensionVtbl,
+    IXAudio2Voice,
+    IXAudio2VoiceVtbl,
+    IXAudio2SourceVoice,
+    IXAudio2SourceVoiceVtbl,
+    IXAudio2SubmixVoice,
+    IXAudio2SubmixVoiceVtbl,
+    IXAudio2MasteringVoice,
+    IXAudio2MasteringVoiceVtbl,
+    IXAudio2EngineCallback,
+    IXAudio2EngineCallbackVtbl,
+    IXAudio2VoiceCallback,
+    IXAudio2VoiceCallbackVtbl,
 };
 
 /// Raw low level FFI bindings
