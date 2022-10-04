@@ -1,4 +1,5 @@
-use super::*;
+#[allow(unused_imports)] use super::*;
+use super::xaudio2::sys::*;
 
 use winapi::Interface;
 use winapi::ctypes::c_void;
