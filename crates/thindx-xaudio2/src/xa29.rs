@@ -36,7 +36,22 @@ pub mod xaudio2 {
     use winresult::*;
 
     pub use xa29_exports::*;
-    pub use prev::xaudio2::EngineCallback;
+    #[doc(inline)] pub use prev::xaudio2::{
+        // Structs
+        Buffer,
+        BufferWma,
+        DebugConfiguration,
+        EffectDescriptor,
+        FilterParameters,
+        PerformanceData,
+        SendDescriptor,
+        VoiceDetails,
+        VoiceState,
+
+        // Traits
+        EngineCallback,
+        VoiceCallback,
+    };
 
     /// Raw low level FFI bindings
     ///
@@ -50,8 +65,8 @@ pub mod xaudio2 {
     pub use sys::XAUDIO2D_DLL_A  as D_DLL_A;
     pub use sys::XAUDIO2D_DLL_W  as D_DLL_W;
 
-    pub use sys::{
-        XAUDIO2_PROCESSOR  as Processor,
+    pub use prev::xaudio2::{
+        Processor,
         Processor1,
         Processor2,
         Processor3,
@@ -84,18 +99,18 @@ pub mod xaudio2 {
         Processor30,
         Processor31,
         Processor32,
-        XAUDIO2_USE_DEFAULT_PROCESSOR as USE_DEFAULT_PROCESSOR,
     };
+    pub use sys::XAUDIO2_USE_DEFAULT_PROCESSOR as USE_DEFAULT_PROCESSOR;
     #[allow(deprecated)] #[doc(hidden)] pub use sys::XAUDIO2_DEFAULT_PROCESSOR as DEFAULT_PROCESSOR;
 
-    #[cfg(feature = "helper-functions")] pub use sys::{
-        XAudio2DecibelsToAmplitudeRatio             as decibels_to_amplitude_ratio,
-        XAudio2AmplitudeRatioToDecibels             as amplitude_ratio_to_decibels,
-        XAudio2SemitonesToFrequencyRatio            as semitones_to_frequency_ratio,
-        XAudio2FrequencyRatioToSemitones            as frequency_ratio_to_semitones,
-        XAudio2CutoffFrequencyToRadians             as cutoff_frequency_to_radians,
-        XAudio2RadiansToCutoffFrequency             as radians_to_cutoff_frequency,
-        XAudio2CutoffFrequencyToOnePoleCoefficient  as cutoff_frequency_to_one_pole_coefficient,
+    #[cfg(feature = "helper-functions")] pub use prev::xaudio2::{
+        decibels_to_amplitude_ratio,
+        amplitude_ratio_to_decibels,
+        semitones_to_frequency_ratio,
+        frequency_ratio_to_semitones,
+        cutoff_frequency_to_radians,
+        radians_to_cutoff_frequency,
+        cutoff_frequency_to_one_pole_coefficient,
     };
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-xaudio2create)\] XAudio2Create:

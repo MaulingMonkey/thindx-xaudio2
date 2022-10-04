@@ -53,6 +53,53 @@ pub mod xaudio2 {
     pub use sys::XAUDIO2D_DLL_A  as D_DLL_A;
     pub use sys::XAUDIO2D_DLL_W  as D_DLL_W;
 
+    pub use sys::{
+        XAUDIO2_PROCESSOR  as Processor,
+        Processor1,
+        Processor2,
+        Processor3,
+        Processor4,
+        Processor5,
+        Processor6,
+        Processor7,
+        Processor8,
+        Processor9,
+        Processor10,
+        Processor11,
+        Processor12,
+        Processor13,
+        Processor14,
+        Processor15,
+        Processor16,
+        Processor17,
+        Processor18,
+        Processor19,
+        Processor20,
+        Processor21,
+        Processor22,
+        Processor23,
+        Processor24,
+        Processor25,
+        Processor26,
+        Processor27,
+        Processor28,
+        Processor29,
+        Processor30,
+        Processor31,
+        Processor32,
+        XAUDIO2_DEFAULT_PROCESSOR as DEFAULT_PROCESSOR,
+    };
+
+    #[cfg(feature = "helper-functions")] pub use sys::{
+        XAudio2DecibelsToAmplitudeRatio             as decibels_to_amplitude_ratio,
+        XAudio2AmplitudeRatioToDecibels             as amplitude_ratio_to_decibels,
+        XAudio2SemitonesToFrequencyRatio            as semitones_to_frequency_ratio,
+        XAudio2FrequencyRatioToSemitones            as frequency_ratio_to_semitones,
+        XAudio2CutoffFrequencyToRadians             as cutoff_frequency_to_radians,
+        XAudio2RadiansToCutoffFrequency             as radians_to_cutoff_frequency,
+        XAudio2CutoffFrequencyToOnePoleCoefficient  as cutoff_frequency_to_one_pole_coefficient,
+    };
+
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_descriptor)\]
     /// XAUDIO2_EFFECT_DESCRIPTOR: safe equivalent
     #[derive(Clone)] #[repr(C)] pub struct EffectDescriptor {
