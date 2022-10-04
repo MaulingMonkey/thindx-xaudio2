@@ -13,7 +13,7 @@ use bytemuck::Zeroable;
 use winapi::ctypes::c_void;
 use winapi::shared::guiddef::GUID;
 use winapi::shared::mmreg::WAVEFORMATEX;
-use winapi::um::audiosessiontypes::AUDIO_STREAM_CATEGORY;
+use winapi::um::audiosessiontypes::{AUDIO_STREAM_CATEGORY, AudioCategory_GameEffects};
 use winapi::um::unknwnbase::{IUnknown, IUnknownVtbl};
 use winresult::*;
 
@@ -110,6 +110,9 @@ pub const XAUDIO2_DEFAULT_CHANNELS : u32 = 0;
 
 /// Used in [IXAudio2::CreateMasteringVoice]
 pub const XAUDIO2_DEFAULT_SAMPLERATE : u32 = 0;
+
+/// Not defined by xaudio2.h, but [IXAudio2::CreateMasteringVoice] default.
+pub const XAUDIO2_DEFAULT_AUDIO_CATEGORY : AUDIO_STREAM_CATEGORY = AudioCategory_GameEffects;
 
 
 
