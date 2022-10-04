@@ -40,6 +40,7 @@ pub mod xaudio2 {
     use winresult::*;
 
     pub use xa29_exports::*;
+    pub use prev::xaudio2::EngineCallback;
     pub use super::xaudio2_sys as sys;
 
     pub use sys::XAUDIO2_DLL    as DLL;
@@ -164,5 +165,7 @@ pub mod xaudio2 {
 
 #[doc(inline)] pub use prev::{
     IXAudio2Ext,
+    IXAudio2MasteringVoiceExt,
+    IXAudio2SourceVoiceExt,
     IXAudio2VoiceExt,
 };
