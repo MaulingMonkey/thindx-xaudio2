@@ -95,7 +95,12 @@ impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onbufferend)\]
     unsafe extern "system" fn on_buffer_end(this: *const IXAudio2VoiceCallback, buffer_context: *mut c_void) {
         let this = unsafe { &*(this as *const Self) };
-        let buffer_context = *unsafe { Box::from_raw(buffer_context as *mut VC::BufferContext) };
+        let buffer_context = if core::mem::size_of::<VC::BufferContext>() == 0 {
+            // Allow the likes of IXAudio2Ext::create_source_voice_no_callback to use xaudio2::SourceVoice<()> without allocating/freeing boxes
+            unsafe { core::mem::MaybeUninit::<VC::BufferContext>::zeroed().assume_init() }
+        } else {
+            *unsafe { Box::from_raw(buffer_context as *mut VC::BufferContext) }
+        };
         this.callbacks.on_buffer_end(buffer_context)
     }
 

@@ -39,9 +39,10 @@ pub trait IXAudio2Ext {
         callback:               Option<core::convert::Infallible>,
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
-    ) -> Result<xaudio2::SourceVoiceUntyped, HResultError> { // XXX: Theoretically leaks Box<()>s
+    ) -> Result<xaudio2::SourceVoice<()>, HResultError> {
         let _ = callback;
-        unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, None, send_list, effect_chain) }
+        let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, None, send_list, effect_chain) }?;
+        Ok(unsafe { xaudio2::SourceVoice::from_raw(voice.into_raw().cast()) })
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
@@ -54,7 +55,7 @@ pub trait IXAudio2Ext {
         callback:               &xaudio2::VoiceCallbackWrapper<VC>,
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
-    ) -> Result<xaudio2::SourceVoice<VC>, HResultError> {
+    ) -> Result<xaudio2::SourceVoice<VC::BufferContext>, HResultError> {
         let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, Some(callback.as_interface()), send_list, effect_chain) }?;
         Ok(unsafe { xaudio2::SourceVoice::from_raw(voice.into_raw().cast()) })
     }

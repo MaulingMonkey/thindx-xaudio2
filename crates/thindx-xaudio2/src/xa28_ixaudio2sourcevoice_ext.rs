@@ -4,17 +4,18 @@ use super::xaudio2::sys::*;
 use winresult::*;
 
 use core::marker::PhantomData;
-use core::ptr::null;
+use core::mem::size_of;
+use core::ptr::{null, NonNull};
 
 
 
 /// [IXAudio2SourceVoice], but with a typed context for callbacks / submitted source buffers.
-#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<VC: xaudio2::VoiceCallback>(IXAudio2SourceVoice, PhantomData<VC>);
-impl<VC: xaudio2::VoiceCallback> core::ops::Deref for IXAudio2SourceVoiceTyped<VC> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
-impl<VC: xaudio2::VoiceCallback> IXAudio2SourceVoiceTyped<VC> {
+#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<Context: Send + Sync + Sized + 'static>(IXAudio2SourceVoice, PhantomData<Context>);
+impl<Context: Send + Sync + Sized + 'static> core::ops::Deref for IXAudio2SourceVoiceTyped<Context> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
+impl<Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Context> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
     /// Adds a new audio buffer to this voice's input queue.
-    pub fn submit_source_buffer(&self, buffer: xaudio2::Buffer<VC::BufferContext>, buffer_wma: Option<&xaudio2::BufferWma>) -> Result<HResultSuccess, HResultError> {
+    pub fn submit_source_buffer(&self, buffer: xaudio2::Buffer<Context>, buffer_wma: Option<&xaudio2::BufferWma>) -> Result<HResultSuccess, HResultError> {
         let buffer = XAUDIO2_BUFFER {
             Flags:      buffer.Flags,
             AudioBytes: buffer.AudioData.len().try_into().map_err(|_| E::INVALIDARG)?,
@@ -24,7 +25,13 @@ impl<VC: xaudio2::VoiceCallback> IXAudio2SourceVoiceTyped<VC> {
             LoopLength: buffer.LoopLength,
             PlayBegin:  buffer.PlayBegin,
             PlayLength: buffer.PlayLength,
-            pContext:   Box::into_raw(Box::new(buffer.Context)).cast(), // XXX: Consider replacing `Box` with trait driven `trait UserData { into_raw, from_raw, borrow_raw }`
+            // XXX: Consider replacing `Box` with trait driven `trait UserData { into_raw, from_raw, borrow_raw }`
+            pContext:   if size_of::<Context>() == 0 {
+                // Allow the likes of IXAudio2Ext::create_source_voice_no_callback to use xaudio2::SourceVoice<()> without allocating/freeing boxes
+                NonNull::dangling().as_ptr()
+            } else {
+                Box::into_raw(Box::new(buffer.Context)).cast()
+            },
         };
         unsafe { self.submit_source_buffer_unchecked(&buffer, buffer_wma) }
     }
