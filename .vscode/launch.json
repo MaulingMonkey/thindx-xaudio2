@@ -3,6 +3,44 @@
     "version": "0.2.0",
     "configurations": [
         // thindx-xaudio2
+        {
+            "name":                     "thindx-xaudio2 • example • a440 • debug",
+            "type":                     "cppdbg",
+            "request":                  "launch",
+            "internalConsoleOptions":   "openOnSessionStart",
+            "preLaunchTask":            "cargo build --package thindx-xaudio2 --example a440",
+            "program":                  "${workspaceFolder}/target/debug/examples/a440",
+            "cwd":                      "${workspaceFolder}",
+            "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
+            "windows": {
+                "type":                 "cppvsdbg",
+                "program":              "${workspaceFolder}/target/debug/examples/a440.exe",
+                "enableDebugHeap":      true,
+            },
+            "symbolOptions": {
+                // "cachePath":         "${env:TEMP}/SymbolCache"
+                "searchMicrosoftSymbolServer": true,
+            },
+        },
+        {
+            "name":                     "thindx-xaudio2 • example • a440 • release",
+            "type":                     "cppdbg",
+            "request":                  "launch",
+            "internalConsoleOptions":   "openOnSessionStart",
+            "preLaunchTask":            "cargo build --package thindx-xaudio2 --example a440 --release",
+            "program":                  "${workspaceFolder}/target/release/examples/a440",
+            "cwd":                      "${workspaceFolder}",
+            "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
+            "windows": {
+                "type":                 "cppvsdbg",
+                "program":              "${workspaceFolder}/target/release/examples/a440.exe",
+                "enableDebugHeap":      false,
+            },
+            "symbolOptions": {
+                // "cachePath":         "${env:TEMP}/SymbolCache"
+                "searchMicrosoftSymbolServer": true,
+            },
+        },
         // thindx-xaudio2-sys
     ]
 }

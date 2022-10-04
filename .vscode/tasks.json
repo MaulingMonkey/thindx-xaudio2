@@ -3,7 +3,7 @@
     "version":          "2.0.0",
     "problemMatcher":   "$rustc",
     "type":             "shell",
-    "presentation":     { "clear": true, "panel": "shared" },
+    "presentation":     { "clear": true, "panel": "shared", "reveal": "always" },
     "tasks": [
         {
             "label":            "build",
@@ -49,6 +49,17 @@
             "label":            "diff 2.8 -> 2.9: xaudio2fx.h",
             "command":          "code --diff \"C:\\Program Files (x86)\\Windows Kits\\8.1\\Include\\um\\xaudio2fx.h\" \"C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.22621.0\\um\\xaudio2fx.h\"",
             "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
+        },
+
+
+
+        {
+            "label":            "cargo build --package thindx-xaudio2 --example a440",
+            "command":          "cargo build --package thindx-xaudio2 --example a440",
+        },
+        {
+            "label":            "cargo build --package thindx-xaudio2 --example a440 --release",
+            "command":          "cargo build --package thindx-xaudio2 --example a440 --release",
         },
     ]
 }
