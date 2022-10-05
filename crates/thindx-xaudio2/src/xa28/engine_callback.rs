@@ -5,7 +5,12 @@ use winresult::*;
 
 
 /// [IXAudio2EngineCallback] in trait form
-pub trait EngineCallback : Sized {
+pub trait EngineCallback
+    : Sized         // required for `wrap`
+    + Sync          // all methods are executed on an XAudio thread
+    //+ Send        // is not necessary.  IXAudio2EngineCallback isn't an IUnknown, so no IUnknown::Release to worry about.  No other method transfers ownership of the EngineCallback to XAudio2 either.
+    //+ 'static     // is not fundamental.  While all methods currently require 'static, a future scoped registration might not.
+{
     /// Convert `self` into a [IXAudio2EngineCallback] implementation suitable for passing to [IXAudio2Ext::register_for_callbacks]
     fn wrap(self) -> EngineCallbackWrapper<Self> { EngineCallbackWrapper::new(self) }
 

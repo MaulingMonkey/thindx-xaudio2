@@ -20,13 +20,32 @@ pub trait IXAudio2Ext {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-registerforcallbacks)\]
     /// Adds a new client to receive XAudio2's engine callbacks.
     fn register_for_callbacks(&self, callback: &'static IXAudio2EngineCallback) -> Result<HResultSuccess, HResultError> {
+        // SAFETY: IXAudio2EngineCallback must outlive self - this is enforced by &'static lifetime.
         unsafe { self._as_ixaudio2().RegisterForCallbacks(callback) }.succeeded()
+    }
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-registerforcallbacks)\]
+    /// [Self::register_for_callbacks]\([Box::leak]\([Box::new]\(...\)\)\)
+    ///
+    /// Leaks memory - but let's be honest, you were going to register the engine
+    /// callback for the duration of your program, and never reclaim the memory
+    /// you're 'leaking' with this method anyways.  A fancier scoped-based
+    /// alternative could be written if you absolutely must reclaim memory safely.
+    ///
+    /// The returned IXAudio2EngineCallback can be unregistered and reregistered
+    /// (through the non-`_leak` version of this method) if you're into that kind of thing.
+    fn register_for_callbacks_leak(&self, callback: impl xaudio2::EngineCallback + 'static) -> Result<&'static IXAudio2EngineCallback, HResultError> {
+        let leaked = Box::leak(Box::new(xaudio2::EngineCallback::wrap(callback)));
+        self.register_for_callbacks(leaked)?;
+        Ok(leaked)
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-unregisterforcallbacks)\]
     /// Removes an existing receiver of XAudio2 engine callbacks.
-    fn unregister_for_callbacks(&self, callback: &'static IXAudio2EngineCallback) {
+    fn unregister_for_callbacks(&self, callback: &IXAudio2EngineCallback) {
+        // SAFETY: Since we're *un*registering `callback`, it need not be 'static.
         unsafe { self._as_ixaudio2().UnregisterForCallbacks(callback) }
+        // if the IXAudio2 *did* reference `callback`, it no longer does.
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]

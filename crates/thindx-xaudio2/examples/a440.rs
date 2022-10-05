@@ -11,6 +11,8 @@ use core::mem::size_of;
 fn main() {
     mcom::init::mta().expect("mcom::init::mta");
     let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR).expect("xaudio2::create");
+    xaudio2.register_for_callbacks_leak(EngineCallback).expect("register_for_callbacks_leak");
+
     let _master = xaudio2.create_mastering_voice(
         xaudio2::DEFAULT_CHANNELS, xaudio2::DEFAULT_SAMPLERATE,
         0, (), None, xaudio2::DEFAULT_AUDIO_CATEGORY
@@ -50,38 +52,23 @@ fn main() {
     panic!("main() end before stream end?");
 }
 
+struct EngineCallback;
+impl xaudio2::EngineCallback for EngineCallback {
+    // As expected, these callbacks all fire on an XAudio2 thread:
+    fn on_processing_pass_start(&self) { eprintln!("on_processing_pass_start") }
+    fn on_processing_pass_end(&self) { eprintln!("on_processing_pass_end") }
+    fn on_critical_error(&self, error: winresult::HResult) { panic!("{error:?}") }
+}
+
 struct VoiceCallback;
 impl xaudio2::VoiceCallback for VoiceCallback {
     type BufferContext = ();
-
-    // As expected, these callbacks all fire on an IXAudio2 thread:
-
-    fn on_voice_processing_pass_start(&self, bytes_required: u32) {
-        eprintln!("on_voice_processing_pass_start({bytes_required})");
-    }
-
-    fn on_voice_processing_pass_end(&self) {
-        eprintln!("on_voice_processing_pass_end()");
-    }
-
-    fn on_loop_end(&self, buffer_context: &Self::BufferContext) {
-        eprintln!("on_loop_end({buffer_context:?})");
-    }
-
-    fn on_buffer_start(&self, buffer_context: &Self::BufferContext) {
-        eprintln!("on_buffer_start({buffer_context:?})");
-    }
-
-    fn on_buffer_end(&self, buffer_context: Self::BufferContext) {
-        eprintln!("on_buffer_end({buffer_context:?})");
-    }
-
-    fn on_stream_end(&self) {
-        eprintln!("on_stream_end");
-        std::process::exit(0);
-    }
-
-    fn on_voice_error(&self, _buffer_context: &Self::BufferContext, error: winresult::HResult) {
-        panic!("{error:?}");
-    }
+    // As expected, these callbacks all fire on an XAudio2 thread:
+    fn on_voice_processing_pass_start(&self, bytes_required: u32) { eprintln!("on_voice_processing_pass_start({bytes_required})") }
+    fn on_voice_processing_pass_end(&self) { eprintln!("on_voice_processing_pass_end()") }
+    fn on_loop_end(&self, buffer_context: &Self::BufferContext) { eprintln!("on_loop_end({buffer_context:?})") }
+    fn on_buffer_start(&self, buffer_context: &Self::BufferContext) { eprintln!("on_buffer_start({buffer_context:?})") }
+    fn on_buffer_end(&self, buffer_context: Self::BufferContext) { eprintln!("on_buffer_end({buffer_context:?})") }
+    fn on_stream_end(&self) { eprintln!("on_stream_end"); std::process::exit(0); }
+    fn on_voice_error(&self, _buffer_context: &Self::BufferContext, error: winresult::HResult) { panic!("{error:?}"); }
 }
