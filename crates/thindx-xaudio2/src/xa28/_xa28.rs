@@ -6,14 +6,15 @@
 //! *   [XAudio2 Versions: XAudio 2.8 (Windows 8.x)](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-versions#xaudio-28-windows-8x)
 //! *   [XAudio2 and Windows 8](https://walbourn.github.io/xaudio2-and-windows-8/)
 
-mod xa28_buffers;
-mod xa28_enginecallback;
-mod xa28_ixaudio2_ext;                  pub use xa28_ixaudio2_ext::*;
-mod xa28_ixaudio2masteringvoice_ext;    pub use xa28_ixaudio2masteringvoice_ext::*;
-mod xa28_ixaudio2voice_ext;             pub use xa28_ixaudio2voice_ext::*;
-mod xa28_ixaudio2sourcevoice_ext;       pub use xa28_ixaudio2sourcevoice_ext::*;
-mod xa28_voice;
-mod xa28_voicecallback;
+mod buffer_wma;
+mod buffer;
+mod engine_callback;
+mod ixaudio2_ext;                   pub use ixaudio2_ext::*;
+mod ixaudio2masteringvoice_ext;     pub use ixaudio2masteringvoice_ext::*;
+mod ixaudio2voice_ext;              pub use ixaudio2voice_ext::*;
+mod ixaudio2sourcevoice_ext;        pub use ixaudio2sourcevoice_ext::*;
+mod voices;
+mod voice_callback;
 
 
 // Might not remain pub
@@ -38,10 +39,11 @@ mod xa28_voicecallback;
 
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
-    pub use super::xa28_buffers::*;
-    pub use super::xa28_enginecallback::*;
-    pub use super::xa28_voice::*;
-    pub use super::xa28_voicecallback::*;
+    pub use super::buffer_wma::*;
+    pub use super::buffer::*;
+    pub use super::engine_callback::*;
+    pub use super::voices::*;
+    pub use super::voice_callback::*;
 
     /// Raw low level FFI bindings
     ///

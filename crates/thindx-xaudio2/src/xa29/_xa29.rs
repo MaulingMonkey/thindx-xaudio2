@@ -8,7 +8,7 @@
 
 use super::xaudio2_8 as prev;
 
-mod xa29_exports;
+mod exports;
 
 // Might not remain pub
 #[doc(hidden)] pub use xaudio2::sys::{
@@ -35,7 +35,7 @@ pub mod xaudio2 {
     use super::*;
     use winresult::*;
 
-    pub use xa29_exports::*;
+    pub use exports::*;
     #[doc(inline)] pub use prev::xaudio2::{
         // Structs
         Buffer,
