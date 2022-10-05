@@ -13,5 +13,5 @@ pub use thindx_xaudio2_sys as sys;
 #[path = "xa25.rs"] pub mod xaudio2_5;
 #[path = "xa26.rs"] pub mod xaudio2_6;
 #[path = "xa27.rs"] pub mod xaudio2_7;
-#[path = "xa28.rs"] pub mod xaudio2_8;
-#[path = "xa29.rs"] pub mod xaudio2_9;
+#[path = "xa28/_xa28.rs"] pub mod xaudio2_8;
+#[path = "xa29/_xa29.rs"] pub mod xaudio2_9;
