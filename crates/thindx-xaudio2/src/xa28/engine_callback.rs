@@ -27,9 +27,13 @@ pub trait EngineCallback : Sized {
     callbacks:  EC,
 }
 
+impl<EC: EngineCallback> core::ops::Deref for EngineCallbackWrapper<EC> {
+    type Target = IXAudio2EngineCallback;
+    fn deref(&self) -> &IXAudio2EngineCallback { unsafe { core::mem::transmute(self) } }
+}
+
 impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
     pub fn new(callbacks: EC) -> Self { Self { vtbl: &Self::VTBL, callbacks } }
-    pub fn as_interface(&self) -> &IXAudio2EngineCallback { unsafe { core::mem::transmute(self) } }
 
     const VTBL : IXAudio2EngineCallbackVtbl = IXAudio2EngineCallbackVtbl {
         OnProcessingPassStart:  Self::on_processing_pass_start,
@@ -51,4 +55,35 @@ impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
         let this = unsafe { &*(this as *const Self) };
         this.callbacks.on_critical_error(error)
     }
+}
+
+#[test] fn test() {
+    use crate::xaudio2_9::*; // XXX: no xaudio2::create for 2.8 yet
+    struct EC;
+    impl EngineCallback for EC {
+        fn on_processing_pass_start(&self) {}
+        fn on_processing_pass_end(&self) {}
+        fn on_critical_error(&self, error: HResult) { panic!("{error:?}") }
+    }
+    let ec = Box::leak(Box::new(EC.wrap()));
+
+    mcom::init::mta().expect("mcom::init::mta");
+    let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR).expect("xaudio2::create");
+
+    // validate that unregistering never-registered callbacks causes no problems
+    xaudio2.unregister_for_callbacks(ec);
+
+    // normal reg + unreg
+    xaudio2.register_for_callbacks(ec).expect("register_for_callbacks");
+    xaudio2.unregister_for_callbacks(ec);
+
+    // validate double unregister causes no problems
+    xaudio2.unregister_for_callbacks(ec);
+
+    // validate double register+unregister causes no problems
+    xaudio2.register_for_callbacks(ec).expect("register_for_callbacks");
+    xaudio2.register_for_callbacks(ec).expect("register_for_callbacks");
+    xaudio2.unregister_for_callbacks(ec);
+    xaudio2.unregister_for_callbacks(ec);
+    xaudio2.unregister_for_callbacks(ec);
 }

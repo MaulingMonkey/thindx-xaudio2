@@ -19,13 +19,13 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-registerforcallbacks)\]
     /// Adds a new client to receive XAudio2's engine callbacks.
-    fn register_for_callbacks(&self, callback: &IXAudio2EngineCallback) -> Result<HResultSuccess, HResultError> {
+    fn register_for_callbacks(&self, callback: &'static IXAudio2EngineCallback) -> Result<HResultSuccess, HResultError> {
         unsafe { self._as_ixaudio2().RegisterForCallbacks(callback) }.succeeded()
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-unregisterforcallbacks)\]
     /// Removes an existing receiver of XAudio2 engine callbacks.
-    fn unregister_for_callbacks(&self, callback: &IXAudio2EngineCallback) {
+    fn unregister_for_callbacks(&self, callback: &'static IXAudio2EngineCallback) {
         unsafe { self._as_ixaudio2().UnregisterForCallbacks(callback) }
     }
 
