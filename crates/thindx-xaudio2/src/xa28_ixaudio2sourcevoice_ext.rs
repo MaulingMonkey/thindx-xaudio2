@@ -61,17 +61,25 @@ pub trait IXAudio2SourceVoiceExt {
     /// Adds a new audio buffer to this voice's input queue.
     ///
     /// ### Safety
-    /// The following invariants may apply:
-    /// *   [XAUDIO2_BUFFER::pContext] may have arbitrary requirements depending on what callbacks have been registered with this voice.
-    /// *   [XAUDIO2_BUFFER::pAudioData]\[.. [XAUDIO2_BUFFER::AudioBytes]\] must be valid
-    /// *   [XAUDIO2_BUFFER::pAudioData]\[[XAUDIO2_BUFFER::PlayBegin]..\]\[..[XAUDIO2_BUFFER::PlayLength]\] must be valid?
-    /// *   [XAUDIO2_BUFFER::pAudioData]\[[XAUDIO2_BUFFER::LoopBegin]..\]\[..[XAUDIO2_BUFFER::LoopLength]\] must be valid?
+    /// The requirements imposed are numerous.  I strongly recommend carefully reading through at least:
+    /// *   [IXAudio2SourceVoice::SubmitSourceBuffer: Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer#remarks)
+    /// *   [XAUDIO2_BUFFER](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer): [Members](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer#members) + [Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer#remarks)
+    /// *   [XAUDIO2_BUFFER_WMA](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma): [Members](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma#members) + [Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma#remarks)
+    ///
+    /// A **partial** list of requirements that may impact soundness includes:
+    /// *   [XAUDIO2_BUFFER::pContext] may have arbitrary requirements imposed upon it by [IXAudio2VoiceCallback].
+    /// *   [XAUDIO2_BUFFER::pAudioData] must remain valid until [IXAudio2VoiceCallback::OnBufferEnd] for the ranges:
+    ///     *   (pAudioData as *const u8)\[.. [XAUDIO2_BUFFER::AudioBytes]\]
+    ///     *   (pAudioData as *const Sample)\[[XAUDIO2_BUFFER::PlayBegin]..\]\[..[XAUDIO2_BUFFER::PlayLength]\]
+    ///     *   (pAudioData as *const Sample)\[[XAUDIO2_BUFFER::LoopBegin]..\]\[..[XAUDIO2_BUFFER::LoopLength]\]
     /// *   [XAUDIO2_BUFFER::PlayBegin] <= [XAUDIO2_BUFFER::AudioBytes]?
     /// *   [XAUDIO2_BUFFER::LoopBegin] <= [XAUDIO2_BUFFER::AudioBytes]?
     /// *   [XAUDIO2_BUFFER::Flags] may need to be valid?
     ///
     /// And if `buffer_wma` is [Some]:
-    /// *   [XAUDIO2_BUFFER_WMA::pDecodedPacketCumulativeBytes]\[.. [XAUDIO2_BUFFER_WMA::PacketCount]\] must be valid
+    /// *   [XAUDIO2_BUFFER_WMA::pDecodedPacketCumulativeBytes] must remain valid until [IXAudio2VoiceCallback::OnBufferEnd]:
+    ///     *   pDecodedPacketCumulativeBytes\[.. [XAUDIO2_BUFFER_WMA::PacketCount]\] must be valid
+    ///     *   "byte swapped when loading the buffer on Xbox 360" (big endian?)
     /// *   [XAUDIO2_BUFFER_WMA::PacketCount] >= 1?
     /// *   [XAUDIO2_BUFFER::AudioBytes] % [XAUDIO2_BUFFER_WMA::PacketCount] == 0?  "Must 'divide evenly'..."
     unsafe fn submit_source_buffer_unchecked(&self, buffer: &XAUDIO2_BUFFER, buffer_wma: Option<&xaudio2::BufferWma>) -> Result<HResultSuccess, HResultError> {

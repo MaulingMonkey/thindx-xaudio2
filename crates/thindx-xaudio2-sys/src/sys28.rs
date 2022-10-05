@@ -819,6 +819,12 @@ interfaces! {
         /// ### Arguments
         /// * `pBuffer`     - Pointer to the buffer structure to be queued.
         /// * `pBufferWMA`  - Additional structure used only when submitting XWMA data.
+        ///
+        /// ### Safety
+        /// The requirements imposed are numerous.  I strongly recommend carefully reading through at least:
+        /// *   [IXAudio2SourceVoice::SubmitSourceBuffer: Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer#remarks)
+        /// *   [XAUDIO2_BUFFER](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer): [Members](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer#members) + [Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer#remarks)
+        /// *   [XAUDIO2_BUFFER_WMA](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma): [Members](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma#members) + [Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma#remarks)
         pub unsafe fn SubmitSourceBuffer(&self, pBuffer: *const XAUDIO2_BUFFER, pBufferWMA: *const XAUDIO2_BUFFER_WMA) -> HResult;
 
         /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-flushsourcebuffers)\]
