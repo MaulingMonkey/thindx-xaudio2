@@ -8,10 +8,10 @@
 
 mod xa28_buffers;
 mod xa28_enginecallback;
-mod xa28_ixaudio2_ext;  pub use xa28_ixaudio2_ext::*;
-mod xa28_ixaudio2masteringvoice_ext; pub use xa28_ixaudio2masteringvoice_ext::*;
-mod xa28_ixaudio2voice_ext; pub use xa28_ixaudio2voice_ext::*;
-mod xa28_ixaudio2sourcevoice_ext; pub use xa28_ixaudio2sourcevoice_ext::*;
+mod xa28_ixaudio2_ext;                  pub use xa28_ixaudio2_ext::*;
+mod xa28_ixaudio2masteringvoice_ext;    pub use xa28_ixaudio2masteringvoice_ext::*;
+mod xa28_ixaudio2voice_ext;             pub use xa28_ixaudio2voice_ext::*;
+mod xa28_ixaudio2sourcevoice_ext;       pub use xa28_ixaudio2sourcevoice_ext::*;
 mod xa28_voice;
 mod xa28_voicecallback;
 
