@@ -1,3 +1,6 @@
+#[allow(unused_imports)] use super::*;
+#[allow(unused_imports)] use super::xaudio2::sys::*;
+
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer)\] [XAUDIO2_BUFFER]
 #[allow(non_snake_case)] // XXX: is this really what we want?
 #[derive(Clone, Copy, Debug, Default)] #[repr(C)] pub struct Buffer<'a, Context: Send + Sync + Sized + 'static> {

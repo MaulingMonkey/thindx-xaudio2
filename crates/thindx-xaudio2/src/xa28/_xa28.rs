@@ -8,6 +8,7 @@
 
 mod buffer_wma;
 mod buffer;
+mod context;
 mod engine_callback;
 mod ixaudio2_ext;                   pub use ixaudio2_ext::*;
 mod ixaudio2masteringvoice_ext;     pub use ixaudio2masteringvoice_ext::*;
@@ -41,6 +42,7 @@ mod voice_callback;
 pub mod xaudio2 {
     pub use super::buffer_wma::*;
     pub use super::buffer::*;
+    pub use super::context::*;
     pub use super::engine_callback::*;
     pub use super::voices::*;
     pub use super::voice_callback::*;

@@ -40,6 +40,7 @@ pub mod xaudio2 {
         // Structs
         Buffer,
         BufferWma,
+        Context,
         DebugConfiguration,
         EffectDescriptor,
         EngineCallbackWrapper,
