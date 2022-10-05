@@ -53,9 +53,21 @@ pub trait VoiceCallback : Send + Sync + Sized + 'static {
     callbacks:  VC,
 }
 
+impl<EC: VoiceCallback> core::ops::Deref for VoiceCallbackWrapper<EC> {
+    type Target = IXAudio2VoiceCallback;
+    fn deref(&self) -> &IXAudio2VoiceCallback {
+        // IXAudio2VoiceCallback doesn't implement IUnknown, nor other (de)allocation that would require provenance beyond `self`.
+        // As such, "fixing" provenance here is fine.  Probably.  Maybe.
+        // ref: https://github.com/retep998/winapi-rs/issues/1025
+        let this : *const Self = self;
+        let _ = sptr::Strict::expose_addr(this);
+
+        unsafe { core::mem::transmute(self) }
+    }
+}
+
 impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
     pub fn new(callbacks: VC) -> Self { Self { vtbl: &Self::VTBL, callbacks } }
-    pub fn as_interface(&self) -> &IXAudio2VoiceCallback { unsafe { core::mem::transmute(self) } }
 
     const VTBL : IXAudio2VoiceCallbackVtbl = IXAudio2VoiceCallbackVtbl {
         OnVoiceProcessingPassStart: Self::on_voice_processing_pass_start,
@@ -69,32 +81,32 @@ impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassstart)\]
     unsafe extern "system" fn on_voice_processing_pass_start(this: *const IXAudio2VoiceCallback, bytes_required: u32) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         this.callbacks.on_voice_processing_pass_start(bytes_required)
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassend)\]
     unsafe extern "system" fn on_voice_processing_pass_end(this: *const IXAudio2VoiceCallback) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         this.callbacks.on_voice_processing_pass_end()
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onstreamend)\]
     unsafe extern "system" fn on_stream_end(this: *const IXAudio2VoiceCallback) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         this.callbacks.on_stream_end()
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onbufferstart)\]
     unsafe extern "system" fn on_buffer_start(this: *const IXAudio2VoiceCallback, buffer_context: *mut c_void) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         let buffer_context = unsafe { &*(buffer_context as *const VC::BufferContext) };
         this.callbacks.on_buffer_start(buffer_context)
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onbufferend)\]
     unsafe extern "system" fn on_buffer_end(this: *const IXAudio2VoiceCallback, buffer_context: *mut c_void) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         let buffer_context = if core::mem::size_of::<VC::BufferContext>() == 0 {
             // Allow the likes of IXAudio2Ext::create_source_voice_no_callback to use xaudio2::SourceVoice<()> without allocating/freeing boxes
             unsafe { core::mem::MaybeUninit::<VC::BufferContext>::zeroed().assume_init() }
@@ -106,14 +118,14 @@ impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onloopend)\]
     unsafe extern "system" fn on_loop_end(this: *const IXAudio2VoiceCallback, buffer_context: *mut c_void) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         let buffer_context = unsafe { &*(buffer_context as *const VC::BufferContext) };
         this.callbacks.on_loop_end(buffer_context)
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceerror)\]
     unsafe extern "system" fn on_voice_error(this: *const IXAudio2VoiceCallback, buffer_context: *mut c_void, error: HResult) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         let buffer_context = unsafe { &*(buffer_context as *const VC::BufferContext) };
         this.callbacks.on_voice_error(buffer_context, error)
     }

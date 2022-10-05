@@ -75,7 +75,7 @@ pub trait IXAudio2Ext {
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
     ) -> Result<xaudio2::SourceVoice<VC::BufferContext>, HResultError> {
-        let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, Some(callback.as_interface()), send_list, effect_chain) }?;
+        let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, Some(callback), send_list, effect_chain) }?;
         Ok(unsafe { xaudio2::SourceVoice::from_raw(voice.into_raw().cast()) })
     }
 

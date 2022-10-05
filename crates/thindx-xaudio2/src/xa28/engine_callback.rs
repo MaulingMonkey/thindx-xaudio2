@@ -34,7 +34,15 @@ pub trait EngineCallback
 
 impl<EC: EngineCallback> core::ops::Deref for EngineCallbackWrapper<EC> {
     type Target = IXAudio2EngineCallback;
-    fn deref(&self) -> &IXAudio2EngineCallback { unsafe { core::mem::transmute(self) } }
+    fn deref(&self) -> &IXAudio2EngineCallback {
+        // IXAudio2EngineCallback doesn't implement IUnknown, nor other (de)allocation that would require provenance beyond `self`.
+        // As such, "fixing" provenance here is fine.  Probably.  Maybe.
+        // ref: https://github.com/retep998/winapi-rs/issues/1025
+        let this : *const Self = self;
+        let _ = sptr::Strict::expose_addr(this);
+
+        unsafe { core::mem::transmute(self) }
+    }
 }
 
 impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
@@ -47,17 +55,17 @@ impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
     };
 
     unsafe extern "system" fn on_processing_pass_start(this: *const IXAudio2EngineCallback) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         this.callbacks.on_processing_pass_start()
     }
 
     unsafe extern "system" fn on_processing_pass_end(this: *const IXAudio2EngineCallback) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         this.callbacks.on_processing_pass_end()
     }
 
     unsafe extern "system" fn on_critical_error(this: *const IXAudio2EngineCallback, error: HResult) {
-        let this = unsafe { &*(this as *const Self) };
+        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
         this.callbacks.on_critical_error(error)
     }
 }
