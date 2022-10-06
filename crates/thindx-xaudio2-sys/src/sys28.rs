@@ -307,7 +307,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer)\]
 /// Used in [IXAudio2SourceVoice::SubmitSourceBuffer]
-#[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER {
+#[derive(Clone, Copy, Debug, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER {
     /// Either 0 or [XAUDIO2_END_OF_STREAM].
     pub Flags: u32,
 
@@ -336,6 +336,8 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     pub pContext: *mut c_void,
 }
 
+impl Default for XAUDIO2_BUFFER { fn default() -> Self { Self::zeroed() } }
+
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma)\]
 /// Used to [IXAudio2SourceVoice::SubmitSourceBuffer] xWMA data.
 ///
@@ -345,7 +347,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
 /// And whether a sound is submitted in more than one buffer or not, the final
 /// buffer of the sound should use the [XAUDIO2_END_OF_STREAM] flag, or else the
 /// client must call [IXAudio2SourceVoice::Discontinuity] after submitting it.
-#[derive(Clone, Copy, Debug)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER_WMA {
+#[derive(Clone, Copy, Debug, Zeroable)] #[repr(C, packed(1))] pub struct XAUDIO2_BUFFER_WMA {
     /// Decoded packet's cumulative size array.
     /// Each element is the number of bytes accumulated when the corresponding XWMA packet is decoded in order.
     /// The array must have PacketCount elements.
@@ -355,6 +357,8 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     /// Must be >= 1 and divide evenly into [XAUDIO2_BUFFER::AudioBytes].
     pub PacketCount: u32,
 }
+
+impl Default for XAUDIO2_BUFFER_WMA { fn default() -> Self { Self::zeroed() } }
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_voice_state)\]
 /// Returned by [IXAudio2SourceVoice::GetState]
