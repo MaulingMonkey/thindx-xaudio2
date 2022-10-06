@@ -48,6 +48,7 @@ pub trait IXAudio2Ext {
         // if the IXAudio2 *did* reference `callback`, it no longer does.
     }
 
+    #[cfg(nope)]
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
     fn create_source_voice_no_callback(
@@ -64,6 +65,7 @@ pub trait IXAudio2Ext {
         Ok(unsafe { xaudio2::SourceVoice::from_raw(voice.into_raw().cast()) })
     }
 
+    #[cfg(nope)]
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
     fn create_source_voice_typed_callback<VC: xaudio2::VoiceCallback>(

@@ -6,43 +6,42 @@ use core::ptr::NonNull;
 
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\] [IXAudio2SourceVoice]
-pub struct SourceVoice<Context: Send + Sync + Sized + 'static>(NonNull<IXAudio2SourceVoiceTyped<Context>>);
+pub struct SourceVoice<Context: Send + Sync + Sized + 'static> {
+    voice:      NonNull<IXAudio2SourceVoiceTyped<Context>>,
+    callback:   Box<dyn Deref<Target = IXAudio2VoiceCallback>>,
+}
 
 impl<Context: Send + Sync + Sized + 'static> SourceVoice<Context> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-destroyvoice)\]
-    /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
+    /// Syncronously destroys the voice, stopping it if necessary and removing it from the XAudio2 graph.
     ///
     /// (Dropping the voice also implicitly stops/removes it.)
-    pub fn destroy_voice(self) {}
+    pub fn destroy_voice_sync(self) {}
+
+    // TODO: destroy_voice_async?
 
     /// Create a voice wrapper from a raw pointer.
     ///
-    /// If `raw` is null, will return [None].
+    /// If `voice` is null, will [panic!].
     ///
     /// ### Safety
-    /// *   `raw` must be a valid interface pointer if not null.
-    /// *   `Self` takes ownership of `raw`.
-    pub unsafe fn from_raw_opt(raw: *const IXAudio2SourceVoiceTyped<Context>) -> Option<Self> { Some(Self(NonNull::new(raw as *mut _)?)) }
-
-    /// Create a voice wrapper from a raw pointer.
-    ///
-    /// If `raw` is null, will [panic!].
-    ///
-    /// ### Safety
-    /// *   `raw` must be a valid interface pointer if not null.
-    /// *   `Self` takes ownership of `raw`.
-    #[track_caller] pub unsafe fn from_raw(raw: *const IXAudio2SourceVoiceTyped<Context>) -> Self { unsafe { Self::from_raw_opt(raw) }.unwrap() }
-
-    /// Convert `self` back into a raw pointer, relinquishing ownership.
-    pub fn into_raw(self) -> *const IXAudio2SourceVoiceTyped<Context> {
-        let ptr = self.0.as_ptr();
-        core::mem::forget(self);
-        ptr
+    /// *   `voice` must be a valid interface pointer if not null.
+    /// *   `Self` takes ownership of `voice`.
+    #[track_caller] pub(crate) unsafe fn new(voice: *const IXAudio2SourceVoiceTyped<Context>, callback: Box<dyn Deref<Target = IXAudio2VoiceCallback>>) -> Self {
+        let voice = NonNull::new(voice as *mut _).expect("voice cannot be null");
+        Self { voice, callback }
     }
-
-    pub fn as_raw(&self) -> *const IXAudio2SourceVoiceTyped<Context> { self.0.as_ptr() }
 }
 
-impl<Context: Send + Sync + Sized + 'static> Deref      for SourceVoice<Context> { fn deref    (&    self) -> &    Self::Target { unsafe { self.0.as_ref() } } type Target = IXAudio2SourceVoiceTyped<Context>; }
-impl<Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoice<Context> { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { self.0.as_mut() } } }
-impl<Context: Send + Sync + Sized + 'static> Drop       for SourceVoice<Context> { fn drop(&mut self) { unsafe { (*self.0.as_ptr()).DestroyVoice() } } }
+impl<Context: Send + Sync + Sized + 'static> Deref      for SourceVoice<Context> { fn deref    (&    self) -> &    Self::Target { unsafe { self.voice.as_ref() } } type Target = IXAudio2SourceVoiceTyped<Context>; }
+impl<Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoice<Context> { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { self.voice.as_mut() } } }
+
+impl<Context: Send + Sync + Sized + 'static> Drop for SourceVoice<Context> {
+    fn drop(&mut self) {
+        // This is syncronous, and must occur before self.callback is dropped.
+        // XAudio2 threads might UAF (Use After Free) said callbacks otherwise.
+        unsafe { (*self.voice.as_ptr()).DestroyVoice() };
+
+        // allow self.callback to drop implicitly after Destroy
+    }
+}
