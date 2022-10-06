@@ -11,11 +11,11 @@ use core::ptr::{null_mut, null};
 
 
 
-impl IXAudio2Ext for IXAudio2 { fn _as_ixaudio2(&self) -> &IXAudio2 { self } }
+impl IXAudio2Ext for IXAudio2 { fn _as_ixaudio2(&self) -> *const IXAudio2 { self } }
 
 /// [IXAudio2] extension methods
 pub trait IXAudio2Ext {
-    #[doc(hidden)] fn _as_ixaudio2(&self) -> &IXAudio2;
+    #[doc(hidden)] fn _as_ixaudio2(&self) -> *const IXAudio2;
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-registerforcallbacks)\]
     /// Adds a new client to receive XAudio2's engine callbacks.

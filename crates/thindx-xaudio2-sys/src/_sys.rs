@@ -1,5 +1,6 @@
 //! \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-apis-portal)\]
 
+#![feature(arbitrary_self_types)]
 #![cfg(windows)]
 #![forbid(unsafe_op_in_unsafe_fn)]
 #![allow(non_camel_case_types)]

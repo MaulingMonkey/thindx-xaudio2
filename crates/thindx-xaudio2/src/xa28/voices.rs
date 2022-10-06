@@ -49,7 +49,7 @@ macro_rules! voices {
 
         impl $(< $generic : $($constraint)+ >)? Deref       for $voice $(< $generic >)? { fn deref    (&    self) -> &    Self::Target { unsafe { self.0.as_ref() } } type Target = $ivoice; }
         impl $(< $generic : $($constraint)+ >)? DerefMut    for $voice $(< $generic >)? { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { self.0.as_mut() } } }
-        impl $(< $generic : $($constraint)+ >)? Drop        for $voice $(< $generic >)? { fn drop(&mut self) { unsafe { (*self.0.as_ptr()).DestroyVoice() } } }
+        impl $(< $generic : $($constraint)+ >)? Drop        for $voice $(< $generic >)? { fn drop(&mut self) { let voice : &IXAudio2Voice = self; let voice : *const _ = voice; unsafe { voice.DestroyVoice() } } }
     )*};
 }
 

@@ -39,11 +39,11 @@ impl<Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Context> {
 
 
 
-impl IXAudio2SourceVoiceExt for IXAudio2SourceVoice { fn _as_ixaudio2(&self) -> &IXAudio2SourceVoice { self } }
+impl IXAudio2SourceVoiceExt for IXAudio2SourceVoice { fn _as_ixaudio2(&self) -> *const IXAudio2SourceVoice { self } }
 
 /// [IXAudio2SourceVoice] extension methods
 pub trait IXAudio2SourceVoiceExt {
-    #[doc(hidden)] fn _as_ixaudio2(&self) -> &IXAudio2SourceVoice;
+    #[doc(hidden)] fn _as_ixaudio2(&self) -> *const IXAudio2SourceVoice;
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-start)\]
     /// Makes this voice start consuming and processing audio.

@@ -4,11 +4,11 @@ use winresult::*;
 
 
 
-impl IXAudio2MasteringVoiceExt for IXAudio2MasteringVoice { fn _as_ixaudio2(&self) -> &IXAudio2MasteringVoice { self } }
+impl IXAudio2MasteringVoiceExt for IXAudio2MasteringVoice { fn _as_ixaudio2(&self) -> *const IXAudio2MasteringVoice { self } }
 
 /// [IXAudio2MasteringVoice] extension methods
 pub trait IXAudio2MasteringVoiceExt {
-    #[doc(hidden)] fn _as_ixaudio2(&self) -> &IXAudio2MasteringVoice;
+    #[doc(hidden)] fn _as_ixaudio2(&self) -> *const IXAudio2MasteringVoice;
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2masteringvoice-getchannelmask)\]
     /// Returns the channel mask for this voice.

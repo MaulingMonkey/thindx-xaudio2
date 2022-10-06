@@ -7,11 +7,11 @@ use core::ptr::null;
 
 
 
-impl IXAudio2VoiceExt for IXAudio2Voice { fn _as_ixaudio2(&self) -> &IXAudio2Voice { self } }
+impl IXAudio2VoiceExt for IXAudio2Voice { fn _as_ixaudio2(&self) -> *const IXAudio2Voice { self } }
 
 /// [IXAudio2] extension methods
 pub trait IXAudio2VoiceExt {
-    #[doc(hidden)] fn _as_ixaudio2(&self) -> &IXAudio2Voice;
+    #[doc(hidden)] fn _as_ixaudio2(&self) -> *const IXAudio2Voice;
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-getvoicedetails)\]
     /// Returns the basic characteristics of this voice.

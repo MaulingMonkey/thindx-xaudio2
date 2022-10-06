@@ -23,8 +23,8 @@ macro_rules! interfaces {
         impl $interface {
             $(
                 $(#[doc = $fn_doc])*
-                #[allow(dead_code)] pub unsafe fn $method(&self $(, $param_id : $param_ty)*) -> $return_ty {
-                    unsafe { ((*self.0).$method)(self $(, $param_id)*) }
+                #[allow(dead_code)] pub unsafe fn $method(self: *const $interface $(, $param_id : $param_ty)*) -> $return_ty {
+                    unsafe { ((*(*self).0).$method)(self $(, $param_id)*) }
                 }
             )*
         }
