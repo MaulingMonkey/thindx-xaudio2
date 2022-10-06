@@ -14,6 +14,7 @@ mod ixaudio2_ext;                   pub use ixaudio2_ext::*;
 mod ixaudio2masteringvoice_ext;     pub use ixaudio2masteringvoice_ext::*;
 mod ixaudio2voice_ext;              pub use ixaudio2voice_ext::*;
 mod ixaudio2sourcevoice_ext;        pub use ixaudio2sourcevoice_ext::*;
+mod source_voice;
 mod voices;
 mod voice_callback;
 
@@ -44,6 +45,7 @@ pub mod xaudio2 {
     pub use super::buffer::*;
     pub use super::context::*;
     pub use super::engine_callback::*;
+    pub use super::source_voice::*;
     pub use super::voices::*;
     pub use super::voice_callback::*;
 

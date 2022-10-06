@@ -1,6 +1,5 @@
 use super::*;
 
-use core::marker::PhantomData;
 use core::ops::*;
 use core::ptr::NonNull;
 
@@ -8,11 +7,13 @@ use core::ptr::NonNull;
 
 macro_rules! voices {
     ($(
-        pub struct $voice:ident $(< $generic:ident : ( $($constraint:tt)+ ) >)? ( NonNull< $ivoice:ty > );
+        $(#[doc = $voice_doc:literal])*
+        pub struct $voice:ident ( NonNull< $ivoice:ty > );
     )*) => {$(
-        pub struct $voice $(< $generic : $($constraint)+ >)? ( NonNull< $ivoice > $(, PhantomData<$generic>)? );
+        $(#[doc = $voice_doc])*
+        pub struct $voice ( NonNull< $ivoice > );
 
-        impl $(< $generic : $($constraint)+ >)? $voice $(< $generic >)? {
+        impl $voice {
             /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-destroyvoice)\]
             /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
             ///
@@ -26,7 +27,7 @@ macro_rules! voices {
             /// ### Safety
             /// *   `raw` must be a valid interface pointer if not null.
             /// *   `Self` takes ownership of `raw`.
-            pub unsafe fn from_raw_opt(raw: *const $ivoice) -> Option<Self> { Some(Self(NonNull::new(raw as *mut _)? $(, PhantomData::<$generic>)?)) }
+            pub unsafe fn from_raw_opt(raw: *const $ivoice) -> Option<Self> { Some(Self(NonNull::new(raw as *mut _)?)) }
 
             /// Create a voice wrapper from a raw pointer.
             ///
@@ -47,16 +48,22 @@ macro_rules! voices {
             pub fn as_raw(&self) -> *const $ivoice { self.0.as_ptr() }
         }
 
-        impl $(< $generic : $($constraint)+ >)? Deref       for $voice $(< $generic >)? { fn deref    (&    self) -> &    Self::Target { unsafe { self.0.as_ref() } } type Target = $ivoice; }
-        impl $(< $generic : $($constraint)+ >)? DerefMut    for $voice $(< $generic >)? { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { self.0.as_mut() } } }
-        impl $(< $generic : $($constraint)+ >)? Drop        for $voice $(< $generic >)? { fn drop(&mut self) { unsafe { (*self.0.as_ptr()).DestroyVoice() } } }
+        impl Deref      for $voice { fn deref    (&    self) -> &    Self::Target { unsafe { self.0.as_ref() } } type Target = $ivoice; }
+        impl DerefMut   for $voice { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { self.0.as_mut() } } }
+        impl Drop       for $voice { fn drop(&mut self) { unsafe { (*self.0.as_ptr()).DestroyVoice() } } }
     )*};
 }
 
 voices! {
-    pub struct Voice                            (NonNull<IXAudio2Voice>);
-    pub struct MasteringVoice                   (NonNull<IXAudio2MasteringVoice>);
-    pub struct SubmixVoice                      (NonNull<IXAudio2SubmixVoice>);
-    pub struct SourceVoiceUntyped               (NonNull<IXAudio2SourceVoice>);
-    pub struct SourceVoice<Context: (Send + Sync + Sized + 'static)>(NonNull<IXAudio2SourceVoiceTyped<Context>>);
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2voice)\] [IXAudio2Voice]
+    pub struct Voice(NonNull<IXAudio2Voice>);
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2masteringvoice)\] [IXAudio2MasteringVoice]
+    pub struct MasteringVoice(NonNull<IXAudio2MasteringVoice>);
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2submixvoice)\] [IXAudio2SubmixVoice]
+    pub struct SubmixVoice(NonNull<IXAudio2SubmixVoice>);
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\] [IXAudio2SourceVoice]
+    pub struct SourceVoiceUntyped(NonNull<IXAudio2SourceVoice>);
 }
