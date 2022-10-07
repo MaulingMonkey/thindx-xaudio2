@@ -182,7 +182,9 @@ pub mod xaudio2 {
     /// ```
     /// use thindx_xaudio2::xaudio2_9::{xaudio2, xaudio2::sys::IXAudio2Extension};
     ///
-    /// let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR).unwrap();
+    /// let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR);
+    /// let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, #[allow(deprecated)] xaudio2::DEFAULT_PROCESSOR));
+    /// let xaudio2 = xaudio2.unwrap();
     /// let ext = xaudio2.try_cast::<IXAudio2Extension>().unwrap();
     /// ```
     ///
