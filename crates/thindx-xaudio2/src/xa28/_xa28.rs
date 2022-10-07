@@ -138,7 +138,8 @@ pub mod xaudio2 {
         Processor30,
         Processor31,
         Processor32,
-        XAUDIO2_DEFAULT_PROCESSOR as DEFAULT_PROCESSOR,
+        XAUDIO2_ANY_PROCESSOR       as ANY_PROCESSOR,
+        XAUDIO2_DEFAULT_PROCESSOR   as DEFAULT_PROCESSOR,
     };
 
     #[cfg(feature = "helper-functions")] pub use sys::{

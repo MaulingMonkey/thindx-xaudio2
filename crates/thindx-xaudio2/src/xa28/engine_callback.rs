@@ -89,7 +89,7 @@ impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
 
     mcom::init::mta().expect("mcom::init::mta");
     let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR);
-    let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, #[allow(deprecated)] xaudio2::DEFAULT_PROCESSOR));
+    let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR));
     let xaudio2 = xaudio2.expect("xaudio2::create");
 
     // validate that unregistering never-registered callbacks causes no problems

@@ -153,8 +153,11 @@ pub mod xaudio2 {
         Processor31,
         Processor32,
     };
-    pub use sys::XAUDIO2_USE_DEFAULT_PROCESSOR as USE_DEFAULT_PROCESSOR;
-    #[allow(deprecated)] #[doc(hidden)] pub use sys::XAUDIO2_DEFAULT_PROCESSOR as DEFAULT_PROCESSOR;
+    pub use sys::{
+        XAUDIO2_ANY_PROCESSOR           as ANY_PROCESSOR,
+        XAUDIO2_USE_DEFAULT_PROCESSOR   as USE_DEFAULT_PROCESSOR,
+        XAUDIO2_DEFAULT_PROCESSOR       as DEFAULT_PROCESSOR,
+    };
 
     #[cfg(feature = "helper-functions")] pub use prev::xaudio2::{
         decibels_to_amplitude_ratio,
@@ -173,19 +176,27 @@ pub mod xaudio2 {
     /// In XAudio 2.7 and earlier, XAudio2Create immediately creates a COM object and will fail if COM is not initialized.
     /// In XAudio 2.8 and later, this call may succeed, but basic operations like creating voices will fail with e.g. [CO::E_NOTINITIALIZED].
     ///
-    /// | Argument  | Description                                                                                       |
-    /// | --------- | ------------------------------------------------------------------------------------------------- |
-    /// | flags     | Must be [None]                                                                                    |
-    /// | processor | [Processor1] ..= [Processor32], <strike>[DEFAULT_PROCESSOR],</strike> or [USE_DEFAULT_PROCESSOR]  |
+    /// ### Arguments
+    /// *   `flags`     - Must be [None]
+    /// *   `processor` - The processor(s) to run XAudio2's worker thread(s) on.
+    ///
+    ///     | Value                     | Description   |
+    ///     | ------------------------- | ------------- |
+    ///     | [USE_DEFAULT_PROCESSOR]   | Let XAudio2 choose the core (requires WIN10_19H1+ to avoid [xaudio2::E_INVALID_CALL])  |
+    ///     | [DEFAULT_PROCESSOR]       | Hardcoded SDK default processor (e.g. [Processor1])   |
+    ///     | [ANY_PROCESSOR]           | ⚠️ Spawn threads for every processor/core!  (Excessive!)  |
+    ///     | [Processor1]              | Run specifically on processor/core 1                  |
+    ///     |   ..                      |   ..                                                  |
+    ///     | [Processor32]             | Run specifically on processor/core 32                 |
     ///
     /// ### Example
     /// ```
     /// use thindx_xaudio2::xaudio2_9::{xaudio2, xaudio2::sys::IXAudio2Extension};
     ///
     /// let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR);
-    /// let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, #[allow(deprecated)] xaudio2::DEFAULT_PROCESSOR));
-    /// let xaudio2 = xaudio2.unwrap();
-    /// let ext = xaudio2.try_cast::<IXAudio2Extension>().unwrap();
+    /// let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR));
+    /// let xaudio2 = xaudio2.expect("xaudio2::create");
+    /// let ext = xaudio2.try_cast::<IXAudio2Extension>().expect("try_cast::<IXAudio2Extension>()");
     /// ```
     ///
     /// ### Errors
@@ -194,6 +205,7 @@ pub mod xaudio2 {
     /// *   [HResultError::from_win32]\([ERROR::INVALID_LIBRARY])   - if `XAudio2_9.dll` loading failed to load in a strange way
     /// *   [HResultError::from_win32]\([ERROR::PROC_NOT_FOUND])    - if `XAudio2_9.dll` failed to export `XAudio2CreateWithVersionInformation` or `XAudio2Create`
     /// *   [HResultError::from_win32]\([ERROR::NOINTERFACE])       - if [IXAudio2] was null despite the function "succeeding" (thindx specific)
+    /// *   [xaudio2::E_INVALID_CALL]                               - if `processor` is invalid (e.g. specified [xaudio2::USE_DEFAULT_PROCESSOR] on Windows Server 2019)
     pub fn create(flags: Option<core::convert::Infallible>, processor: Processor) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
         #![allow(non_snake_case)]
 

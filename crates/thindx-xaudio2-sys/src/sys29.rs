@@ -147,12 +147,15 @@ pub use prev::{
     XAUDIO2_ANY_PROCESSOR,
 };
 
-/// This value indicates that XAudio2 will choose the default processor by itself. The actual value chosen may vary depending on the hardware platform.
+/// Allow XAudio2 to choose the processor.
+///
+/// This constant won't work on all platforms (e.g. will fail with [XAUDIO2_E_INVALID_CALL] on Windows Server 2019), so a fallback on [XAUDIO2_DEFAULT_PROCESSOR] is appropriate.
 pub const XAUDIO2_USE_DEFAULT_PROCESSOR : u32 = 0x00000000;
 
-/// This definition is included for backwards compatibilty.
-/// Implementations targeting Games and WIN10_19H1 and later, should use [XAUDIO2_USE_DEFAULT_PROCESSOR] instead to let XAudio2 select the appropriate default processor for the hardware platform.
-#[deprecated = "Implementations targeting Games and WIN10_19H1 and later, should use `XAUDIO2_USE_DEFAULT_PROCESSOR` instead to let XAudio2 select the appropriate default processor for the hardware platform."]
+/// A hardcoded "default" processor (e.g. [Processor1].)
+///
+/// Implementations targeting Games and WIN10_19H1 and later should try [XAUDIO2_USE_DEFAULT_PROCESSOR] first to let XAudio2 select the appropriate default processor for the hardware platform.
+/// That won't work on all platforms (e.g. will fail with [XAUDIO2_E_INVALID_CALL] on Windows Server 2019), so a fallback on [XAUDIO2_DEFAULT_PROCESSOR] is appropriate.
 pub const XAUDIO2_DEFAULT_PROCESSOR : u32 = Processor1;
 
 pub use prev::{
