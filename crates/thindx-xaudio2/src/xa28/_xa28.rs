@@ -154,7 +154,7 @@ pub mod xaudio2 {
     };
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_effect_descriptor)\]
-    /// XAUDIO2_EFFECT_DESCRIPTOR: safe equivalent
+    /// [XAUDIO2_EFFECT_DESCRIPTOR](sys::XAUDIO2_EFFECT_DESCRIPTOR): safe equivalent
     #[derive(Clone)] #[repr(C)] pub struct EffectDescriptor {
         pub effect:             mcom::Rc<winapi::um::unknwnbase::IUnknown>, // XXX: would suggest &IUnknown, but that can be constructed unsoundly from safe code
         pub initial_state:      abibool::bool32,
@@ -173,7 +173,7 @@ pub mod xaudio2 {
     const _ : () = assert!(core::mem::size_of ::<sys::XAUDIO2_EFFECT_DESCRIPTOR>() == core::mem::size_of ::<EffectDescriptor>());
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_send_descriptor)\]
-    /// XAUDIO2_SEND_DESCRIPTOR: safe equivalent
+    /// [XAUDIO2_SEND_DESCRIPTOR](sys::XAUDIO2_SEND_DESCRIPTOR): safe equivalent
     #[repr(C, packed(1))] pub struct SendDescriptor<'a> { // XXX: note that packed here means output_voice isn't 8-byte aligned on x64!
         pub flags:          u32,
         pub output_voice:   &'a sys::IXAudio2Voice, // XXX: mcom::Rc might be saner here?
