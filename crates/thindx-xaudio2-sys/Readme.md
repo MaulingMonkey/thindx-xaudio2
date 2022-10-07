@@ -9,6 +9,9 @@
 
 </center>
 
+## Warnings
+⚠️ `0.0.0-yyyy-mm-dd` does not obey [semver](https://doc.rust-lang.org/cargo/reference/semver.html).<br>
+
 
 
 <h2 name="license">License</h2>
