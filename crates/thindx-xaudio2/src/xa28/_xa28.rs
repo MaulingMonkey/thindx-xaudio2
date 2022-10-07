@@ -6,14 +6,15 @@
 //! *   [XAudio2 Versions: XAudio 2.8 (Windows 8.x)](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-versions#xaudio-28-windows-8x)
 //! *   [XAudio2 and Windows 8](https://walbourn.github.io/xaudio2-and-windows-8/)
 
-mod buffer_wma;
-mod buffer;
 mod context;
 mod engine_callback;
 mod ixaudio2_ext;                   pub use ixaudio2_ext::*;
 mod ixaudio2masteringvoice_ext;     pub use ixaudio2masteringvoice_ext::*;
 mod ixaudio2voice_ext;              pub use ixaudio2voice_ext::*;
 mod ixaudio2sourcevoice_ext;        pub use ixaudio2sourcevoice_ext::*;
+mod source_buffer;                  pub(crate) use source_buffer::*;
+mod loop_count;
+mod sample_range;
 mod source_voice;
 mod voices;
 mod voice_callback;
@@ -41,10 +42,10 @@ mod voice_callback;
 
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
-    pub use super::buffer_wma::*;
-    pub use super::buffer::*;
     pub use super::context::*;
     pub use super::engine_callback::*;
+    pub use super::loop_count::*;
+    pub use super::sample_range::*;
     pub use super::source_voice::*;
     pub use super::voices::*;
     pub use super::voice_callback::*;
@@ -74,15 +75,12 @@ pub mod xaudio2 {
         XAUDIO2_DEFAULT_FREQ_RATIO                      as DEFAULT_FREQ_RATIO,
         XAUDIO2_MAX_FILTER_ONEOVERQ                     as MAX_FILTER_ONEOVERQ,
         XAUDIO2_MAX_FILTER_FREQUENCY                    as MAX_FILTER_FREQUENCY,
-        XAUDIO2_MAX_LOOP_COUNT                          as MAX_LOOP_COUNT,
         XAUDIO2_MAX_INSTANCES                           as MAX_INSTANCES,
         XAUDIO2_MAX_RATIO_TIMES_RATE_XMA_MONO           as MAX_RATIO_TIMES_RATE_XMA_MONO,
         XAUDIO2_MAX_RATIO_TIMES_RATE_XMA_MULTICHANNEL   as MAX_RATIO_TIMES_RATE_XMA_MULTICHANNEL,
         XAUDIO2_COMMIT_NOW                              as COMMIT_NOW,
         XAUDIO2_COMMIT_ALL                              as COMMIT_ALL,
         XAUDIO2_INVALID_OPSET                           as INVALID_OPSET,
-        XAUDIO2_NO_LOOP_REGION                          as NO_LOOP_REGION,
-        XAUDIO2_LOOP_INFINITE                           as LOOP_INFINITE,
         XAUDIO2_DEFAULT_CHANNELS                        as DEFAULT_CHANNELS,
         XAUDIO2_DEFAULT_SAMPLERATE                      as DEFAULT_SAMPLERATE,
         XAUDIO2_DEFAULT_AUDIO_CATEGORY                  as DEFAULT_AUDIO_CATEGORY,

@@ -829,6 +829,13 @@ interfaces! {
         /// *   [IXAudio2SourceVoice::SubmitSourceBuffer: Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer#remarks)
         /// *   [XAUDIO2_BUFFER](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer): [Members](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer#members) + [Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer#remarks)
         /// *   [XAUDIO2_BUFFER_WMA](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma): [Members](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma#members) + [Remarks](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ns-xaudio2-xaudio2_buffer_wma#remarks)
+        ///
+        /// Of particular note:
+        /// *   [IXAudio2VoiceCallback] imposes arbitrary requirements on [XAUDIO2_BUFFER::pContext].<br>
+        ///     E.g. my safe bindings tend to require it point to a `Box::<InternalType>::into_raw(...)`
+        /// *   [XAUDIO2_BUFFER::pContext] must be kept alive until [IXAudio2VoiceCallback::OnBufferEnd].
+        /// *   [XAUDIO2_BUFFER_WMA::pDecodedPacketCumulativeBytes] must be kept alive until [IXAudio2VoiceCallback::OnBufferEnd].
+        /// *   Many index/length bounds and alignment requirements, some of which may be required to avoid undefined behavior.
         pub unsafe fn SubmitSourceBuffer(&self, pBuffer: *const XAUDIO2_BUFFER, pBufferWMA: *const XAUDIO2_BUFFER_WMA) -> HResult;
 
         /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-flushsourcebuffers)\]

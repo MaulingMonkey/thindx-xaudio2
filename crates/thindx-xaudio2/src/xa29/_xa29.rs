@@ -38,15 +38,20 @@ pub mod xaudio2 {
     pub use exports::*;
     #[doc(inline)] pub use prev::xaudio2::{
         // Structs
-        Buffer,
-        BufferWma,
         Context,
         DebugConfiguration,
         EffectDescriptor,
         EngineCallbackWrapper,
         FilterParameters,
+        LoopCount,
+        MasteringVoice,
         PerformanceData,
+        SampleRange,
         SendDescriptor,
+        SourceVoice,
+        SourceVoiceUntyped,
+        SubmixVoice,
+        Voice,
         VoiceCallbackWrapper,
         VoiceDetails,
         VoiceState,

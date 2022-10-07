@@ -27,7 +27,7 @@ fn main() {
         wFormatTag:         WAVE_FORMAT_IEEE_FLOAT,
         nChannels:          1,  // mono
         nSamplesPerSec:     hz, // match output
-        nAvgBytesPerSec:    (size_of::<f32>() as u32) * hz,
+        nAvgBytesPerSec:    (size_of::<[f32; 1]>() as u32) * hz,
         nBlockAlign:        1 * 32 / 8, // channels * bits / bits per byte
         wBitsPerSample:     32,
         cbSize:             size_of::<WAVEFORMATEX>() as _,
@@ -38,15 +38,13 @@ fn main() {
     let a440 = xaudio2.create_source_voice_typed_callback(&waveformatex, 0, xaudio2::DEFAULT_FREQ_RATIO, &callback, None /* defaults to master */, None).expect("a440");
 
     let samples = (0 .. samples).map(|s| f32::sin((s as f32) * 2.0 * PI / (samples as f32))).collect::<Vec<_>>();
-    let samples = xaudio2::Buffer {
-        AudioData:  bytemuck::cast_slice(&samples[..]),
-        LoopCount:  xaudio2::MAX_LOOP_COUNT, // 254
-        Flags:      xaudio2::END_OF_STREAM,
-        ..Default::default()
-    };
     a440.set_volume(0.2, xaudio2::COMMIT_NOW).unwrap(); // 20% pure tone is plenty loud IMO
-    // TODO: XXX: soundness: keep `samples` alive until processed.
-    a440.submit_source_buffer(samples, None).expect("a440.submit_source_buffer(samples, None)");
+    a440.submit_source_buffer(
+        xaudio2::END_OF_STREAM,
+        samples, ..,
+        .., xaudio2::MAX_LOOP_COUNT,
+        (),
+    ).expect("a440.submit_source_buffer");
     a440.start(0, xaudio2::COMMIT_NOW).expect("a440.start()");
     std::thread::sleep(std::time::Duration::from_secs(10));
     panic!("main() end before stream end?");

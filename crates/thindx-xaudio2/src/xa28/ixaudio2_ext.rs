@@ -50,22 +50,6 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
-    fn create_source_voice_no_callback(
-        &self,
-        format:                 &WAVEFORMATEX, // TODO: safer type?
-        flags:                  u32,
-        max_frequency_ratio:    f32,
-        callback:               Option<core::convert::Infallible>,
-        send_list:              Option<&[xaudio2::SendDescriptor]>,
-        effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
-    ) -> Result<xaudio2::SourceVoice<()>, HResultError> {
-        let _ = callback;
-        let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, None, send_list, effect_chain) }?;
-        Ok(unsafe { xaudio2::SourceVoice::from_raw(voice.into_raw().cast()) })
-    }
-
-    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
-    /// Creates and configures a source voice.
     fn create_source_voice_typed_callback<VC: xaudio2::VoiceCallback>(
         &self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
@@ -83,7 +67,7 @@ pub trait IXAudio2Ext {
     /// Creates and configures a source voice.
     ///
     /// ### Safety
-    /// *   `callback` may make demands of [IXAudio2SourceVoiceExt::submit_source_buffer_unchecked]ed [XAUDIO2_BUFFER::pContext]s for soundness purpouses.
+    /// *   `callback` may make demands of submitted [XAUDIO2_BUFFER::pContext]s for soundness purpouses.
     unsafe fn create_source_voice_unchecked(
         &self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
