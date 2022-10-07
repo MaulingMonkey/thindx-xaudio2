@@ -1,3 +1,4 @@
+use crate::util::xaudio2_thread_guard;
 use super::*;
 
 use winresult::*;
@@ -55,18 +56,24 @@ impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
     };
 
     unsafe extern "system" fn on_processing_pass_start(this: *const IXAudio2EngineCallback) {
-        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
-        this.callbacks.on_processing_pass_start()
+        xaudio2_thread_guard(||{
+            let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
+            this.callbacks.on_processing_pass_start()
+        })
     }
 
     unsafe extern "system" fn on_processing_pass_end(this: *const IXAudio2EngineCallback) {
-        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
-        this.callbacks.on_processing_pass_end()
+        xaudio2_thread_guard(||{
+            let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
+            this.callbacks.on_processing_pass_end()
+        })
     }
 
     unsafe extern "system" fn on_critical_error(this: *const IXAudio2EngineCallback, error: HResult) {
-        let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
-        this.callbacks.on_critical_error(error)
+        xaudio2_thread_guard(||{
+            let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
+            this.callbacks.on_critical_error(error)
+        })
     }
 }
 

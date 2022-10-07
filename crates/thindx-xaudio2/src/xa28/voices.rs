@@ -23,6 +23,10 @@ macro_rules! voices {
             ///
             /// (Dropping the voice also implicitly stops/removes it.)
             pub fn destroy_voice(self) {}
+            // "It is invalid to call DestroyVoice from within a callback (that is, IXAudio2EngineCallback or IXAudio2VoiceCallback)."
+            // Currently this cannot happen as Self : !Send.
+            // Consider using https://docs.rs/static_assertions/latest/static_assertions/macro.assert_not_impl_any.html to verify this.
+            // See also: util::xaudio2_thread_guard
 
             /// Create a voice wrapper from a raw pointer.
             ///
