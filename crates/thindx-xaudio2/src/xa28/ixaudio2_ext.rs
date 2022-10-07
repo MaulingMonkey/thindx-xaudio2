@@ -50,17 +50,17 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
-    fn create_source_voice_typed_callback<VC: xaudio2::VoiceCallback>(
-        &self,
+    fn create_source_voice_typed_callback<'xa2cb, VC: xaudio2::VoiceCallback>(
+        &'xa2cb self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
         flags:                  u32,
         max_frequency_ratio:    f32,
-        callback:               &xaudio2::VoiceCallbackWrapper<VC>,
+        callback:               &'xa2cb xaudio2::VoiceCallbackWrapper<VC>,
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
-    ) -> Result<xaudio2::SourceVoice<VC::BufferContext>, HResultError> {
+    ) -> Result<xaudio2::SourceVoice<'xa2cb, VC::BufferContext>, HResultError> {
         let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, Some(callback), send_list, effect_chain) }?;
-        Ok(unsafe { xaudio2::SourceVoice::from_raw(voice.into_raw().cast()) })
+        Ok(unsafe { xaudio2::SourceVoice::from_raw(self._as_ixaudio2(), voice.into_raw().cast()) })
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
@@ -68,15 +68,15 @@ pub trait IXAudio2Ext {
     ///
     /// ### Safety
     /// *   `callback` may make demands of submitted [XAUDIO2_BUFFER::pContext]s for soundness purpouses.
-    unsafe fn create_source_voice_unchecked(
-        &self,
+    unsafe fn create_source_voice_unchecked<'xa2cb>(
+        &'xa2cb self,
         format:                 &WAVEFORMATEX, // TODO: safer type?
         flags:                  u32,
         max_frequency_ratio:    f32,
-        callback:               Option<&IXAudio2VoiceCallback>,
+        callback:               Option<&'xa2cb IXAudio2VoiceCallback>,
         send_list:              Option<&[xaudio2::SendDescriptor]>,
         effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
-    ) -> Result<xaudio2::SourceVoiceUntyped, HResultError> {
+    ) -> Result<xaudio2::SourceVoiceUntyped<'xa2cb>, HResultError> {
         // so much for "unchecked" - more like "less checked" amirite
         if usize::from(format.cbSize) != size_of_val(format) { return Err(E::INVALIDARG) }
 
@@ -101,7 +101,7 @@ pub trait IXAudio2Ext {
             send_list       .as_ref()   .map_or(null(), |c| c),
             effect_chain    .as_ref()   .map_or(null(), |c| c),
         )};
-        let voice = unsafe { xaudio2::SourceVoiceUntyped::from_raw_opt(voice) };
+        let voice = unsafe { xaudio2::SourceVoiceUntyped::from_raw_opt(self._as_ixaudio2(), voice) };
         hr.succeeded()?;
         let voice = voice.ok_or(E::NOINTERFACE)?;
         Ok(voice)
@@ -139,7 +139,7 @@ pub trait IXAudio2Ext {
             send_list       .as_ref().map_or(null(), |c| c),
             effect_chain    .as_ref().map_or(null(), |c| c),
         )};
-        let voice = unsafe { xaudio2::SubmixVoice::from_raw_opt(voice) };
+        let voice = unsafe { xaudio2::SubmixVoice::from_raw_opt(self._as_ixaudio2(), voice) };
         hr.succeeded()?;
         let voice = voice.ok_or(E::NOINTERFACE)?;
         Ok(voice)
@@ -181,7 +181,7 @@ pub trait IXAudio2Ext {
             effect_chain    .as_ref().map_or(null(), |c| c),
             stream_category,
         )};
-        let voice = unsafe { xaudio2::MasteringVoice::from_raw_opt(voice) };
+        let voice = unsafe { xaudio2::MasteringVoice::from_raw_opt(self._as_ixaudio2(), voice) };
         hr.succeeded()?;
         let voice = voice.ok_or(E::NOINTERFACE)?;
         Ok(voice)

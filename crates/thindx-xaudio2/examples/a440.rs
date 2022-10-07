@@ -34,7 +34,6 @@ fn main() {
     };
 
     let callback = xaudio2::VoiceCallbackWrapper::new(VoiceCallback);
-    // TODO: XXX: soundness: ensure `callback` outlives `a440` via type system.
     let a440 = xaudio2.create_source_voice_typed_callback(&waveformatex, 0, xaudio2::DEFAULT_FREQ_RATIO, &callback, None /* defaults to master */, None).expect("a440");
 
     let samples = (0 .. samples).map(|s| f32::sin((s as f32) * 2.0 * PI / (samples as f32))).collect::<Vec<_>>();
