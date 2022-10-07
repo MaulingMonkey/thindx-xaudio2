@@ -329,7 +329,7 @@ pub const HighPassOnePoleFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(5);
     /// Length of the desired loop region in samples, or 0 to loop the entire buffer.
     pub LoopLength: u32,
 
-    /// Number of times to repeat the loop region, or XAUDIO2_LOOP_INFINITE to loop forever.
+    /// Number of times to repeat the loop region, or [XAUDIO2_LOOP_INFINITE] to loop forever.
     pub LoopCount: u32,
 
     /// Context value to be passed back in callbacks.
