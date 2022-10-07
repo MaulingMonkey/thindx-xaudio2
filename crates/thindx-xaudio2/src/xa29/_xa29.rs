@@ -9,6 +9,7 @@
 use super::xaudio2_8 as prev;
 
 mod exports;
+mod ixaudio2extension_ext;          pub use ixaudio2extension_ext::*;
 
 // Might not remain pub
 #[doc(hidden)] pub use xaudio2::sys::{
@@ -191,12 +192,11 @@ pub mod xaudio2 {
     ///
     /// ### Example
     /// ```
-    /// use thindx_xaudio2::xaudio2_9::{xaudio2, xaudio2::sys::IXAudio2Extension};
+    /// use thindx_xaudio2::xaudio2_9::*;
     ///
     /// let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR);
     /// let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR));
     /// let xaudio2 = xaudio2.expect("xaudio2::create");
-    /// let ext = xaudio2.try_cast::<IXAudio2Extension>().expect("try_cast::<IXAudio2Extension>()");
     /// ```
     ///
     /// ### Errors
