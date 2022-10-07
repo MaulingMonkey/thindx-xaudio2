@@ -5,6 +5,9 @@
 #![deprecated = "Not currently implemented.  Prefer XAudio 2.9, which has redists backported to Windows 7 SP 1."]
 #![allow(deprecated)]
 
-/// Raw low level FFI bindings
-///
-pub use thindx_xaudio2_sys::xaudio2_5 as sys;
+/// `XAudio2*` & `XAUDIO2_*`
+pub mod xaudio2 {
+    /// Raw low level FFI bindings
+    ///
+    pub use thindx_xaudio2_sys::xaudio2_5 as sys;
+}
