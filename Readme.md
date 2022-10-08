@@ -14,12 +14,12 @@
 </center>
 
 ## Warnings
+
 ⚠️ `0.0.0-yyyy-mm-dd` does not obey [semver](https://doc.rust-lang.org/cargo/reference/semver.html).<br>
-⚠️ `thindx-xaudio2` is not yet sound.<br>
+⚠️ I'm not yet willing to stabilize these crates APIs.<br>
+⚠️ `thindx-xaudio2` lacks testing and may not yet be sound.<br>
 
-
-
-<h2 name="license">License</h2>
+## License
 
 Licensed under either of
 
@@ -28,15 +28,8 @@ Licensed under either of
 
 at your option.
 
-
-
-<h2 name="contribution">Contribution</h2>
+## Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
-
-
-
-<!-- references -->
-[winapi]:                   http://docs.rs/winapi/0.3/

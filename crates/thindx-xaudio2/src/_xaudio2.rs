@@ -1,5 +1,4 @@
-//! \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-apis-portal)\]
-
+#![doc = include_str!("../Readme.md")]
 #![cfg(windows)]
 #![forbid(unsafe_op_in_unsafe_fn)]
 
