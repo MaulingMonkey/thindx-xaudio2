@@ -12,6 +12,12 @@ use std::panic::*;
 ///
 /// > It is invalid to call DestroyVoice from within a callback (that is, IXAudio2EngineCallback or IXAudio2VoiceCallback).
 /// > <https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2voice-destroyvoice>
+///
+/// CreateSourceVoice is already protected against, supposedly:
+///
+/// > It is invalid to call CreateSourceVoice from within a callback (that is, IXAudio2EngineCallback or IXAudio2VoiceCallback).
+/// > If you call CreateSourceVoice within a callback, it returns XAUDIO2_E_INVALID_CALL.
+/// > <https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice>
 pub(crate) fn xaudio2_thread_guard<R>(f: impl FnOnce() -> R + UnwindSafe) -> R {
     match catch_unwind(f) {
         Ok(r) => r,
