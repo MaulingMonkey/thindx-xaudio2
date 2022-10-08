@@ -61,6 +61,7 @@ pub mod xaudio2 {
 
         // Traits
         EngineCallback,
+        HasPcmWaveFormat,
         VoiceCallback,
     };
 
