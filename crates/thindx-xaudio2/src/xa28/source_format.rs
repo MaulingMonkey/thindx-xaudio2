@@ -53,13 +53,14 @@ impl SourceFormat {
     pub fn float_32bit_stereo   (hz: u32) -> TypedSourceFormat<[f32; 2]> { Self::basic(WAVE_FORMAT_IEEE_FLOAT, hz) }
 
     fn basic<S: Sized, const C: usize>(fmt: u16, hz: u32) -> TypedSourceFormat<[S; C]> {
-        let s_size = if let Ok(n) = u16::try_from(size_of::<S>()) { n } else { panic!("size_of::<Sample>() > u16::MAX") };
+        let sc_size = if let Ok(n) = u16::try_from(size_of::<[S; C]>()) { n } else { panic!("size_of::<[S; C]>() > u16::MAX") };
+        let s_size  = if let Ok(n) = u16::try_from(size_of::< S    >()) { n } else { panic!("size_of::<S>() > u16::MAX") };
         unsafe{TypedSourceFormat::new(SourceFormat::from_wave_format_ex(WAVEFORMATEX{
             wFormatTag:         fmt,
             nChannels:          C.try_into().expect("too many channels"),
             nSamplesPerSec:     hz,
-            nAvgBytesPerSec:    hz * (s_size as u32),
-            nBlockAlign:        s_size,
+            nAvgBytesPerSec:    hz * (sc_size as u32),
+            nBlockAlign:        sc_size,
             wBitsPerSample:     s_size * 8,
             cbSize:             0,
         }))}
@@ -82,7 +83,6 @@ impl<S> TypedSourceFormat<S> {
     /// ### Safety
     /// *   `format` should match the type `S`.
     pub unsafe fn new(format: SourceFormat) -> Self {
-        assert!(format.0.wBitsPerSample as usize == 8 * size_of::<S>());
         Self(format, PhantomData)
     }
 }
