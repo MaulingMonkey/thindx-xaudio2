@@ -2,8 +2,8 @@
 
 # 🦀 thindx-xaudio2[-sys] - FFI for XAudio2 🦀
 
-[![GitHub](https://img.shields.io/github/stars/MaulingMonkey/thindx-xaudio2-sys.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/thindx-xaudio2-sys)
-[![Build Status](https://github.com/MaulingMonkey/thindx-xaudio2-sys/workflows/Rust/badge.svg)](https://github.com/MaulingMonkey/thindx-xaudio2-sys/actions?query=workflow%3Arust)
+[![GitHub](https://img.shields.io/github/stars/MaulingMonkey/thindx-xaudio2.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/thindx-xaudio2)
+[![Build Status](https://github.com/MaulingMonkey/thindx-xaudio2/workflows/Rust/badge.svg)](https://github.com/MaulingMonkey/thindx-xaudio2/actions?query=workflow%3Arust)
 [![License](https://img.shields.io/crates/l/thindx-xaudio2.svg)](https://github.com/MaulingMonkey/thindx-xaudio2)
 
 | crate                                             | crates.io | docs.rs | Description |
