@@ -268,7 +268,7 @@ pub const XAUDIO2_DEFAULT_PROCESSOR     : u32 = Processor1;
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/ne-xaudio2-xaudio2_filter_type)\]
 /// Used in [XAUDIO2_FILTER_PARAMETERS]
 #[derive(Clone, Copy, Debug, Default, Zeroable, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(transparent)] pub struct XAUDIO2_FILTER_TYPE(u32); // TODO: check type
+#[repr(transparent)] pub struct XAUDIO2_FILTER_TYPE(u32);
 
 /// Attenuates frequencies above the cutoff frequency (state-variable filter).
 pub const LowPassFilter : XAUDIO2_FILTER_TYPE = XAUDIO2_FILTER_TYPE(0);
