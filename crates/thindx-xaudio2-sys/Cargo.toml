@@ -55,17 +55,9 @@ bytemuck.features                       = ["derive"]
 winapi.features = [
     # shared
     "guiddef",
-    "minwindef",
-    "ntdef",
-    "windef",
-    "winerror",
+    "mmreg",
 
     # um
     "audiosessiontypes",
-    "errhandlingapi",
-    "libloaderapi",
-    "mmreg",
     "unknwnbase",
-    "windef",
-    "winnt",
 ]
