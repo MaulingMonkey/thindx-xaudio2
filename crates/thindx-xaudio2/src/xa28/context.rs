@@ -1,7 +1,7 @@
 #[allow(unused_imports)] use super::*;
 #[allow(unused_imports)] use super::xaudio2::sys::*;
-use winapi::ctypes::c_void;
 use std::sync::Arc;
+use core::ffi::c_void;
 use core::ops::Deref;
 
 

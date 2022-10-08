@@ -1,8 +1,8 @@
 use super::xaudio2::sys::*;
-use winapi::ctypes::c_void;
 use winapi::shared::guiddef::REFCLSID;
 use winapi::um::unknwnbase::IUnknown;
 use winresult::HResult;
+use core::ffi::c_void;
 
 
 

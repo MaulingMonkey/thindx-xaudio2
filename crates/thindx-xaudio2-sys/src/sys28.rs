@@ -10,12 +10,12 @@
 use abibool::bool32;
 use abistr::*;
 use bytemuck::Zeroable;
-use winapi::ctypes::c_void;
 use winapi::shared::guiddef::GUID;
 use winapi::shared::mmreg::WAVEFORMATEX;
 use winapi::um::audiosessiontypes::{AUDIO_STREAM_CATEGORY, AudioCategory_GameEffects};
 use winapi::um::unknwnbase::{IUnknown, IUnknownVtbl};
 use winresult::*;
+use core::ffi::c_void;
 
 #[doc = "`\"xaudio2_8.dll\"`"] pub const XAUDIO2_DLL    : &'static str              =           "xaudio2_8.dll";
 #[doc = "`\"xaudio2_8.dll\"`"] pub const XAUDIO2_DLL_A  : CStrNonNull<'static, u8 > = cstr8!(   "xaudio2_8.dll");
