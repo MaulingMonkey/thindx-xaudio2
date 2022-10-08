@@ -42,6 +42,7 @@ path                                    = "src/_xaudio2.rs"
 
 
 [target.'cfg(windows)'.dependencies]
+thindx-xaudio2-sys.version              = "0.0.0-git"
 thindx-xaudio2-sys.path                 = "../thindx-xaudio2-sys"
 thindx-xaudio2-sys.default-features     = false
 abibool.version                         = "0.5"
