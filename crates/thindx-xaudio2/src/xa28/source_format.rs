@@ -43,15 +43,6 @@ impl SourceFormat {
     /// [IXAudio2::CreateSourceVoice]-friendly parameter.
     pub fn as_source_format(&self) -> *const WAVEFORMATEX { &self.0 }
 
-    pub fn pcm_8bit_mono        (hz: u32) -> TypedSourceFormat<[u8;  1]> { Self::basic(WAVE_FORMAT_PCM, hz) }
-    pub fn pcm_8bit_stereo      (hz: u32) -> TypedSourceFormat<[u8;  2]> { Self::basic(WAVE_FORMAT_PCM, hz) }
-    pub fn pcm_16bit_mono       (hz: u32) -> TypedSourceFormat<[i16; 1]> { Self::basic(WAVE_FORMAT_PCM, hz) }
-    pub fn pcm_16bit_stereo     (hz: u32) -> TypedSourceFormat<[i16; 2]> { Self::basic(WAVE_FORMAT_PCM, hz) }
-    pub fn pcm_32bit_mono       (hz: u32) -> TypedSourceFormat<[i32; 1]> { Self::basic(WAVE_FORMAT_PCM, hz) }
-    pub fn pcm_32bit_stereo     (hz: u32) -> TypedSourceFormat<[i32; 2]> { Self::basic(WAVE_FORMAT_PCM, hz) }
-    pub fn float_32bit_mono     (hz: u32) -> TypedSourceFormat<[f32; 1]> { Self::basic(WAVE_FORMAT_IEEE_FLOAT, hz) }
-    pub fn float_32bit_stereo   (hz: u32) -> TypedSourceFormat<[f32; 2]> { Self::basic(WAVE_FORMAT_IEEE_FLOAT, hz) }
-
     fn basic<S: Sized, const C: usize>(fmt: u16, hz: u32) -> TypedSourceFormat<[S; C]> {
         let sc_size = if let Ok(n) = u16::try_from(size_of::<[S; C]>()) { n } else { panic!("size_of::<[S; C]>() > u16::MAX") };
         let s_size  = if let Ok(n) = u16::try_from(size_of::< S    >()) { n } else { panic!("size_of::<S>() > u16::MAX") };
@@ -86,3 +77,24 @@ impl<S> TypedSourceFormat<S> {
         Self(format, PhantomData)
     }
 }
+
+impl<S: HasPcmWaveFormat, const C: usize> TypedSourceFormat<[S; C]> {
+    /// [Pulse-code modulation](https://en.wikipedia.org/wiki/Pulse-code_modulation) format, implemented for [TypedSourceFormat]<\[[u8] | [i16] | [i32] | [f32]; 1 \| 2\]>.
+    ///
+    /// N.B. 8-bit is unsigned, but 16 and 32 bit are *signed*
+    pub fn pcm(hz: u32) -> Self { SourceFormat::basic(S::pcm_wave_format(), hz) }
+}
+
+/// [u8] | [i16] | [i32] | [f32]
+///
+/// N.B. 8-bit is unsigned, but 16 and 32 bit are *signed*
+pub unsafe trait HasPcmWaveFormat {
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatex#remarks)\]
+    /// WAVE_FORMAT_\* tag values
+    fn pcm_wave_format() -> u16;
+}
+
+unsafe impl HasPcmWaveFormat for u8     { fn pcm_wave_format() -> u16 { WAVE_FORMAT_PCM } }
+unsafe impl HasPcmWaveFormat for i16    { fn pcm_wave_format() -> u16 { WAVE_FORMAT_PCM } }
+unsafe impl HasPcmWaveFormat for i32    { fn pcm_wave_format() -> u16 { WAVE_FORMAT_PCM } }
+unsafe impl HasPcmWaveFormat for f32    { fn pcm_wave_format() -> u16 { WAVE_FORMAT_IEEE_FLOAT } }

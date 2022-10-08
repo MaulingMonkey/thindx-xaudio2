@@ -20,7 +20,7 @@ fn main() {
     let hz = 44100;
     let samples = hz / 440; // https://en.wikipedia.org/wiki/A440_(pitch_standard)
 
-    let format = xaudio2::SourceFormat::float_32bit_stereo(hz);
+    let format = xaudio2::TypedSourceFormat::pcm(hz);
     let callback = xaudio2::VoiceCallbackWrapper::new(VoiceCallback);
     let a440 = xaudio2.create_source_voice_typed_callback(&format, 0, xaudio2::DEFAULT_FREQ_RATIO, &callback, None /* defaults to master */, None).expect("a440");
 
