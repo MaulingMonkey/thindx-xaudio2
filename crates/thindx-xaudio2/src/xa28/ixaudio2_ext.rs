@@ -148,7 +148,7 @@ pub trait IXAudio2Ext {
     /// | input_channels    | [xaudio2::DEFAULT_CHANNELS]
     /// | input_sample_rate | [xaudio2::DEFAULT_SAMPLERATE]
     /// | flags             | 0
-    /// | device_id         | None
+    /// | device_id         | ()
     /// | effect_chain      | None
     /// | stream_category   | [xaudio2::DEFAULT_AUDIO_CATEGORY]
     fn create_mastering_voice(
