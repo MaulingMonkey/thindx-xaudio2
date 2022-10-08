@@ -1,3 +1,5 @@
+#[allow(unused_imports)] use super::*;
+
 use winapi::shared::mmreg::*;
 
 use core::marker::PhantomData;
