@@ -1,10 +1,7 @@
 //! Generate an [A440](https://en.wikipedia.org/wiki/A440_(pitch_standard)) tone for a short duration.
 
 use thindx_xaudio2::xaudio2_9::*;
-
-use winapi::shared::mmreg::{WAVEFORMATEX, WAVE_FORMAT_IEEE_FLOAT};
 use core::f32::consts::PI;
-use core::mem::size_of;
 
 
 
@@ -20,25 +17,14 @@ fn main() {
         0, (), None, xaudio2::DEFAULT_AUDIO_CATEGORY
     ).expect("create_mastering_voice");
 
-    //let hz = master.get_voice_details().InputSampleRate;
     let hz = 44100;
     let samples = hz / 440; // https://en.wikipedia.org/wiki/A440_(pitch_standard)
 
-    // XXX: yes, definitely replace WAVEFORMATEX (see also WAVEFORMATEXTENSIBLE)
-    let waveformatex = WAVEFORMATEX {
-        wFormatTag:         WAVE_FORMAT_IEEE_FLOAT,
-        nChannels:          1,  // mono
-        nSamplesPerSec:     hz, // match output
-        nAvgBytesPerSec:    (size_of::<[f32; 1]>() as u32) * hz,
-        nBlockAlign:        1 * 32 / 8, // channels * bits / bits per byte
-        wBitsPerSample:     32,
-        cbSize:             size_of::<WAVEFORMATEX>() as _,
-    };
-
+    let format = xaudio2::SourceFormat::float_32bit_mono(hz);
     let callback = xaudio2::VoiceCallbackWrapper::new(VoiceCallback);
-    let a440 = xaudio2.create_source_voice_typed_callback(&waveformatex, 0, xaudio2::DEFAULT_FREQ_RATIO, &callback, None /* defaults to master */, None).expect("a440");
+    let a440 = xaudio2.create_source_voice_typed_callback(&format, 0, xaudio2::DEFAULT_FREQ_RATIO, &callback, None /* defaults to master */, None).expect("a440");
 
-    let samples = (0 .. samples).map(|s| f32::sin((s as f32) * 2.0 * PI / (samples as f32))).collect::<Vec<_>>();
+    let samples = (0 .. samples).map(|s| [f32::sin((s as f32) * 2.0 * PI / (samples as f32))]).collect::<Vec<_>>();
     a440.set_volume(0.2, xaudio2::COMMIT_NOW).unwrap(); // 20% pure tone is plenty loud IMO
     a440.submit_source_buffer(
         xaudio2::END_OF_STREAM,

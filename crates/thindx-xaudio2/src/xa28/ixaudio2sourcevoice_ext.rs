@@ -12,15 +12,15 @@ use core::ptr::null;
 
 
 /// [IXAudio2SourceVoice], but with a typed context for callbacks / submitted source buffers.
-#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<Context: Send + Sync + Sized + 'static>(IXAudio2SourceVoice, PhantomData<Context>);
-impl<Context: Send + Sync + Sized + 'static> core::ops::Deref for IXAudio2SourceVoiceTyped<Context> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
-impl<Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Context> {
+#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<Sample, Context: Send + Sync + Sized + 'static>(IXAudio2SourceVoice, PhantomData<(Sample,Context)>);
+impl<Sample, Context: Send + Sync + Sized + 'static> core::ops::Deref for IXAudio2SourceVoiceTyped<Sample, Context> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
+impl<Sample, Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Sample, Context> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
     /// Adds a new audio buffer to this voice's input queue.
     pub fn submit_source_buffer(
         &self,
         flags:          u32,
-        audio_data:     impl Into<Arc<[f32]>>,
+        audio_data:     impl Into<Arc<[Sample]>>,
         play_range:     impl Into<xaudio2::SampleRange>,
         loop_range:     impl Into<xaudio2::SampleRange>,
         loop_count:     impl Into<xaudio2::LoopCount>,
@@ -54,7 +54,20 @@ impl<Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Context> {
             }
         }
 
-        b.pContext = Box::into_raw(Box::new(SourceBuffer::<Context> { audio_data, context })).cast();
+        b.pContext = Box::into_raw(Box::new(SourceBuffer::<Context> {
+            context,
+            audio_len:  audio_data.len(),
+            audio_data: {
+                let raw : *const [Sample] = Arc::into_raw(audio_data);
+                let raw : *const Sample = unsafe { &*raw }.as_ptr();
+                raw.cast()
+            },
+            audio_free: |data, len| {
+                let audio_data = unsafe { core::slice::from_raw_parts(data as *const Sample, len) };
+                let audio_data = unsafe { Arc::from_raw(audio_data) };
+                drop(audio_data);
+            },
+        })).cast();
 
         unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
     }

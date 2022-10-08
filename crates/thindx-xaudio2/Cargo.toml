@@ -60,8 +60,13 @@ abibool.features                        = ["bytemuck"]
 abistr.features                         = ["bytemuck"]
 bytemuck.features                       = ["derive"]
 winapi.features = [
+    "std",
+    "impl-debug",
+    "impl-default",
+
     # shared
     "guiddef",
+    "ksmedia",
     "minwindef",
     "ntdef",
     "windef",

@@ -118,7 +118,8 @@ impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
         xaudio2_thread_guard(||{
             let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
             let buffer_context = *unsafe { Box::from_raw(buffer_context as *mut SourceBuffer<VC::BufferContext>) };
-            this.callbacks.on_buffer_end(buffer_context.context)
+            this.callbacks.on_buffer_end(buffer_context.context);
+            unsafe { (buffer_context.audio_free)(buffer_context.audio_data, buffer_context.audio_len) }
         })
     }
 
