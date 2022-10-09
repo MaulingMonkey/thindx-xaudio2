@@ -56,22 +56,7 @@ impl<Sample, Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Sa
 
         b.pContext = Box::into_raw(Box::new(SourceBuffer::<Context> {
             context,
-            audio_len:  audio_data.len(),
-            audio_data: {
-                // ⚠️ WARNING: easy to muck up provenance of ArcInner<[Sample]> here.
-                let raw : *const [Sample] = Arc::into_raw(audio_data);
-                let raw : *const Sample = unsafe { (*raw).as_ptr() };
-                raw.cast()
-            },
-            audio_free: |data, len| {
-                // 🐞 BUG: core::slice::from_raw_parts here incorrectly narrows provenance from ArcInner<[Sample]> to [Sample] here.
-                // However, core::ptr::from_raw_parts is not yet stable:    https://github.com/rust-lang/rust/issues/81513
-                // Local tracking issue:                                    https://github.com/MaulingMonkey/thindx-xaudio2/issues/18
-                let audio_data : *const [Sample] = unsafe { core::slice::from_raw_parts(data as *const Sample, len) };
-
-                let audio_data = unsafe { Arc::from_raw(audio_data) };
-                drop(audio_data);
-            },
+            _audio_data: Box::new(audio_data),
         })).cast();
 
         unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
