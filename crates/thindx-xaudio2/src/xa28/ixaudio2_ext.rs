@@ -63,6 +63,21 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
+    fn create_source_voice_dynamic<'xa2cb, VC: xaudio2::VoiceCallback>(
+        &'xa2cb self,
+        format:                 &xaudio2::SourceFormat,
+        flags:                  u32,
+        max_frequency_ratio:    f32,
+        callback:               &'xa2cb xaudio2::VoiceCallbackWrapper<VC>,
+        send_list:              Option<&[xaudio2::SendDescriptor]>,
+        effect_chain:           Option<&[xaudio2::EffectDescriptor]>,
+    ) -> Result<xaudio2::SourceVoice<'xa2cb, (), VC::BufferContext>, HResultError> {
+        let voice = unsafe { self.create_source_voice_unchecked(format, flags, max_frequency_ratio, Some(callback), send_list, effect_chain) }?;
+        Ok(unsafe { xaudio2::SourceVoice::from_raw(self._as_ixaudio2(), voice.into_raw().cast()) })
+    }
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
+    /// Creates and configures a source voice.
     ///
     /// ### Safety
     /// *   `callback` may make demands of submitted [XAUDIO2_BUFFER::pContext]s for soundness purpouses.

@@ -26,6 +26,9 @@ impl<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'stat
         loop_count:     impl Into<xaudio2::LoopCount>,
         context:        Context,
     ) -> Result<HResultSuccess, HResultError> {
+        // XXX: enforce with a new `Self` type instead for easier refactoring / compile time avoidance of this assert
+        assert!(std::mem::size_of::<Sample>() > 0, "IXAudio2SourceVoiceTyped<S, ...>::submit_source_buffer isn't intended for S : ZST");
+
         let audio_data  = audio_data.into();
         let play_range  = play_range.into();
         let loop_range  = loop_range.into();
@@ -61,6 +64,58 @@ impl<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'stat
 
         unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
     }
+
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
+    /// Adds a new audio buffer to this voice's input queue.
+    ///
+    /// ### Safety
+    /// It is up to the caller to ensure `audio_data` correctly matches the source voice's format.
+    /// Mismatches in sample rate are likely fairly harmless (resulting in speed+pitch up/down).
+    /// However, getting the sample *type* wrong could lead to much more sinister outcomes involving undefined behavior.
+    pub unsafe fn submit_source_buffer_blob_unchecked<AudioData: AsRef<[u8]> + Send + Sized + 'static>(
+        &self,
+        flags:          u32,
+        audio_data:     Box<AudioData>,
+        play_range:     impl Into<xaudio2::SampleRange>,
+        loop_range:     impl Into<xaudio2::SampleRange>,
+        loop_count:     impl Into<xaudio2::LoopCount>,
+        context:        Context,
+    ) -> Result<HResultSuccess, HResultError> {
+        let play_range  = play_range.into();
+        let loop_range  = loop_range.into();
+        let loop_count  = loop_count.into();
+
+        let mut b = XAUDIO2_BUFFER {
+            Flags:      flags,
+            AudioBytes: size_of_val(&audio_data.as_ref().as_ref()[..]).try_into().map_err(|_| E::INVALIDARG)?,
+            pAudioData: audio_data.as_ref().as_ref().as_ptr().cast(),
+            .. Default::default()
+        };
+
+        match play_range.into_raw_xaudio2_begin_length() {
+            None                    => return Ok(S::OK),
+            Some((begin, length))   => {
+                b.PlayBegin     = begin;
+                b.PlayLength    = length;
+            },
+        }
+
+        if loop_count.0 != 0 {
+            if let Some((begin, length)) = loop_range.into_raw_xaudio2_begin_length() {
+                b.LoopBegin     = begin;
+                b.LoopLength    = length;
+                b.LoopCount     = loop_count.0.into();
+            }
+        }
+
+        b.pContext = Box::into_raw(Box::new(SourceBuffer::<Context> {
+            context,
+            _audio_data: audio_data,
+        })).cast();
+
+        unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
+    }
+
 }
 
 

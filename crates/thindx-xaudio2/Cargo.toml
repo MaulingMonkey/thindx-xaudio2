@@ -62,3 +62,9 @@ winapi.features = [
     "mmreg",
     "unknwnbase",
 ]
+
+[target.'cfg(windows)'.dev-dependencies]
+winapi.version  = "0.3.9"
+winapi.features = [
+    "impl-default",
+]

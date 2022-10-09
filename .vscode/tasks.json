@@ -61,5 +61,13 @@
             "label":            "cargo build --package thindx-xaudio2 --example a440 --release",
             "command":          "cargo build --package thindx-xaudio2 --example a440 --release",
         },
+        {
+            "label":            "cargo build --package thindx-xaudio2 --example play-wav",
+            "command":          "cargo build --package thindx-xaudio2 --example play-wav",
+        },
+        {
+            "label":            "cargo build --package thindx-xaudio2 --example play-wav --release",
+            "command":          "cargo build --package thindx-xaudio2 --example play-wav --release",
+        },
     ]
 }
