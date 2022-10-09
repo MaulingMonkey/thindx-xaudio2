@@ -48,7 +48,7 @@ pub trait IXAudio2Ext {
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2-createsourcevoice)\]
     /// Creates and configures a source voice.
-    fn create_source_voice_typed_callback<'xa2cb, S, VC: xaudio2::VoiceCallback>(
+    fn create_source_voice_typed_callback<'xa2cb, S: Send + Sync + Sized + 'static, VC: xaudio2::VoiceCallback>(
         &'xa2cb self,
         format:                 &xaudio2::TypedSourceFormat<S>,
         flags:                  u32,

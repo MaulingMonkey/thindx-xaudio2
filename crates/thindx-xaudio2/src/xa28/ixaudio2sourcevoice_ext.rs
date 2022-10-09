@@ -12,9 +12,9 @@ use core::ptr::null;
 
 
 /// [IXAudio2SourceVoice], but with a typed context for callbacks / submitted source buffers.
-#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<Sample, Context: Send + Sync + Sized + 'static>(IXAudio2SourceVoice, PhantomData<(Sample,Context)>);
-impl<Sample, Context: Send + Sync + Sized + 'static> core::ops::Deref for IXAudio2SourceVoiceTyped<Sample, Context> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
-impl<Sample, Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Sample, Context> {
+#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static>(IXAudio2SourceVoice, PhantomData<(Sample,Context)>);
+impl<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> core::ops::Deref for IXAudio2SourceVoiceTyped<Sample, Context> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
+impl<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Sample, Context> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
     /// Adds a new audio buffer to this voice's input queue.
     pub fn submit_source_buffer(

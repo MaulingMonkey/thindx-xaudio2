@@ -7,12 +7,12 @@ use core::ptr::NonNull;
 
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\] [IXAudio2SourceVoice]
-pub struct SourceVoice<'xa2, Sample, Context: Send + Sync + Sized + 'static> {
+pub struct SourceVoice<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> {
     factory:    PhantomData<&'xa2 IXAudio2>,
     voice:      NonNull<IXAudio2SourceVoiceTyped<Sample, Context>>,
 }
 
-impl<'xa2, Sample, Context: Send + Sync + Sized + 'static> SourceVoice<'xa2, Sample, Context> {
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> SourceVoice<'xa2, Sample, Context> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-destroyvoice)\]
     /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
     ///
@@ -54,6 +54,6 @@ impl<'xa2, Sample, Context: Send + Sync + Sized + 'static> SourceVoice<'xa2, Sam
     pub fn as_raw(&self) -> *const IXAudio2SourceVoiceTyped<Sample, Context> { self.voice.as_ptr() }
 }
 
-impl<'xa2, Sample, Context: Send + Sync + Sized + 'static> Deref      for SourceVoice<'xa2, Sample, Context> { fn deref    (&    self) -> &    Self::Target { unsafe { self.voice.as_ref() } } type Target = IXAudio2SourceVoiceTyped<Sample, Context>; }
-impl<'xa2, Sample, Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoice<'xa2, Sample, Context> { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { self.voice.as_mut() } } }
-impl<'xa2, Sample, Context: Send + Sync + Sized + 'static> Drop       for SourceVoice<'xa2, Sample, Context> { fn drop(&mut self) { unsafe { (*self.voice.as_ptr()).DestroyVoice() } } }
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> Deref      for SourceVoice<'xa2, Sample, Context> { fn deref    (&    self) -> &    Self::Target { unsafe { self.voice.as_ref() } } type Target = IXAudio2SourceVoiceTyped<Sample, Context>; }
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoice<'xa2, Sample, Context> { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { self.voice.as_mut() } } }
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> Drop       for SourceVoice<'xa2, Sample, Context> { fn drop(&mut self) { unsafe { (*self.voice.as_ptr()).DestroyVoice() } } }
