@@ -64,8 +64,8 @@ fn main() {
 
     mcom::init::mta().expect("unable to initialize XAudio2: failed to initialize COM");
 
-    let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR);
-    let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR));
+    let xaudio2 = unsafe { xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR) };
+    let xaudio2 = xaudio2.or_else(|_| unsafe { xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR) });
     let xaudio2 = xaudio2.expect("unable to initialize XAudio2: failed to create main factory");
 
     let master = xaudio2.create_mastering_voice(xaudio2::DEFAULT_CHANNELS, xaudio2::DEFAULT_SAMPLERATE, 0, (), None, xaudio2::DEFAULT_AUDIO_CATEGORY);

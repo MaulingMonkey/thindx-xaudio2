@@ -180,6 +180,31 @@ pub mod xaudio2 {
     /// In XAudio 2.7 and earlier, XAudio2Create immediately creates a COM object and will fail if COM is not initialized.
     /// In XAudio 2.8 and later, this call may succeed, but basic operations like creating voices will fail with e.g. [CO::E_NOTINITIALIZED].
     ///
+    /// ### Safety
+    /// This function is fairly safe.  However:
+    ///
+    /// *   It might be unsound to exit the process with the [IXAudio2] instance - and it's associated worker thread(s) - still alive.
+    ///     See [thindx-xaudio2#20](https://github.com/MaulingMonkey/thindx-xaudio2/issues/20) for (scant) details.
+    ///
+    /// *   I'm not 100% confident my abstractions are as sound as possible just yet.
+    ///     I need to write a lot more integration and unit tests before I feel bold enough to make such a claim.
+    ///
+    /// *   XAudio2 is a large API, and is likely to contain edge cases resulting in undefined behavior that are impossible for this wrapper to fully guard against:
+    ///     *   Dereferences of null, uninitialized, or otherwise invalid pointers due to improper allocation failure handling when out of memory or address space.
+    ///     *   Integer overflows of internal tracking counters resulting in buffer overflows on worker threads.
+    ///     *   Uninitializing COM out from underneath XAudio2.
+    ///         While I've marked [mcom::init::uninitialize] `unsafe`,
+    ///         and `windows::*::CoUninitialize` is also `unsafe`,
+    ///         I could see someone making a "safe" scoped COM scope abstraction that this crate is ignorant of.
+    ///     *   Someone providing their own unsound proxy `xaudio2_9[redist].dll`s
+    ///
+    /// As such, this function is marked `unsafe` - as a small token roadbump and acknowledgement of all of the above.
+    ///
+    /// While one could argue this makes the crate as a whole "technically sound", don't let that deter you from
+    /// [filing issues](https://github.com/MaulingMonkey/thindx-xaudio2/issues) if you encounter undefined behavior
+    /// without using other `unsafe` code, even if you're not sure this crate can guard against it reasonably.
+    /// Worst case scenario, I'll close it as an out-of-scope xaudio2_9.dll bug.
+    ///
     /// ### Arguments
     /// *   `flags`     - Must be [None]
     /// *   `processor` - The processor(s) to run XAudio2's worker thread(s) on.
@@ -197,8 +222,8 @@ pub mod xaudio2 {
     /// ```
     /// use thindx_xaudio2::xaudio2_9::*;
     ///
-    /// let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR);
-    /// let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR));
+    /// let xaudio2 = unsafe { xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR) };
+    /// let xaudio2 = xaudio2.or_else(|_| unsafe { xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR) });
     /// let xaudio2 = xaudio2.expect("xaudio2::create");
     /// ```
     ///
@@ -209,7 +234,7 @@ pub mod xaudio2 {
     /// *   [HResultError::from_win32]\([ERROR::PROC_NOT_FOUND])    - if `XAudio2_9.dll` failed to export `XAudio2CreateWithVersionInformation` or `XAudio2Create`
     /// *   [HResultError::from_win32]\([ERROR::NOINTERFACE])       - if [IXAudio2] was null despite the function "succeeding" (thindx specific)
     /// *   [xaudio2::E_INVALID_CALL]                               - if `processor` is invalid (e.g. specified [xaudio2::USE_DEFAULT_PROCESSOR] on Windows Server 2019)
-    pub fn create(flags: Option<core::convert::Infallible>, processor: Processor) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
+    pub unsafe fn create(flags: Option<core::convert::Infallible>, processor: Processor) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
         #![allow(non_snake_case)]
 
         let exports = match Exports::from_default_path_cached() {

@@ -11,8 +11,8 @@ impl IXAudio2ExtensionExt for IXAudio2Extension { fn _as_ixaudio2(&self) -> &IXA
 /// use thindx_xaudio2::xaudio2_9::*;
 /// let ci = std::env::var_os("CI").is_some();
 ///
-/// let xaudio2 = xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR);
-/// let xaudio2 = xaudio2.or_else(|_| xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR));
+/// let xaudio2 = unsafe { xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR) };
+/// let xaudio2 = xaudio2.or_else(|_| unsafe { xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR) });
 /// let xaudio2 = xaudio2.expect("xaudio2::create");
 /// if let Some(ext) = xaudio2.try_cast::<IXAudio2Extension>() {
 ///     # if ci {
