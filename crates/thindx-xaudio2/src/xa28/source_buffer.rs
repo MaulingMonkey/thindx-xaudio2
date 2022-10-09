@@ -10,5 +10,5 @@ use std::any::Any;
 /// *   [VoiceCallback::BufferContext] parameters
 pub(crate) struct SourceBuffer<Context: Send + Sync + Sized + 'static> {
     pub(crate) context:     Context,
-    pub(crate) _audio_data: Box<dyn Any>, // for keepalive only
+    pub(crate) _audio_data: Box<dyn Any + Send>, // for keepalive only
 }
