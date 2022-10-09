@@ -40,7 +40,6 @@ thindx-xaudio2-sys.path                 = "../thindx-xaudio2-sys"
 thindx-xaudio2-sys.default-features     = false
 abibool.version                         = "0.5"
 abistr.version                          = "0.2.0-rc3" # const abistr::cstr!("...")
-bugsalot                                = "0.2"
 bytemuck.version                        = "1"
 lazy_static                             = "1"
 minidl                                  = "0.1.3"

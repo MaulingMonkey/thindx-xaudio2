@@ -4,7 +4,7 @@
 
 pub use thindx_xaudio2_sys as sys;
 
-#[path = "util/_util.rs"] mod util;
+#[path = "util/_util.rs"] mod util; pub use util::*;
 #[path = "xa20.rs"] pub mod xaudio2_0;
 #[path = "xa21.rs"] pub mod xaudio2_1;
 #[path = "xa22.rs"] pub mod xaudio2_2;

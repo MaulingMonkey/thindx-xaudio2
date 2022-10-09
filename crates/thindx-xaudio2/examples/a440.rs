@@ -7,6 +7,7 @@ use core::f32::consts::PI;
 
 fn main() {
     mcom::init::mta().expect("mcom::init::mta");
+    unsafe { thindx_xaudio2::disable_catch_unwind() };
     let xaudio2 = unsafe { xaudio2::create(None, None) }.expect("xaudio2::create");
     xaudio2.register_for_callbacks_leak(EngineCallback).expect("register_for_callbacks_leak");
 

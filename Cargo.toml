@@ -2,9 +2,3 @@
 
 [workspace]
 members = ["crates/*"]
-
-[profile.dev]
-panic   = "abort"
-
-[profile.release]
-panic   = "abort"

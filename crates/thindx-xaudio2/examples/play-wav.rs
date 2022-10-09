@@ -64,6 +64,7 @@ fn main() {
 
     mcom::init::mta().expect("unable to initialize XAudio2: failed to initialize COM");
 
+    unsafe { thindx_xaudio2::disable_catch_unwind() };
     let xaudio2 = unsafe { xaudio2::create(None, None) };
     let xaudio2 = xaudio2.expect("unable to initialize XAudio2: failed to create main factory");
 
