@@ -239,6 +239,8 @@ pub mod xaudio2 {
     /// *   [HResultError::from_win32]\([ERROR::PROC_NOT_FOUND])    - if `XAudio2_9.dll` failed to export `XAudio2CreateWithVersionInformation` or `XAudio2Create`
     /// *   [HResultError::from_win32]\([ERROR::NOINTERFACE])       - if [IXAudio2] was null despite the function "succeeding" (thindx specific)
     /// *   [xaudio2::E_INVALID_CALL]                               - if `processor` is invalid (e.g. specified [xaudio2::USE_DEFAULT_PROCESSOR] on Windows Server 2019)
+    ///
+    /// [HResultError::from_win32]: https://docs.rs/winresult/latest/winresult/struct.HResultError.html#method.from_win32
     pub unsafe fn create(flags: Option<core::convert::Infallible>, processor: impl Into<Option<Processor>>) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
         #![allow(non_snake_case)]
 
