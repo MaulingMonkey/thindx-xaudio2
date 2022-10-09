@@ -48,7 +48,7 @@
             "internalConsoleOptions":   "openOnSessionStart",
             "preLaunchTask":            "cargo build --package thindx-xaudio2 --example play-wav",
             "program":                  "${workspaceFolder}/target/debug/examples/play-wav",
-            "args":                     ["C:\\Windows\\Media\\notify.wav"],
+            "args":                     ["C:\\Windows\\Media\\notify.wav", "90%"],
             "cwd":                      "${workspaceFolder}",
             "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
             "windows": {
@@ -68,7 +68,7 @@
             "internalConsoleOptions":   "openOnSessionStart",
             "preLaunchTask":            "cargo build --package thindx-xaudio2 --example play-wav --release",
             "program":                  "${workspaceFolder}/target/release/examples/play-wav",
-            "args":                     ["C:\\Windows\\Media\\notify.wav"],
+            "args":                     ["C:\\Windows\\Media\\notify.wav", "90%"],
             "cwd":                      "${workspaceFolder}",
             "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
             "windows": {

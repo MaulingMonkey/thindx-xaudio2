@@ -20,7 +20,15 @@ use std::mem::*;
 fn main() {
     let mut args = std::env::args_os();
     let _exe = args.next();
-    let wav = args.next().expect("expected usage: play-wav.exe \"C:\\Windows\\Media\\notify.wav\"");
+    let wav = args.next().expect("expected usage: play-wav.exe \"C:\\Windows\\Media\\notify.wav\" 100%");
+    let vol = if let Some(vol) = args.next() {
+        let vol = vol.into_string().expect("invalid volume: invalid utf16");
+        let vol = vol.strip_suffix("%").unwrap_or(&vol);
+        let vol = vol.parse::<f32>().expect("invalid volume: not a number");
+        vol / 100.0
+    } else {
+        1.0
+    };
 
     let wav = std::fs::read(wav).expect("unable to open file");
     let (riff, wave, mut wave_data, _after_wave_data) = riff_chunk_type(&wav).expect("invalid .wav file: unable to read riff chunk header");
@@ -62,7 +70,7 @@ fn main() {
 
     let master = xaudio2.create_mastering_voice(xaudio2::DEFAULT_CHANNELS, xaudio2::DEFAULT_SAMPLERATE, 0, (), None, xaudio2::DEFAULT_AUDIO_CATEGORY);
     let master = master.expect("unable to initialize XAudio2: failed to create mastering voice");
-    let _ = master.set_volume(0.4, 0);
+    let _ = master.set_volume(vol, 0);
 
     struct ExitOnBufferEnd;
     impl xaudio2::VoiceCallback for ExitOnBufferEnd {
