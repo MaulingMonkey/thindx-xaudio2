@@ -211,6 +211,7 @@ pub mod xaudio2 {
     ///
     ///     | Value                     | Description   |
     ///     | ------------------------- | ------------- |
+    ///     | [None]                    | Try [USE_DEFAULT_PROCESSOR] first, then try [DEFAULT_PROCESSOR] (no `USE_` prefix) if that didn't work.
     ///     | [USE_DEFAULT_PROCESSOR]   | Let XAudio2 choose the core (requires WIN10_19H1+ to avoid [xaudio2::E_INVALID_CALL])  |
     ///     | [DEFAULT_PROCESSOR]       | Hardcoded SDK default processor (e.g. [Processor1])   |
     ///     | [ANY_PROCESSOR]           | ⚠️ Spawn threads for every processor/core!  (Excessive!)  |
@@ -222,9 +223,13 @@ pub mod xaudio2 {
     /// ```
     /// use thindx_xaudio2::xaudio2_9::*;
     ///
-    /// let xaudio2 = unsafe { xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR) };
-    /// let xaudio2 = xaudio2.or_else(|_| unsafe { xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR) });
-    /// let xaudio2 = xaudio2.expect("xaudio2::create");
+    /// // Probably what you want:
+    /// let xaudio2 = unsafe { xaudio2::create(None, None) }.unwrap();
+    ///
+    /// // Alternatively:
+    /// let xaudio2 = unsafe { xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR) }; // fails on e.g. Windows Server 2019
+    /// let xaudio2 = unsafe { xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR) }.unwrap(); // succeeds
+    /// let xaudio2 = unsafe { xaudio2::create(None, Some(xaudio2::DEFAULT_PROCESSOR)) }.unwrap();
     /// ```
     ///
     /// ### Errors
@@ -234,7 +239,7 @@ pub mod xaudio2 {
     /// *   [HResultError::from_win32]\([ERROR::PROC_NOT_FOUND])    - if `XAudio2_9.dll` failed to export `XAudio2CreateWithVersionInformation` or `XAudio2Create`
     /// *   [HResultError::from_win32]\([ERROR::NOINTERFACE])       - if [IXAudio2] was null despite the function "succeeding" (thindx specific)
     /// *   [xaudio2::E_INVALID_CALL]                               - if `processor` is invalid (e.g. specified [xaudio2::USE_DEFAULT_PROCESSOR] on Windows Server 2019)
-    pub unsafe fn create(flags: Option<core::convert::Infallible>, processor: Processor) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
+    pub unsafe fn create(flags: Option<core::convert::Infallible>, processor: impl Into<Option<Processor>>) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
         #![allow(non_snake_case)]
 
         let exports = match Exports::from_default_path_cached() {
@@ -254,25 +259,36 @@ pub mod xaudio2 {
             }
         };
 
-        let mut xaudio2 = core::ptr::null_mut();
         let _ = flags;
-        let flags = 0;
-        const NTDDI_VERSION : u32 = 0x0A00000C; // NTDDI_WIN10_NI - see C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\sdkddkver.h
-
-        let hr = if let Some(XAudio2CreateWithVersionInfo) = exports.XAudio2CreateWithVersionInfo {
-            unsafe { XAudio2CreateWithVersionInfo(&mut xaudio2, flags, processor, NTDDI_VERSION) }
-        } else if let Some(XAudio2Create) = exports.XAudio2Create {
-            unsafe { XAudio2Create(&mut xaudio2, flags, processor) }
-        } else {
-            // The real SDK uses GetLastError() after GetProcAddress fails.
-            // I instead hardcode the error code, since `exports` might be a cached copy of XAudio2's exports, loaded long ago.
-            HResultError::from_win32(ERROR::PROC_NOT_FOUND).into()
+        return match processor.into() {
+            Some(processor) => imp(exports, processor),
+            None => {
+                let xaudio2 = imp(exports, USE_DEFAULT_PROCESSOR);
+                let xaudio2 = xaudio2.or_else(|_| imp(exports, DEFAULT_PROCESSOR));
+                xaudio2
+            },
         };
 
-        let xaudio2 = unsafe { mcom::Rc::from_raw_opt(xaudio2) };
-        hr.succeeded()?;
-        let xaudio2 = xaudio2.ok_or(HResultError::from_win32(ERROR::NOINTERFACE))?; // XAudio2Create "succeeded" but gave us a null ptr?
-        Ok(xaudio2)
+        fn imp(exports: &Exports, processor: Processor) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
+            let mut xaudio2 = core::ptr::null_mut();
+            let flags = 0;
+            const NTDDI_VERSION : u32 = 0x0A00000C; // NTDDI_WIN10_NI - see C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\sdkddkver.h
+
+            let hr = if let Some(XAudio2CreateWithVersionInfo) = exports.XAudio2CreateWithVersionInfo {
+                unsafe { XAudio2CreateWithVersionInfo(&mut xaudio2, flags, processor, NTDDI_VERSION) }
+            } else if let Some(XAudio2Create) = exports.XAudio2Create {
+                unsafe { XAudio2Create(&mut xaudio2, flags, processor) }
+            } else {
+                // The real SDK uses GetLastError() after GetProcAddress fails.
+                // I instead hardcode the error code, since `exports` might be a cached copy of XAudio2's exports, loaded long ago.
+                HResultError::from_win32(ERROR::PROC_NOT_FOUND).into()
+            };
+
+            let xaudio2 = unsafe { mcom::Rc::from_raw_opt(xaudio2) };
+            hr.succeeded()?;
+            let xaudio2 = xaudio2.ok_or(HResultError::from_win32(ERROR::NOINTERFACE))?; // XAudio2Create "succeeded" but gave us a null ptr?
+            Ok(xaudio2)
+        }
     }
 }
 

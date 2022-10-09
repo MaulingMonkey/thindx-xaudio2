@@ -7,9 +7,7 @@ use core::f32::consts::PI;
 
 fn main() {
     mcom::init::mta().expect("mcom::init::mta");
-    let xaudio2 = unsafe { xaudio2::create(None, xaudio2::USE_DEFAULT_PROCESSOR) };
-    let xaudio2 = xaudio2.or_else(|_| unsafe { xaudio2::create(None, xaudio2::DEFAULT_PROCESSOR) });
-    let xaudio2 = xaudio2.expect("xaudio2::create");
+    let xaudio2 = unsafe { xaudio2::create(None, None) }.expect("xaudio2::create");
     xaudio2.register_for_callbacks_leak(EngineCallback).expect("register_for_callbacks_leak");
 
     let _master = xaudio2.create_mastering_voice(
