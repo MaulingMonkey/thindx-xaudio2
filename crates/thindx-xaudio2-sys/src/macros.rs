@@ -28,6 +28,11 @@ macro_rules! interfaces {
                 }
             )*
         }
+        unsafe impl crate::FromVtable for $interface {
+            type Vtable = $interface_vtable;
+            unsafe fn from_vtable(vtable: &'static $interface_vtable) -> Self { Self(vtable) }
+            unsafe fn from_vtable_unbounded(vtable: *const $interface_vtable) -> Self { Self(vtable) }
+        }
         $(
             impl core::ops::Deref for $interface {
                 type Target = $base;

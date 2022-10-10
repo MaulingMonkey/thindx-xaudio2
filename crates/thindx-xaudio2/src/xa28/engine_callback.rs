@@ -1,6 +1,7 @@
 use crate::util::xaudio2_thread_guard;
 use super::*;
 
+use thindx_xaudio2_sys::FromVtable;
 use winresult::*;
 
 
@@ -29,7 +30,7 @@ pub trait EngineCallback
 }
 
 #[repr(C)] pub struct EngineCallbackWrapper<EC: EngineCallback> {
-    vtbl:       *const IXAudio2EngineCallbackVtbl,
+    interface:  IXAudio2EngineCallback,
     callbacks:  EC,
 }
 
@@ -42,12 +43,12 @@ impl<EC: EngineCallback> core::ops::Deref for EngineCallbackWrapper<EC> {
         let this : *const Self = self;
         let _ = sptr::Strict::expose_addr(this);
 
-        unsafe { core::mem::transmute(self) }
+        &self.interface
     }
 }
 
 impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
-    pub fn new(callbacks: EC) -> Self { Self { vtbl: &Self::VTBL, callbacks } }
+    pub fn new(callbacks: EC) -> Self { Self { interface: unsafe { IXAudio2EngineCallback::from_vtable(&Self::VTBL) }, callbacks } }
 
     const VTBL : IXAudio2EngineCallbackVtbl = IXAudio2EngineCallbackVtbl {
         OnProcessingPassStart:  Self::on_processing_pass_start,

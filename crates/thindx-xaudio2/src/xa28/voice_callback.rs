@@ -1,6 +1,7 @@
 use crate::util::xaudio2_thread_guard;
 #[allow(unused_imports)] use super::*;
 use super::xaudio2::sys::*;
+use thindx_xaudio2_sys::FromVtable;
 use winresult::*;
 use core::ffi::c_void;
 
@@ -49,7 +50,7 @@ pub trait VoiceCallback : Send + Sync + Sized + 'static {
 }
 
 #[repr(C)] pub struct VoiceCallbackWrapper<VC: VoiceCallback> {
-    vtbl:       *const IXAudio2VoiceCallbackVtbl,
+    interface:  IXAudio2VoiceCallback,
     callbacks:  VC,
 }
 
@@ -62,12 +63,12 @@ impl<EC: VoiceCallback> core::ops::Deref for VoiceCallbackWrapper<EC> {
         let this : *const Self = self;
         let _ = sptr::Strict::expose_addr(this);
 
-        unsafe { core::mem::transmute(self) }
+        &self.interface
     }
 }
 
 impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
-    pub fn new(callbacks: VC) -> Self { Self { vtbl: &Self::VTBL, callbacks } }
+    pub fn new(callbacks: VC) -> Self { Self { interface: unsafe { IXAudio2VoiceCallback::from_vtable(&Self::VTBL) }, callbacks } }
 
     const VTBL : IXAudio2VoiceCallbackVtbl = IXAudio2VoiceCallbackVtbl {
         OnVoiceProcessingPassStart: Self::on_voice_processing_pass_start,
