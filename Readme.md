@@ -5,6 +5,12 @@
 [![GitHub](https://img.shields.io/github/stars/MaulingMonkey/thindx-xaudio2.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/thindx-xaudio2)
 [![Build Status](https://github.com/MaulingMonkey/thindx-xaudio2/workflows/Rust/badge.svg)](https://github.com/MaulingMonkey/thindx-xaudio2/actions?query=workflow%3Arust)
 [![License](https://img.shields.io/crates/l/thindx-xaudio2.svg)](https://github.com/MaulingMonkey/thindx-xaudio2)
+<br>
+•
+[examples](https://github.com/MaulingMonkey/thindx-xaudio2/tree/master/crates/thindx-xaudio2/examples)
+•
+[changelog](https://github.com/MaulingMonkey/thindx-xaudio2/wiki/Changelog)
+•
 
 | crate                                             | crates.io | docs.rs | Description |
 | ------------------------------------------------- | --------- | ------- | ----------- |
