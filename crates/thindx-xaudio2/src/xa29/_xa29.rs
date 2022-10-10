@@ -184,8 +184,8 @@ pub mod xaudio2 {
     /// ### Safety
     /// This function is fairly safe.  However:
     ///
-    /// *   It might be unsound to exit the process with the [IXAudio2] instance - and it's associated worker thread(s) - still alive.
-    ///     See [thindx-xaudio2#20](https://github.com/MaulingMonkey/thindx-xaudio2/issues/20) for (scant) details.
+    /// *   Not even Rust can save you from bad hardware misexecuting AVX instructions
+    ///     ([thindx-xaudio2#20](https://github.com/MaulingMonkey/thindx-xaudio2/issues/20))
     ///
     /// *   I'm not 100% confident my abstractions are as sound as possible just yet.
     ///     I need to write a lot more integration and unit tests before I feel bold enough to make such a claim.
