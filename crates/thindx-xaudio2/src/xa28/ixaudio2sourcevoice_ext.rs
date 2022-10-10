@@ -3,124 +3,12 @@ use super::xaudio2::sys::*;
 
 use winresult::*;
 
-use std::sync::Arc;
-
-use core::marker::PhantomData;
-use core::mem::size_of_val;
-use core::ptr::null;
-
-
-
-/// [IXAudio2SourceVoice], but with a typed context for callbacks / submitted source buffers.
-#[repr(transparent)] pub struct IXAudio2SourceVoiceTyped<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static>(IXAudio2SourceVoice, PhantomData<(Sample,Context)>);
-impl<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> core::ops::Deref for IXAudio2SourceVoiceTyped<Sample, Context> { type Target = IXAudio2SourceVoice; fn deref(&self) -> &Self::Target { &self.0 } }
-impl<Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceTyped<Sample, Context> {
-    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
-    /// Adds a new audio buffer to this voice's input queue.
-    pub fn submit_source_buffer(
-        &self,
-        flags:          u32,
-        audio_data:     impl Into<Arc<[Sample]>>,
-        play_range:     impl Into<xaudio2::SampleRange>,
-        loop_range:     impl Into<xaudio2::SampleRange>,
-        loop_count:     impl Into<xaudio2::LoopCount>,
-        context:        Context,
-    ) -> Result<HResultSuccess, HResultError> {
-        // XXX: enforce with a new `Self` type instead for easier refactoring / compile time avoidance of this assert
-        assert!(std::mem::size_of::<Sample>() > 0, "IXAudio2SourceVoiceTyped<S, ...>::submit_source_buffer isn't intended for S : ZST");
-
-        let audio_data  = audio_data.into();
-        let play_range  = play_range.into();
-        let loop_range  = loop_range.into();
-        let loop_count  = loop_count.into();
-
-        let mut b = XAUDIO2_BUFFER {
-            Flags:      flags,
-            AudioBytes: size_of_val(&audio_data[..]).try_into().map_err(|_| E::INVALIDARG)?,
-            pAudioData: audio_data.as_ptr().cast(),
-            .. Default::default()
-        };
-
-        match play_range.into_raw_xaudio2_begin_length() {
-            None                    => return Ok(S::OK),
-            Some((begin, length))   => {
-                b.PlayBegin     = begin;
-                b.PlayLength    = length;
-            },
-        }
-
-        if loop_count.0 != 0 {
-            if let Some((begin, length)) = loop_range.into_raw_xaudio2_begin_length() {
-                b.LoopBegin     = begin;
-                b.LoopLength    = length;
-                b.LoopCount     = loop_count.0.into();
-            }
-        }
-
-        b.pContext = Box::into_raw(Box::new(SourceBuffer::<Context> {
-            context,
-            _audio_data: Box::new(audio_data),
-        })).cast();
-
-        unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
-    }
-
-    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
-    /// Adds a new audio buffer to this voice's input queue.
-    ///
-    /// ### Safety
-    /// It is up to the caller to ensure `audio_data` correctly matches the source voice's format.
-    /// Mismatches in sample rate are likely fairly harmless (resulting in speed+pitch up/down).
-    /// However, getting the sample *type* wrong could lead to much more sinister outcomes involving undefined behavior.
-    pub unsafe fn submit_source_buffer_blob_unchecked<AudioData: AsRef<[u8]> + Send + Sized + 'static>(
-        &self,
-        flags:          u32,
-        audio_data:     Box<AudioData>,
-        play_range:     impl Into<xaudio2::SampleRange>,
-        loop_range:     impl Into<xaudio2::SampleRange>,
-        loop_count:     impl Into<xaudio2::LoopCount>,
-        context:        Context,
-    ) -> Result<HResultSuccess, HResultError> {
-        let play_range  = play_range.into();
-        let loop_range  = loop_range.into();
-        let loop_count  = loop_count.into();
-
-        let mut b = XAUDIO2_BUFFER {
-            Flags:      flags,
-            AudioBytes: size_of_val(&audio_data.as_ref().as_ref()[..]).try_into().map_err(|_| E::INVALIDARG)?,
-            pAudioData: audio_data.as_ref().as_ref().as_ptr().cast(),
-            .. Default::default()
-        };
-
-        match play_range.into_raw_xaudio2_begin_length() {
-            None                    => return Ok(S::OK),
-            Some((begin, length))   => {
-                b.PlayBegin     = begin;
-                b.PlayLength    = length;
-            },
-        }
-
-        if loop_count.0 != 0 {
-            if let Some((begin, length)) = loop_range.into_raw_xaudio2_begin_length() {
-                b.LoopBegin     = begin;
-                b.LoopLength    = length;
-                b.LoopCount     = loop_count.0.into();
-            }
-        }
-
-        b.pContext = Box::into_raw(Box::new(SourceBuffer::<Context> {
-            context,
-            _audio_data: audio_data,
-        })).cast();
-
-        unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
-    }
-
-}
-
 
 
 impl IXAudio2SourceVoiceExt for IXAudio2SourceVoice { fn _as_ixaudio2(&self) -> &IXAudio2SourceVoice { self } }
+impl<'xa2                                                                               > IXAudio2SourceVoiceExt for xaudio2::SourceVoiceUntyped<'xa2>           { fn _as_ixaudio2(&self) -> &IXAudio2SourceVoice { self } }
+impl<'xa2,                                        Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceExt for xaudio2::SourceVoiceDynamic<'xa2, Context>  { fn _as_ixaudio2(&self) -> &IXAudio2SourceVoice { self } }
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> IXAudio2SourceVoiceExt for xaudio2::SourceVoice<'xa2, Sample, Context> { fn _as_ixaudio2(&self) -> &IXAudio2SourceVoice { self } }
 
 /// [IXAudio2SourceVoice] extension methods
 pub trait IXAudio2SourceVoiceExt {

@@ -12,7 +12,7 @@ macro_rules! voices {
         pub struct $voice:ident <'xa2> ( NonNull< $ivoice:ty > );
     )*) => {$(
         $(#[doc = $voice_doc])*
-        pub struct $voice <'xa2> {
+        #[repr(transparent)] pub struct $voice <'xa2> {
             factory:    PhantomData<&'xa2 IXAudio2>,
             voice:      NonNull< $ivoice >,
         }

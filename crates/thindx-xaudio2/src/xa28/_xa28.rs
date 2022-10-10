@@ -16,6 +16,7 @@ mod source_buffer;                  pub(crate) use source_buffer::*;
 mod loop_count;
 mod sample_range;
 mod source_format;
+mod source_voice_dynamic;
 mod source_voice;
 mod voices;
 mod voice_callback;
@@ -48,6 +49,7 @@ pub mod xaudio2 {
     pub use super::loop_count::*;
     pub use super::sample_range::*;
     pub use super::source_format::*;
+    pub use super::source_voice_dynamic::*;
     pub use super::source_voice::*;
     pub use super::voices::*;
     pub use super::voice_callback::*;

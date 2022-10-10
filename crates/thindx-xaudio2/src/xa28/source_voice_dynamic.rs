@@ -4,8 +4,6 @@ use super::xaudio2::sys::*;
 
 use winresult::*;
 
-use std::sync::Arc;
-
 use core::marker::PhantomData;
 use core::mem::*;
 use core::ops::*;
@@ -14,13 +12,13 @@ use core::ptr::*;
 
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\] [IXAudio2SourceVoice]
-#[repr(transparent)] pub struct SourceVoice<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> {
+#[repr(transparent)] pub struct SourceVoiceDynamic<'xa2, Context: Send + Sync + Sized + 'static> {
     factory:    PhantomData<&'xa2 IXAudio2>,
     voice:      NonNull<IXAudio2SourceVoice>,
-    context:    PhantomData<fn(&[Sample], &Context)>,
+    phantom:    PhantomData<fn (&Context)>,
 }
 
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> SourceVoice<'xa2, Sample, Context> {
+impl<'xa2, Context: Send + Sync + Sized + 'static> SourceVoiceDynamic<'xa2, Context> {
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voice-destroyvoice)\]
     /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
     ///
@@ -33,27 +31,28 @@ impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized +
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
     /// Adds a new audio buffer to this voice's input queue.
-    pub fn submit_source_buffer(
+    ///
+    /// ### Safety
+    /// It is up to the caller to ensure `audio_data` correctly matches the source voice's format.
+    /// Mismatches in sample rate are likely fairly harmless (resulting in speed+pitch up/down).
+    /// However, getting the sample *type* wrong could lead to much more sinister outcomes involving undefined behavior.
+    pub unsafe fn submit_source_buffer_blob_unchecked<AudioData: AsRef<[u8]> + Send + Sized + 'static>(
         &self,
         flags:          u32,
-        audio_data:     impl Into<Arc<[Sample]>>,
+        audio_data:     Box<AudioData>,
         play_range:     impl Into<xaudio2::SampleRange>,
         loop_range:     impl Into<xaudio2::SampleRange>,
         loop_count:     impl Into<xaudio2::LoopCount>,
         context:        Context,
     ) -> Result<HResultSuccess, HResultError> {
-        // XXX: enforce with a new `Self` type instead for easier refactoring / compile time avoidance of this assert
-        assert!(std::mem::size_of::<Sample>() > 0, "IXAudio2SourceVoiceTyped<S, ...>::submit_source_buffer isn't intended for S : ZST");
-
-        let audio_data  = audio_data.into();
         let play_range  = play_range.into();
         let loop_range  = loop_range.into();
         let loop_count  = loop_count.into();
 
         let mut b = XAUDIO2_BUFFER {
             Flags:      flags,
-            AudioBytes: size_of_val(&audio_data[..]).try_into().map_err(|_| E::INVALIDARG)?,
-            pAudioData: audio_data.as_ptr().cast(),
+            AudioBytes: size_of_val(&audio_data.as_ref().as_ref()[..]).try_into().map_err(|_| E::INVALIDARG)?,
+            pAudioData: audio_data.as_ref().as_ref().as_ptr().cast(),
             .. Default::default()
         };
 
@@ -75,11 +74,13 @@ impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized +
 
         b.pContext = Box::into_raw(Box::new(SourceBuffer::<Context> {
             context,
-            _audio_data: Box::new(audio_data),
+            _audio_data: audio_data,
         })).cast();
 
         unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
     }
+
+    pub fn as_raw(&self) -> *const IXAudio2SourceVoice { self.voice.as_ptr() }
 
     /// Create a voice wrapper from a raw pointer.
     ///
@@ -91,7 +92,7 @@ impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized +
     pub(crate) unsafe fn from_raw_opt(_xa2: &'xa2 IXAudio2, raw: *const IXAudio2SourceVoice) -> Option<Self> { Some(Self {
         factory:    PhantomData,
         voice:      NonNull::new(raw as *mut _)?,
-        context:    PhantomData,
+        phantom:    PhantomData,
     })}
 
     /// Create a voice wrapper from a raw pointer.
@@ -110,11 +111,9 @@ impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized +
         core::mem::forget(self);
         ptr
     }
-
-    pub fn as_raw(&self) -> *const IXAudio2SourceVoice { self.voice.as_ptr() }
 }
 
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> From<SourceVoice<'xa2, Sample, Context>> for SourceVoiceDynamic<'xa2, Context> { fn from(voice: SourceVoice<'xa2, Sample, Context>) -> Self { unsafe { core::mem::transmute(voice) } }}
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> Deref      for SourceVoice<'xa2, Sample, Context> { fn deref    (&    self) -> &    Self::Target { unsafe { core::mem::transmute(self) } } type Target = xaudio2::SourceVoiceDynamic<'xa2, Context>; }
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoice<'xa2, Sample, Context> { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { core::mem::transmute(self) } } }
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> Drop       for SourceVoice<'xa2, Sample, Context> { fn drop(&mut self) { unsafe { (*self.voice.as_ptr()).DestroyVoice() } } }
+impl<'xa2, Context: Send + Sync + Sized + 'static> From<SourceVoiceDynamic<'xa2, Context>> for SourceVoiceUntyped<'xa2> { fn from(voice: SourceVoiceDynamic<'xa2, Context>) -> Self { unsafe { core::mem::transmute(voice) } }}
+impl<'xa2, Context: Send + Sync + Sized + 'static> Deref      for SourceVoiceDynamic<'xa2, Context> { fn deref    (&    self) -> &    Self::Target { unsafe { core::mem::transmute(self) } } type Target = xaudio2::SourceVoiceUntyped<'xa2>; }
+impl<'xa2, Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoiceDynamic<'xa2, Context> { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { core::mem::transmute(self) } } }
+impl<'xa2, Context: Send + Sync + Sized + 'static> Drop       for SourceVoiceDynamic<'xa2, Context> { fn drop(&mut self) { unsafe { (*self.voice.as_ptr()).DestroyVoice() } } }

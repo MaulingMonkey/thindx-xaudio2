@@ -51,6 +51,7 @@ pub mod xaudio2 {
         SendDescriptor,
         SourceFormat,
         SourceVoice,
+        SourceVoiceDynamic,
         SourceVoiceUntyped,
         SubmixVoice,
         TypedSourceFormat,
@@ -295,9 +296,6 @@ pub mod xaudio2 {
 }
 
 #[doc(inline)] pub use prev::{
-    // Structs
-    IXAudio2SourceVoiceTyped,
-
     // Traits
     IXAudio2Ext,
     IXAudio2MasteringVoiceExt,
