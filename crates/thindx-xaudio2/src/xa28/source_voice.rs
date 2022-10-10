@@ -15,9 +15,8 @@ use core::ptr::*;
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\] [IXAudio2SourceVoice]
 #[repr(transparent)] pub struct SourceVoice<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> {
-    factory:    PhantomData<&'xa2 IXAudio2>,
-    voice:      NonNull<IXAudio2SourceVoice>,
-    context:    PhantomData<fn(&[Sample], &Context)>,
+    voice:      SourceVoiceDynamic<'xa2, Context>,
+    context:    PhantomData<fn(&[Sample])>,
 }
 
 impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> SourceVoice<'xa2, Sample, Context> {
@@ -25,11 +24,7 @@ impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized +
     /// Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
     ///
     /// (Dropping the voice also implicitly stops/removes it.)
-    pub fn destroy_voice(self) {}
-    // "It is invalid to call DestroyVoice from within a callback (that is, IXAudio2EngineCallback or IXAudio2VoiceCallback)."
-    // Currently this cannot happen as Self : !Send.
-    // Consider using https://docs.rs/static_assertions/latest/static_assertions/macro.assert_not_impl_any.html to verify this.
-    // See also: util::xaudio2_thread_guard
+    pub fn destroy_voice(self) { self.voice.destroy_voice() }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2sourcevoice-submitsourcebuffer)\]
     /// Adds a new audio buffer to this voice's input queue.
@@ -89,8 +84,7 @@ impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized +
     /// *   `raw` must be a valid interface pointer if not null.
     /// *   `Self` takes ownership of `raw`.
     pub(crate) unsafe fn from_raw_opt(_xa2: &'xa2 IXAudio2, raw: *const IXAudio2SourceVoice) -> Option<Self> { Some(Self {
-        factory:    PhantomData,
-        voice:      NonNull::new(raw as *mut _)?,
+        voice:      unsafe { SourceVoiceDynamic::from_raw_opt(_xa2, raw)? },
         context:    PhantomData,
     })}
 
@@ -105,16 +99,9 @@ impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized +
 
     #[allow(dead_code)] // TODO: consider removing this fn outright
     /// Convert `self` back into a raw pointer, relinquishing ownership.
-    pub(crate) fn into_raw(self) -> *const IXAudio2SourceVoice {
-        let ptr = self.voice.as_ptr();
-        core::mem::forget(self);
-        ptr
-    }
-
-    pub fn as_raw(&self) -> *const IXAudio2SourceVoice { self.voice.as_ptr() }
+    pub(crate) fn into_raw(self) -> *const IXAudio2SourceVoice { self.voice.into_raw() }
 }
 
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> From<SourceVoice<'xa2, Sample, Context>> for SourceVoiceDynamic<'xa2, Context> { fn from(voice: SourceVoice<'xa2, Sample, Context>) -> Self { unsafe { core::mem::transmute(voice) } }}
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> Deref      for SourceVoice<'xa2, Sample, Context> { fn deref    (&    self) -> &    Self::Target { unsafe { core::mem::transmute(self) } } type Target = xaudio2::SourceVoiceDynamic<'xa2, Context>; }
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoice<'xa2, Sample, Context> { fn deref_mut(&mut self) -> &mut Self::Target { unsafe { core::mem::transmute(self) } } }
-impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> Drop       for SourceVoice<'xa2, Sample, Context> { fn drop(&mut self) { unsafe { (*self.voice.as_ptr()).DestroyVoice() } } }
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> From<SourceVoice<'xa2, Sample, Context>> for SourceVoiceDynamic<'xa2, Context> { fn from(voice: SourceVoice<'xa2, Sample, Context>) -> Self { voice.voice }}
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> Deref      for SourceVoice<'xa2, Sample, Context> { fn deref    (&    self) -> &    Self::Target { &    self.voice } type Target = xaudio2::SourceVoiceDynamic<'xa2, Context>; }
+impl<'xa2, Sample: Send + Sync + Sized + 'static, Context: Send + Sync + Sized + 'static> DerefMut   for SourceVoice<'xa2, Sample, Context> { fn deref_mut(&mut self) -> &mut Self::Target { &mut self.voice } }
