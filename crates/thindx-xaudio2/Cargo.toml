@@ -2,7 +2,7 @@
 
 [package]
 name                                    = "thindx-xaudio2"
-version                                 = "0.0.0-2022-10-07"
+version                                 = "0.0.0-2022-10-10"
 authors                                 = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition                                 = "2021"
 repository                              = "https://github.com/MaulingMonkey/thindx-xaudio2"
@@ -35,7 +35,7 @@ path                                    = "src/_xaudio2.rs"
 
 
 [target.'cfg(windows)'.dependencies]
-thindx-xaudio2-sys.version              = "0.0.0-2022-10-07"
+thindx-xaudio2-sys.version              = "0.0.0-2022-10-10"
 thindx-xaudio2-sys.path                 = "../thindx-xaudio2-sys"
 thindx-xaudio2-sys.default-features     = false
 abibool.version                         = "0.5"

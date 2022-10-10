@@ -2,7 +2,7 @@
 
 [package]
 name                                    = "thindx-xaudio2-sys"
-version                                 = "0.0.0-2022-10-07"
+version                                 = "0.0.0-2022-10-10"
 authors                                 = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition                                 = "2021"
 repository                              = "https://github.com/MaulingMonkey/thindx-xaudio2"
