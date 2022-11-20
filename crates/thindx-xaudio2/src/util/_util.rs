@@ -1,4 +1,5 @@
 #[allow(unused_imports)] use crate::xaudio2_9::xaudio2::sys::*;
+use std::io::Write;
 use std::panic::*;
 use std::sync::atomic::*;
 
@@ -59,15 +60,17 @@ static CATCH_UNWIND : AtomicBool = AtomicBool::new(true);
 pub(crate) fn xaudio2_thread_guard<R>(f: impl FnOnce() -> R + UnwindSafe) -> R {
     if !CATCH_UNWIND.load(Ordering::Relaxed) { return f() }
 
-    match catch_unwind(f) {
-        Ok(r) => r,
-        Err(panic) => {
-            eprint!(concat!(
+    let _ = match catch_unwind(f) {
+        Ok(r) => return r,
+        Err(panic) => || -> std::io::Result<()> {
+            let mut stderr = std::io::stderr().lock();
+
+            write!(stderr, concat!(
                 "\u{001B}[31;1mbug\u{001B}[37m:\u{001B}[0m Unwinding panic! thrown in a XAudio2 callback / on a XAudio2 thread.\n",
                 "     Unwinding across a COM/FFI boundary might be undefined behavior.\n",
                 "     For better callstacks, call `enable_catch_unwind` after reading the docs.\n",
                 "     XAudio2's thread handles no exceptions, so this will be fatal regardless.\n",
-            ));
+            ))?;
 
             let panic = if let Some(s) = panic.downcast_ref::<String>() {
                 Some(s.as_str())
@@ -78,13 +81,14 @@ pub(crate) fn xaudio2_thread_guard<R>(f: impl FnOnce() -> R + UnwindSafe) -> R {
             };
 
             if let Some(panic) = panic {
-                eprint!("\n");
+                write!(stderr, "\n")?;
                 for line in panic.split('\n') {
-                    eprint!("     {}\n", line.strip_suffix("\r").unwrap_or(line));
+                    write!(stderr, "     {}\n", line.strip_suffix("\r").unwrap_or(line))?;
                 }
             }
 
-            std::process::abort();
-        },
-    }
+            Ok(())
+        }(),
+    };
+    std::process::abort();
 }
