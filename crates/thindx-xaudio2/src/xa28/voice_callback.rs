@@ -2,7 +2,6 @@ use crate::util::xaudio2_thread_guard;
 #[allow(unused_imports)] use super::*;
 use super::xaudio2::sys::*;
 use thindx_xaudio2_sys::FromVtable;
-use winresult::*;
 use core::ffi::c_void;
 
 
@@ -46,7 +45,7 @@ pub trait VoiceCallback : Send + Sync + Sized + 'static {
     /// The voice may have to be destroyed and re-created to recover from
     /// the error.  The callback arguments report which buffer was being
     /// processed when the error occurred, and its HRESULT code.
-    fn on_voice_error(&self, buffer_context: &Self::BufferContext, error: HResult);
+    fn on_voice_error(&self, buffer_context: &Self::BufferContext, error: xaudio2::HResult);
 }
 
 #[repr(C)] pub struct VoiceCallbackWrapper<VC: VoiceCallback> {
@@ -132,7 +131,7 @@ impl<VC: VoiceCallback> VoiceCallbackWrapper<VC> {
     }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceerror)\]
-    unsafe extern "system" fn on_voice_error(this: *const IXAudio2VoiceCallback, buffer_context: *mut c_void, error: HResult) {
+    unsafe extern "system" fn on_voice_error(this: *const IXAudio2VoiceCallback, buffer_context: *mut c_void, error: xaudio2::HResult) {
         xaudio2_thread_guard(||{
             let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
             let buffer_context = unsafe { &*(buffer_context as *const SourceBuffer<VC::BufferContext>) };

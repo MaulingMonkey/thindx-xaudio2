@@ -44,7 +44,7 @@ impl xaudio2::EngineCallback for EngineCallback {
     // As expected, these callbacks all fire on an XAudio2 thread:
     fn on_processing_pass_start(&self) { eprintln!("on_processing_pass_start") }
     fn on_processing_pass_end(&self) { eprintln!("on_processing_pass_end") }
-    fn on_critical_error(&self, error: winresult::HResult) { panic!("{error:?}") }
+    fn on_critical_error(&self, error: xaudio2::HResult) { panic!("{error:?}") }
 }
 
 struct VoiceCallback;
@@ -57,5 +57,5 @@ impl xaudio2::VoiceCallback for VoiceCallback {
     fn on_buffer_start(&self, buffer_context: &Self::BufferContext) { eprintln!("on_buffer_start({buffer_context:?})") }
     fn on_buffer_end(&self, buffer_context: Self::BufferContext) { eprintln!("on_buffer_end({buffer_context:?})") }
     fn on_stream_end(&self) { eprintln!("on_stream_end"); std::process::exit(0); }
-    fn on_voice_error(&self, _buffer_context: &Self::BufferContext, error: winresult::HResult) { panic!("{error:?}"); }
+    fn on_voice_error(&self, _buffer_context: &Self::BufferContext, error: xaudio2::HResult) { panic!("{error:?}"); }
 }

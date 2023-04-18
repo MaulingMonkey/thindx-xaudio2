@@ -2,7 +2,6 @@ use crate::util::xaudio2_thread_guard;
 use super::*;
 
 use thindx_xaudio2_sys::FromVtable;
-use winresult::*;
 
 
 
@@ -26,7 +25,7 @@ pub trait EngineCallback
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2enginecallback-oncriticalerror)\]
     /// Called in the event of a critical system error which requires XAudio2 to be closed down and restarted.  The error code is given in Error.
-    fn on_critical_error(&self, error: HResult);
+    fn on_critical_error(&self, error: xaudio2::HResult);
 }
 
 #[repr(C)] pub struct EngineCallbackWrapper<EC: EngineCallback> {
@@ -70,7 +69,7 @@ impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
         })
     }
 
-    unsafe extern "system" fn on_critical_error(this: *const IXAudio2EngineCallback, error: HResult) {
+    unsafe extern "system" fn on_critical_error(this: *const IXAudio2EngineCallback, error: xaudio2::HResult) {
         xaudio2_thread_guard(||{
             let this : &Self = unsafe { &*sptr::from_exposed_addr(sptr::Strict::addr(this)) };
             this.callbacks.on_critical_error(error)
@@ -84,7 +83,7 @@ impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
     impl EngineCallback for EC {
         fn on_processing_pass_start(&self) {}
         fn on_processing_pass_end(&self) {}
-        fn on_critical_error(&self, error: HResult) { panic!("{error:?}") }
+        fn on_critical_error(&self, error: xaudio2::HResult) { panic!("{error:?}") }
     }
     let ec = Box::leak(Box::new(EC.wrap()));
 

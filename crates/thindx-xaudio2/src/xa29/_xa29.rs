@@ -34,7 +34,11 @@ mod ixaudio2extension_ext;          pub use ixaudio2extension_ext::*;
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
     use super::*;
-    use winresult::*;
+
+    // Re-exports
+    #[doc(no_inline)] pub use winresult::{HResult, HResultError};
+    use winresult::{ERROR, ErrorCode};
+    #[cfg(doc)] use winresult::CO;
 
     pub use exports::*;
     #[doc(inline)] pub use prev::xaudio2::{

@@ -44,6 +44,9 @@ mod voice_callback;
 
 /// `XAudio2*` & `XAUDIO2_*`
 pub mod xaudio2 {
+    // Re-exports
+    #[doc(no_inline)] pub use winresult::{HResult, HResultError};
+
     pub use super::context::*;
     pub use super::engine_callback::*;
     pub use super::loop_count::*;

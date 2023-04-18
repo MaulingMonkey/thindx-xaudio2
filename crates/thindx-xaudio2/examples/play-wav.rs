@@ -76,7 +76,7 @@ fn main() {
     impl xaudio2::VoiceCallback for ExitOnBufferEnd {
         type BufferContext = ();
         fn on_buffer_end(&self, _: Self::BufferContext) { std::process::exit(0) }
-        fn on_voice_error(&self, _: &Self::BufferContext, error: winresult::HResult) { panic!("{error:?}") }
+        fn on_voice_error(&self, _: &Self::BufferContext, error: xaudio2::HResult) { panic!("{error:?}") }
     }
     let callback = xaudio2::VoiceCallbackWrapper::new(ExitOnBufferEnd);
 
