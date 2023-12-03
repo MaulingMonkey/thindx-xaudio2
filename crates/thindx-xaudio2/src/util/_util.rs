@@ -60,35 +60,39 @@ static CATCH_UNWIND : AtomicBool = AtomicBool::new(true);
 pub(crate) fn xaudio2_thread_guard<R>(f: impl FnOnce() -> R + UnwindSafe) -> R {
     if !CATCH_UNWIND.load(Ordering::Relaxed) { return f() }
 
-    let _ = match catch_unwind(f) {
-        Ok(r) => return r,
-        Err(panic) => || -> std::io::Result<()> {
-            let mut stderr = std::io::stderr().lock();
+    let panic = match catch_unwind(f) { Ok(r) => return r, Err(p) => p };
+    let _ = || -> std::io::Result<()> {
+        let mut stderr = std::io::stderr().lock();
 
-            write!(stderr, concat!(
-                "\u{001B}[31;1mbug\u{001B}[37m:\u{001B}[0m Unwinding panic! thrown in a XAudio2 callback / on a XAudio2 thread.\n",
-                "     Unwinding across a COM/FFI boundary might be undefined behavior.\n",
-                "     For better callstacks, call `enable_catch_unwind` after reading the docs.\n",
-                "     XAudio2's thread handles no exceptions, so this will be fatal regardless.\n",
-            ))?;
+        write!(stderr, concat!(
+            "\u{001B}[31;1mbug\u{001B}[37m:\u{001B}[0m Unwinding panic! thrown in a XAudio2 callback / on a XAudio2 thread.\n",
+            "     Unwinding across a COM/FFI boundary might be undefined behavior.\n",
+            "     For better callstacks, call `enable_catch_unwind` after reading the docs.\n",
+            "     XAudio2's thread handles no exceptions, so this will be fatal regardless.\n",
+        ))?;
 
-            let panic = if let Some(s) = panic.downcast_ref::<String>() {
-                Some(s.as_str())
-            } else if let Some(s) = panic.downcast_ref::<&str>() {
-                Some(*s)
-            } else {
-                None
-            };
+        let panic = if let Some(s) = panic.downcast_ref::<String>() {
+            Some(s.as_str())
+        } else if let Some(s) = panic.downcast_ref::<&str>() {
+            Some(*s)
+        } else {
+            None
+        };
 
-            if let Some(panic) = panic {
-                write!(stderr, "\n")?;
-                for line in panic.split('\n') {
-                    write!(stderr, "     {}\n", line.strip_suffix("\r").unwrap_or(line))?;
-                }
+        if let Some(panic) = panic {
+            write!(stderr, "\n")?;
+            for line in panic.split('\n') {
+                write!(stderr, "     {}\n", line.strip_suffix("\r").unwrap_or(line))?;
             }
+        }
 
-            Ok(())
-        }(),
-    };
+        Ok(())
+    }();
+
+    // lz/zuurr shared this evil gem:
+    // std::panic::panic_any(Box::new(PanicOnDrop()))
+    // https://discord.com/channels/273534239310479360/592856094527848449/1181014203134390342
+    // ensure we still have the panic in-scope when we call abort
+    let _ = &panic;
     std::process::abort();
 }
