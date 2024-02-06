@@ -6,6 +6,7 @@
 #![allow(non_upper_case_globals)]
 
 #[macro_use] mod macros;
+#[path = "../doc/_doc.rs"] pub mod _doc;
 #[path = "sys20.rs"] pub mod xaudio2_0;
 #[path = "sys21.rs"] pub mod xaudio2_1;
 #[path = "sys22.rs"] pub mod xaudio2_2;

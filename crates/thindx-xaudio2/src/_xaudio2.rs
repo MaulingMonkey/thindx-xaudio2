@@ -2,6 +2,7 @@
 #![cfg(windows)]
 #![forbid(unsafe_op_in_unsafe_fn)]
 
+#[cfg(doc)] #[path = "../doc/_doc.rs"] pub mod _doc;
 pub use thindx_xaudio2_sys as sys;
 
 #[path = "util/_util.rs"] mod util; pub use util::*;
