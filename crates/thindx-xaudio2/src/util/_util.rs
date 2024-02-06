@@ -5,8 +5,8 @@ use std::sync::atomic::*;
 
 
 
-/// Disable the use of [std::panic::catch_unwind] to guard against panics unwinding over an FFI boundary in XAudio2 threads executing callbacks.
-/// This improves your callstacks such that they include the original `panic!` for your debugger and native crash collection tools,
+/// Disable the use of [`std::panic::catch_unwind`] to guard against panics unwinding over an FFI boundary in XAudio2 threads executing callbacks.
+/// This improves your callstacks such that they include the original [`panic!`] for your debugger and native crash collection tools,
 /// but might *technically* be undefined behavior.
 ///
 /// As such, you are *strongly* discouraged from calling this from a safe fn unless you're either:
@@ -33,7 +33,7 @@ use std::sync::atomic::*;
 /// best handle unwinds and FFI.
 pub unsafe fn disable_catch_unwind() { CATCH_UNWIND.store(false, Ordering::Relaxed) }
 
-/// Re-enable the use of [std::panic::catch_unwind] (the default behavior.)
+/// Re-enable the use of [`std::panic::catch_unwind`] (the default behavior.)
 ///
 /// Probably pretty pointless, but might be useful if some jerk in some crate called [disable_catch_unwind] when they shouldn't have.
 pub fn enable_catch_unwind() { CATCH_UNWIND.store(true, Ordering::Relaxed) }
