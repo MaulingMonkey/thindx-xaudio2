@@ -9,7 +9,7 @@ use core::ptr::null;
 
 impl IXAudio2VoiceExt for IXAudio2Voice { fn _as_ixaudio2(&self) -> &IXAudio2Voice { self } }
 
-/// [IXAudio2] extension methods
+/// [IXAudio2Voice] extension methods
 pub trait IXAudio2VoiceExt {
     #[doc(hidden)] fn _as_ixaudio2(&self) -> &IXAudio2Voice;
 
