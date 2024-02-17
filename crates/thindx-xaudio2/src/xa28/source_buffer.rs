@@ -1,6 +1,7 @@
 #[allow(unused_imports)] use super::*;
 #[allow(unused_imports)] use super::xaudio2::sys::*;
-use std::any::Any;
+use alloc::boxed::Box;
+use core::any::Any;
 
 
 

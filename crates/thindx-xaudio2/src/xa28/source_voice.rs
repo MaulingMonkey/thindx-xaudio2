@@ -4,7 +4,8 @@ use super::xaudio2::sys::*;
 
 use winresult::*;
 
-use std::sync::Arc;
+use alloc::boxed::Box;
+use alloc::sync::Arc;
 
 use core::marker::PhantomData;
 use core::mem::*;

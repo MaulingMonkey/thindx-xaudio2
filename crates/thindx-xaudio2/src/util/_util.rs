@@ -1,7 +1,9 @@
 #[allow(unused_imports)] use crate::xaudio2_9::xaudio2::sys::*;
+
 use std::io::Write;
-use std::panic::*;
-use std::sync::atomic::*;
+
+use core::panic::*;
+use core::sync::atomic::*;
 
 
 
@@ -60,7 +62,7 @@ static CATCH_UNWIND : AtomicBool = AtomicBool::new(true);
 pub(crate) fn xaudio2_thread_guard<R>(f: impl FnOnce() -> R + UnwindSafe) -> R {
     if !CATCH_UNWIND.load(Ordering::Relaxed) { return f() }
 
-    let panic = match catch_unwind(f) { Ok(r) => return r, Err(p) => p };
+    let panic = match std::panic::catch_unwind(f) { Ok(r) => return r, Err(p) => p };
     let _ = || -> std::io::Result<()> {
         let mut stderr = std::io::stderr().lock();
 
@@ -71,7 +73,7 @@ pub(crate) fn xaudio2_thread_guard<R>(f: impl FnOnce() -> R + UnwindSafe) -> R {
             "     XAudio2's thread handles no exceptions, so this will be fatal regardless.\n",
         ))?;
 
-        let panic = if let Some(s) = panic.downcast_ref::<String>() {
+        let panic = if let Some(s) = panic.downcast_ref::<alloc::string::String>() {
             Some(s.as_str())
         } else if let Some(s) = panic.downcast_ref::<&str>() {
             Some(*s)

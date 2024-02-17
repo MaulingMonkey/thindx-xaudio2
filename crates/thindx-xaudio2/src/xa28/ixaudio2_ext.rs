@@ -5,6 +5,7 @@ use abistr::AsOptCStr;
 use winapi::um::audiosessiontypes::AUDIO_STREAM_CATEGORY;
 use winresult::*;
 
+use alloc::boxed::Box;
 use core::ptr::{null_mut, null};
 
 

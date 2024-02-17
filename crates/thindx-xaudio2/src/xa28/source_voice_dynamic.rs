@@ -4,6 +4,8 @@ use super::xaudio2::sys::*;
 
 use winresult::*;
 
+use alloc::boxed::Box;
+
 use core::marker::PhantomData;
 use core::mem::*;
 use core::ops::*;

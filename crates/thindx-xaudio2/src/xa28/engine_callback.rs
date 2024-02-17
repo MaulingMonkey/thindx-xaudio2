@@ -79,6 +79,8 @@ impl<EC: EngineCallback> EngineCallbackWrapper<EC> {
 
 #[test] fn test() {
     use crate::xaudio2_9::*; // XXX: no xaudio2::create for 2.8 yet
+    use alloc::boxed::Box;
+
     struct EC;
     impl EngineCallback for EC {
         fn on_processing_pass_start(&self) {}

@@ -2,6 +2,7 @@ use crate::util::xaudio2_thread_guard;
 #[allow(unused_imports)] use super::*;
 use super::xaudio2::sys::*;
 use thindx_xaudio2_sys::FromVtable;
+use alloc::boxed::Box;
 use core::ffi::c_void;
 
 

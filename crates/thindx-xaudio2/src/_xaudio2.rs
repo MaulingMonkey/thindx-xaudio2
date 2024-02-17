@@ -1,6 +1,10 @@
 #![doc = include_str!("../Readme.md")]
 #![cfg(windows)]
 #![forbid(unsafe_op_in_unsafe_fn)]
+#![no_std]
+
+extern crate alloc;
+extern crate std;
 
 #[cfg(doc)] #[path = "../doc/_doc.rs"] pub mod _doc;
 pub use thindx_xaudio2_sys as sys;
