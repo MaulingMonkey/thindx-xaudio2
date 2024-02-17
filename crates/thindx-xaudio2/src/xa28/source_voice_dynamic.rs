@@ -15,48 +15,46 @@ use core::ptr::*;
 
 /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nn-xaudio2-ixaudio2sourcevoice)\] [IXAudio2SourceVoice]
 ///
-/// Deref chain: [`SourceVoiceDynamic`] → [`IXAudio2SourceVoiceExt`]\([`Ext`](IXAudio2SourceVoiceExt)\) → [`IXAudio2Voice`]\([`Ext`](IXAudio2VoiceExt)\)
-///
 /// ### Methods (on `SourceVoiceDynamic` itself)
 /// | Method                                                                            | Description  |
 /// | ----------------------------------------------------------------------------------| -------------|
 /// | [`destroy_voice`](Self::destroy_voice)                                            | Destroys this voice, stopping it if necessary and removing it from the XAudio2 graph.
 /// | [`submit_source_buffer_blob_unchecked`](Self::submit_source_buffer_blob_unchecked)| Adds a new audio buffer to this voice's input queue.
 ///
-/// ### Methods (via `IXAudio2SourceVoiceExt` after `Deref`)
+/// ### Methods (via `SourceVoiceUntyped` after `Deref`)
 /// | Method                                                                            | Description  |
 /// | ----------------------------------------------------------------------------------| -------------|
-/// | [`start`](IXAudio2SourceVoiceExt::start)                                          | Makes this voice start consuming and processing audio.
-/// | [`stop`](IXAudio2SourceVoiceExt::stop)                                            | Makes this voice stop consuming audio.
-/// | [`flush_source_buffers`](IXAudio2SourceVoiceExt::flush_source_buffers)            | Removes all pending audio buffers from this voice's queue.
-/// | [`discontinuity`](IXAudio2SourceVoiceExt::discontinuity)                          | Notifies the voice of an intentional break in the stream of audio buffers (e.g. the end of a sound), to prevent XAudio2 from interpreting an empty buffer queue as a glitch.
-/// | [`exit_loop`](IXAudio2SourceVoiceExt::exit_loop)                                  | Breaks out of the current loop when its end is reached.
-/// | [`get_state`](IXAudio2SourceVoiceExt::get_state)                                  | Returns the number of buffers currently queued on this voice, the pContext value associated with the currently processing buffer (if any), and other voice state information.
-/// | [`set_frequency_ratio`](IXAudio2SourceVoiceExt::set_frequency_ratio)              | Sets this voice's frequency adjustment, i.e. its pitch.
-/// | [`get_frequency_ratio`](IXAudio2SourceVoiceExt::get_frequency_ratio)              | Returns this voice's current frequency adjustment ratio.
-/// | [`set_source_sample_rate`](IXAudio2SourceVoiceExt::set_source_sample_rate)        | Reconfigures this voice to treat its source data as being at a different sample rate than the original one specified in [IXAudio2::CreateSourceVoice]'s pSourceFormat argument.
+/// | [`start`](SourceVoiceUntyped::start)                                              | Makes this voice start consuming and processing audio.
+/// | [`stop`](SourceVoiceUntyped::stop)                                                | Makes this voice stop consuming audio.
+/// | [`flush_source_buffers`](SourceVoiceUntyped::flush_source_buffers)                | Removes all pending audio buffers from this voice's queue.
+/// | [`discontinuity`](SourceVoiceUntyped::discontinuity)                              | Notifies the voice of an intentional break in the stream of audio buffers (e.g. the end of a sound), to prevent XAudio2 from interpreting an empty buffer queue as a glitch.
+/// | [`exit_loop`](SourceVoiceUntyped::exit_loop)                                      | Breaks out of the current loop when its end is reached.
+/// | [`get_state`](SourceVoiceUntyped::get_state)                                      | Returns the number of buffers currently queued on this voice, the pContext value associated with the currently processing buffer (if any), and other voice state information.
+/// | [`set_frequency_ratio`](SourceVoiceUntyped::set_frequency_ratio)                  | Sets this voice's frequency adjustment, i.e. its pitch.
+/// | [`get_frequency_ratio`](SourceVoiceUntyped::get_frequency_ratio)                  | Returns this voice's current frequency adjustment ratio.
+/// | [`set_source_sample_rate`](SourceVoiceUntyped::set_source_sample_rate)            | Reconfigures this voice to treat its source data as being at a different sample rate than the original one specified in [IXAudio2::CreateSourceVoice]'s pSourceFormat argument.
 ///
-/// ### Methods (via `IXAudio2VoiceExt` after `Deref`)
+/// ### Methods (via `Voice` after `Deref`)
 /// | Method                                                                            | Description  |
 /// | ----------------------------------------------------------------------------------| -------------|
-/// | [`get_voice_details`](IXAudio2VoiceExt::get_voice_details)                        | Get [`VoiceDetails`] (flags, channels, sample rate)
-/// | [`set_output_voices`](IXAudio2VoiceExt::set_output_voices)                        | Set submix/mastering voices that receive this voice’s output.
-/// | [`set_effect_chain`](IXAudio2VoiceExt::set_effect_chain)                          | Replaces this voice’s current effect chain with a new one.
-/// | [`enable_effect`](IXAudio2VoiceExt::enable_effect)                                | Enables an effect in this voice’s effect chain.
-/// | [`disable_effect`](IXAudio2VoiceExt::disable_effect)                              | Disables an effect in this voice’s effect chain.
-/// | [`get_effect_state`](IXAudio2VoiceExt::get_effect_state)                          | Returns the running state of an effect.
-/// | [`set_effect_parameters_raw`](IXAudio2VoiceExt::set_effect_parameters_raw)        | Sets effect-specific parameters.  Not type checked.
-/// | [`get_effect_parameters_raw`](IXAudio2VoiceExt::get_effect_parameters_raw)        | Obtains the current effect-specific parameters.  Not type checked.
-/// | [`set_filter_parameters`](IXAudio2VoiceExt::set_filter_parameters)                | Sets this voice’s [`FilterParameters`].
-/// | [`get_filter_parameters`](IXAudio2VoiceExt::get_filter_parameters)                | Returns this voice’s current [`FilterParameters`].
-/// | [`set_output_filter_parameters`](IXAudio2VoiceExt::set_output_filter_parameters)  | Sets the [`FilterParameters`] on one of this voice’s sends.
-/// | [`get_output_filter_parameters`](IXAudio2VoiceExt::get_output_filter_parameters)  | Returns the [`FilterParameters`] from one of this voice’s sends.
-/// | [`set_volume`](IXAudio2VoiceExt::set_volume)                                      | Sets this voice’s overall volume level.
-/// | [`get_volume`](IXAudio2VoiceExt::get_volume)                                      | Obtains this voice’s current overall volume level.
-/// | [`set_channel_volumes`](IXAudio2VoiceExt::set_channel_volumes)                    | Sets this voice’s per-channel volume levels.
-/// | [`get_channel_volumes`](IXAudio2VoiceExt::get_channel_volumes)                    | Returns this voice’s current per-channel volume levels.
-/// | [`set_output_matrix`](IXAudio2VoiceExt::set_output_matrix)                        | Sets the volume levels used to mix from each channel of this voice’s output audio to each channel of a given destination voice’s input audio.
-/// | [`get_output_matrix`](IXAudio2VoiceExt::get_output_matrix)                        | Obtains the volume levels used to send each channel of this voice’s output audio to each channel of a given destination voice’s input audio.
+/// | [`get_voice_details`](Voice::get_voice_details)                                   | Get [`VoiceDetails`] (flags, channels, sample rate)
+/// | [`set_output_voices`](Voice::set_output_voices)                                   | Set submix/mastering voices that receive this voice’s output.
+/// | [`set_effect_chain`](Voice::set_effect_chain)                                     | Replaces this voice’s current effect chain with a new one.
+/// | [`enable_effect`](Voice::enable_effect)                                           | Enables an effect in this voice’s effect chain.
+/// | [`disable_effect`](Voice::disable_effect)                                         | Disables an effect in this voice’s effect chain.
+/// | [`get_effect_state`](Voice::get_effect_state)                                     | Returns the running state of an effect.
+/// | [`set_effect_parameters_raw`](Voice::set_effect_parameters_raw)                   | Sets effect-specific parameters.  Not type checked.
+/// | [`get_effect_parameters_raw`](Voice::get_effect_parameters_raw)                   | Obtains the current effect-specific parameters.  Not type checked.
+/// | [`set_filter_parameters`](Voice::set_filter_parameters)                           | Sets this voice’s [`FilterParameters`].
+/// | [`get_filter_parameters`](Voice::get_filter_parameters)                           | Returns this voice’s current [`FilterParameters`].
+/// | [`set_output_filter_parameters`](Voice::set_output_filter_parameters)             | Sets the [`FilterParameters`] on one of this voice’s sends.
+/// | [`get_output_filter_parameters`](Voice::get_output_filter_parameters)             | Returns the [`FilterParameters`] from one of this voice’s sends.
+/// | [`set_volume`](Voice::set_volume)                                                 | Sets this voice’s overall volume level.
+/// | [`get_volume`](Voice::get_volume)                                                 | Obtains this voice’s current overall volume level.
+/// | [`set_channel_volumes`](Voice::set_channel_volumes)                               | Sets this voice’s per-channel volume levels.
+/// | [`get_channel_volumes`](Voice::get_channel_volumes)                               | Returns this voice’s current per-channel volume levels.
+/// | [`set_output_matrix`](Voice::set_output_matrix)                                   | Sets the volume levels used to mix from each channel of this voice’s output audio to each channel of a given destination voice’s input audio.
+/// | [`get_output_matrix`](Voice::get_output_matrix)                                   | Obtains the volume levels used to send each channel of this voice’s output audio to each channel of a given destination voice’s input audio.
 #[repr(transparent)] pub struct SourceVoiceDynamic<'xa2, Context: Send + Sync + Sized + 'static> {
     voice:      SourceVoiceUntyped<'xa2>,
     phantom:    PhantomData<fn (&Context)>,
@@ -117,7 +115,7 @@ impl<'xa2, Context: Send + Sync + Sized + 'static> SourceVoiceDynamic<'xa2, Cont
             _audio_data: audio_data,
         })).cast();
 
-        unsafe { self.SubmitSourceBuffer(&b, null()) }.succeeded()
+        unsafe { self.as_ref().SubmitSourceBuffer(&b, null()) }.succeeded()
     }
 
     /// Create a voice wrapper from a raw pointer.

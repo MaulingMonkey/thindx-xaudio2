@@ -1,4 +1,4 @@
-use super::xaudio2::sys::*;
+use super::{XAudio2, xaudio2::sys::*};
 use winapi::shared::guiddef::REFCLSID;
 use winapi::um::unknwnbase::IUnknown;
 use winresult::HResult;
@@ -122,7 +122,7 @@ const X3DAUDIO_HANDLE_BYTESIZE : usize = 20; // TODO: offload to -sys ?
     /// | ppXAudio2         |                               | Returned [IXAudio2]
     /// | Flags             | 0                             | Reserved flags (must be 0)
     /// | XAudio2Processor  | [XAUDIO2_DEFAULT_PROCESSOR]   | What processor(s) to run XAudio2 on.
-    pub XAudio2Create: Option<unsafe extern "system" fn(ppXAudio2: *mut *mut IXAudio2, Flags: u32, XAudio2Processor: XAUDIO2_PROCESSOR) -> HResult>,
+    pub XAudio2Create: Option<unsafe extern "system" fn(ppXAudio2: &mut Option<XAudio2>, Flags: u32, XAudio2Processor: XAUDIO2_PROCESSOR) -> HResult>,
     // It seems a bit silly for XAudio2Create to be optional.  However, the inline fn wrapper XAudio2Create as found in:
     // C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\xaudio2.h
     // handles the case where XAudio2Create is not present, so I've chosen to handle it too.
@@ -138,7 +138,7 @@ const X3DAUDIO_HANDLE_BYTESIZE : usize = 20; // TODO: offload to -sys ?
     /// | ppXAudio2         |                               | Returned [IXAudio2]
     /// | Flags             | 0                             | Reserved flags (must be 0)
     /// | XAudio2Processor  | [XAUDIO2_DEFAULT_PROCESSOR]   | What processor(s) to run XAudio2 on.
-    pub XAudio2CreateV2_9: Option<unsafe extern "system" fn(ppXAudio2: *mut *mut IXAudio2, Flags: u32, XAudio2Processor: XAUDIO2_PROCESSOR) -> HResult>,
+    pub XAudio2CreateV2_9: Option<unsafe extern "system" fn(ppXAudio2: &mut Option<XAudio2>, Flags: u32, XAudio2Processor: XAUDIO2_PROCESSOR) -> HResult>,
 
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/audio/xaudio2xbox/functions/xaudio2createwithsharedcontexts)\]
@@ -155,7 +155,7 @@ const X3DAUDIO_HANDLE_BYTESIZE : usize = 20; // TODO: offload to -sys ?
     /// | Flags             | 0                             | As per XAudio2Create
     /// | XAudio2Processor  | [XAUDIO2_DEFAULT_PROCESSOR]   | What processor(s) to run XAudio2 on.
     /// | ntddiVersion      | `NTDDI_VERSION`               | Highest OS version supported by the WDK being built with.
-    pub XAudio2CreateWithVersionInfo: Option<unsafe extern "system" fn(ppXAudio2: *mut *mut IXAudio2, Flags: u32, XAudio2Processor: XAUDIO2_PROCESSOR, ntddiVersion: u32) -> HResult>,
+    pub XAudio2CreateWithVersionInfo: Option<unsafe extern "system" fn(ppXAudio2: &mut Option<XAudio2>, Flags: u32, XAudio2Processor: XAUDIO2_PROCESSOR, ntddiVersion: u32) -> HResult>,
 }
 
 impl Exports {

@@ -9,7 +9,7 @@
 use super::xaudio2_8 as prev;
 
 mod exports;
-mod ixaudio2extension_ext;          pub use ixaudio2extension_ext::*;
+mod ixaudio2extension_ext;
 
 // Might not remain pub
 #[doc(hidden)] pub use xaudio2::sys::{
@@ -37,6 +37,7 @@ pub mod xaudio2 {
 
     // Re-exports
     #[doc(no_inline)] pub use winresult::{HResult, HResultError};
+    pub use super::ixaudio2extension_ext::XAudio2Extension as Extension;
     use winresult::{ERROR, ErrorCode};
     #[cfg(doc)] use winresult::CO;
 
@@ -246,7 +247,7 @@ pub mod xaudio2 {
     /// *   [xaudio2::E_INVALID_CALL]                               - if `processor` is invalid (e.g. specified [xaudio2::USE_DEFAULT_PROCESSOR] on Windows Server 2019)
     ///
     /// [HResultError::from_win32]: https://docs.rs/winresult/latest/winresult/struct.HResultError.html#method.from_win32
-    pub unsafe fn create(flags: Option<core::convert::Infallible>, processor: impl Into<Option<Processor>>) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
+    pub unsafe fn create(flags: Option<core::convert::Infallible>, processor: impl Into<Option<Processor>>) -> Result<XAudio2, HResultError> {
         #![allow(non_snake_case)]
 
         let exports = match Exports::from_default_path_cached() {
@@ -276,8 +277,8 @@ pub mod xaudio2 {
             },
         };
 
-        fn imp(exports: &Exports, processor: Processor) -> Result<mcom::Rc<sys::IXAudio2>, HResultError> {
-            let mut xaudio2 = core::ptr::null_mut();
+        fn imp(exports: &Exports, processor: Processor) -> Result<XAudio2, HResultError> {
+            let mut xaudio2 = None;
             let flags = 0;
             const NTDDI_VERSION : u32 = 0x0A00000C; // NTDDI_WIN10_NI - see C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\sdkddkver.h
 
@@ -291,7 +292,6 @@ pub mod xaudio2 {
                 HResultError::from_win32(ERROR::PROC_NOT_FOUND).into()
             };
 
-            let xaudio2 = unsafe { mcom::Rc::from_raw_opt(xaudio2) };
             hr.succeeded()?;
             let xaudio2 = xaudio2.ok_or(HResultError::from_win32(ERROR::NOINTERFACE))?; // XAudio2Create "succeeded" but gave us a null ptr?
             Ok(xaudio2)
@@ -300,9 +300,6 @@ pub mod xaudio2 {
 }
 
 #[doc(inline)] pub use prev::{
-    // Traits
-    IXAudio2Ext,
-    IXAudio2MasteringVoiceExt,
-    IXAudio2SourceVoiceExt,
-    IXAudio2VoiceExt,
+    // Interface Pointers
+    XAudio2,
 };

@@ -12,7 +12,7 @@ pub trait EngineCallback
     //+ Send        // is not necessary.  IXAudio2EngineCallback isn't an IUnknown, so no IUnknown::Release to worry about.  No other method transfers ownership of the EngineCallback to XAudio2 either.
     //+ 'static     // is not fundamental.  While all methods currently require 'static, a future scoped registration might not.
 {
-    /// Convert `self` into a [IXAudio2EngineCallback] implementation suitable for passing to [IXAudio2Ext::register_for_callbacks]
+    /// Convert `self` into a [IXAudio2EngineCallback] implementation suitable for passing to [XAudio2::register_for_callbacks]
     fn wrap(self) -> EngineCallbackWrapper<Self> { EngineCallbackWrapper::new(self) }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/api/xaudio2/nf-xaudio2-ixaudio2enginecallback-onprocessingpassstart)\]

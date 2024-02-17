@@ -11,7 +11,7 @@ use core::ffi::c_void;
 pub trait VoiceCallback : Send + Sync + Sized + 'static {
     type BufferContext : Send + Sync + Sized + 'static;
 
-    /// Convert `self` into a [IXAudio2VoiceCallback] implementation suitable for passing to [IXAudio2Ext::create_source_voice_unchecked]
+    /// Convert `self` into a [IXAudio2VoiceCallback] implementation suitable for passing to [XAudio2::create_source_voice_unchecked]
     fn wrap(self) -> VoiceCallbackWrapper<Self> { VoiceCallbackWrapper::new(self) }
 
     /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/desktop/api/xaudio2/nf-xaudio2-ixaudio2voicecallback-onvoiceprocessingpassstart)\]
