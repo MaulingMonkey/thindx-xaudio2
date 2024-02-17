@@ -213,10 +213,10 @@ interfaces! {
     /// \[<strike>microsoft.com</strike>\]
     /// Extends [IXAudio2] with additional 2.9+ specific functionality.
     ///
-    /// Use [IXAudio2]::[QueryInterface](IUnknown::QueryInterface) to obtain a pointer to this interface.
+    /// Use [IUnknown]::[QueryInterface](IUnknown::QueryInterface) to obtain a pointer to this interface.
     #[iid = IID_IXAudio2Extension]
     pub interface IXAudio2Extension(IXAudio2ExtensionVtbl) => unsafe IUnknown(IUnknownVtbl) {
-        /// \[<strike>microsoft.com</strike>\]
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-redistributable#duration-of-audio-processing-quantum)\]
         /// Returns the processing quantum
         /// quantumMilliseconds = (1000.0f * quantumNumerator / quantumDenominator)
         ///
@@ -225,7 +225,7 @@ interfaces! {
         /// * `quantumDenominator`  - Quantum denominator
         pub unsafe fn GetProcessingQuantum(&self, quantumNumerator: *mut u32, quantumDenominator: *mut u32) -> ();
 
-        /// \[<strike>microsoft.com</strike>\]
+        /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-redistributable#preferred-cpu-core)\]
         /// Returns the number of the processor used by XAudio2
         ///
         /// ### Arguments

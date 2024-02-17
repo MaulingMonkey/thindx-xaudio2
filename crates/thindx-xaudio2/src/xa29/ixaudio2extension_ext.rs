@@ -28,7 +28,7 @@ impl IXAudio2ExtensionExt for IXAudio2Extension { fn _as_ixaudio2(&self) -> &IXA
 pub trait IXAudio2ExtensionExt {
     #[doc(hidden)] fn _as_ixaudio2(&self) -> &IXAudio2Extension;
 
-    /// \[<strike>microsoft.com</strike>\]
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-redistributable#duration-of-audio-processing-quantum)\]
     /// Returns the processing quantum as a ratio of seconds (e.g. `(1, 100)` = `10ms`)
     fn get_processing_quantum(&self) -> (u32, u32) {
         let mut n = 0;
@@ -37,7 +37,7 @@ pub trait IXAudio2ExtensionExt {
         (n, d)
     }
 
-    /// \[<strike>microsoft.com</strike>\]
+    /// \[[microsoft.com](https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-redistributable#preferred-cpu-core)\]
     /// Returns the [xaudio2::Processor] used by XAudio2.
     ///
     /// This will generally be the same as the processor passed to [xaudio2::create],
