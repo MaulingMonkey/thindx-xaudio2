@@ -1,16 +1,22 @@
 <center>
 
-# 🦀 thindx-xaudio2[-sys] - FFI for XAudio2 🦀
+# 🦀 thindx-xaudio2[-sys] 🦀
+
+FFI and thin wrappers for XAudio2
+
+<div style="display: inline-block; text-align: left">
 
 [![GitHub](https://img.shields.io/github/stars/MaulingMonkey/thindx-xaudio2.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/thindx-xaudio2)
 [![Build Status](https://github.com/MaulingMonkey/thindx-xaudio2/workflows/Rust/badge.svg)](https://github.com/MaulingMonkey/thindx-xaudio2/actions?query=workflow%3Arust)
+[![Last Commit](https://img.shields.io/github/last-commit/MaulingMonkey/thindx-xaudio2)](https://github.com/MaulingMonkey/thindx-xaudio2/commits/)
+<br>
+[![MSRV: 1.63.0](https://img.shields.io/badge/msrv-1.63.0-blue)](https://github.com/MaulingMonkey/thindx-xaudio2/blob/master/rust-toolchain.toml)
 [![License](https://img.shields.io/crates/l/thindx-xaudio2.svg)](https://github.com/MaulingMonkey/thindx-xaudio2)
 <br>
-•
-[examples](https://github.com/MaulingMonkey/thindx-xaudio2/tree/master/crates/thindx-xaudio2/examples)
-•
-[changelog](https://github.com/MaulingMonkey/thindx-xaudio2/wiki/Changelog)
-•
+[![Examples](https://img.shields.io/badge/git-examples-blue?logo=github)](https://github.com/MaulingMonkey/thindx-xaudio2/tree/master/crates/thindx-xaudio2/examples)
+[![Changelog](https://img.shields.io/badge/wiki-changelog-blue)](https://github.com/MaulingMonkey/thindx-xaudio2/wiki/Changelog)
+
+</div>
 
 | crate                                             | crates.io | docs.rs | Description |
 | ------------------------------------------------- | --------- | ------- | ----------- |

@@ -1,13 +1,24 @@
 <center>
 
-# 🦀 thindx-xaudio2-sys - Low level FFI for XAudio2 🦀
+# 🦀 thindx-xaudio2-sys 🦀
+
+Low level FFI for XAudio2
+
+<div style="display: inline-block; text-align: left">
 
 [![GitHub](https://img.shields.io/github/stars/MaulingMonkey/thindx-xaudio2.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/thindx-xaudio2)
+[![Build Status](https://github.com/MaulingMonkey/thindx-xaudio2/workflows/Rust/badge.svg)](https://github.com/MaulingMonkey/thindx-xaudio2/actions?query=workflow%3Arust)
+[![Last Commit](https://img.shields.io/github/last-commit/MaulingMonkey/thindx-xaudio2)](https://github.com/MaulingMonkey/thindx-xaudio2/commits/)
+<br>
 [![crates.io](https://img.shields.io/crates/v/thindx-xaudio2-sys.svg)](https://crates.io/crates/thindx-xaudio2-sys)
 [![docs.rs](https://img.shields.io/docsrs/thindx-xaudio2-sys)](https://docs.rs/thindx-xaudio2-sys)
+[![MSRV: 1.63.0](https://img.shields.io/badge/msrv-1.63.0-blue)](https://github.com/MaulingMonkey/thindx-xaudio2/blob/master/rust-toolchain.toml)
+<br>
+[![Examples](https://img.shields.io/badge/git-examples-blue?logo=github)](https://github.com/MaulingMonkey/thindx-xaudio2/tree/master/crates/thindx-xaudio2/examples)
+[![Changelog](https://img.shields.io/badge/wiki-changelog-blue)](https://github.com/MaulingMonkey/thindx-xaudio2/wiki/Changelog)
 [![License](https://img.shields.io/crates/l/thindx-xaudio2-sys.svg)](https://github.com/MaulingMonkey/thindx-xaudio2)
 
-</center>
+</div></center>
 
 ## Warnings
 

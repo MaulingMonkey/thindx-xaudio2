@@ -11,6 +11,7 @@ license                                 = "Apache-2.0 OR MIT"
 readme                                  = "Readme.md"
 description                             = "Low level FFI for XAudio2"
 keywords                                = ["directx", "xaudio2"]
+rust-version                            = "1.63.0" # abistr 0.2.0-rc3 MSRV
 
 categories = [
     # https://crates.io/category_slugs
